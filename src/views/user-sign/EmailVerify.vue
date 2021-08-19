@@ -24,7 +24,7 @@ export default {
     send_email() {
       this.$axios({
         method: 'GET',
-        url: '/user/unverified_email/',
+        url: '/user/unverified_email',
       })
       .then(res => {
         switch (res.data.status_code) {

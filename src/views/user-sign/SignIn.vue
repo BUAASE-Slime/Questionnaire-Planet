@@ -114,7 +114,7 @@ export default {
 
       self.$axios({
         method: 'post',
-        url: '/user/login/',
+        url: '/user/login',
         data: formData,
       })
       .then(res => {

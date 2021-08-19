@@ -190,7 +190,7 @@ export default {
         if (valid) {
           self.$axios({
             method: 'post',
-            url: '/user/register/',
+            url: '/user/register',
             data: formData,
           })
           .then(res => {
