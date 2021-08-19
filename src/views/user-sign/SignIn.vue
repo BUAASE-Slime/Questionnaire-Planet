@@ -40,9 +40,11 @@
 }
 .login {
   width: 100%;
-  height: 810px;
+  height: 100%;
   background: url("../../assets/images/sign-in.png") no-repeat;
   background-size: cover;
+  overflow: hidden;
+  position: fixed;
 }
 .login-wrap {
   width: 350px;

@@ -35,6 +35,12 @@ const routes = [
         name: 'EmailConfirm',
         component: () => import('../views/user-sign/EmailConfirm.vue'),
     },
+
+    {
+        path: '/*',
+        name: 'PageNotFound',
+        component: () => import('../views/error/PageNotFound'),
+    },
 ]
 
 const router = new VueRouter({
