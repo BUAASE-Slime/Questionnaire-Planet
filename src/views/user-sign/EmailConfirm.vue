@@ -1,18 +1,19 @@
 <template>
   <div class="confirm">
-    <div v-if="success" class="register-success">
-      <el-row>
-        <div class="msg">
-          <h1>恭喜您验证成功！</h1>
-        </div>
-      </el-row>
-    </div>
-    <h3 v-else>验证失败，请检查验证链接，或链接已失效</h3>
+<!--    <div v-if="success" class="register-success">-->
+<!--      <el-row>-->
+<!--        <div class="msg">-->
+<!--          <h1>恭喜您验证成功！</h1>-->
+<!--        </div>-->
+<!--      </el-row>-->
+<!--    </div>-->
+<!--    <h3 v-else>验证失败，请检查验证链接，或链接已失效</h3>-->
   </div>
 </template>
 
 <script>
-import user from "../../store/user";
+
+import user from "@/store/user";
 
 export default {
   name: "confirm",
@@ -31,16 +32,24 @@ export default {
     })
     .then(res => {
       switch (res.data.status_code) {
-        case '2000':
+        case 200:
           this.success = true;
+          this.$message.success('恭喜您验证成功!');
+          this.$store.dispatch('saveUserInfo', {user: {
+              'username': user.getters.getUser(user.state()).user.username,
+              'confirmed': true,
+            }});
+          setTimeout(()=> {
+            this.$router.push('/');
+          }, 2000);
           break;
-        case '4001':
+        case 401:
           this.$message.error('无效的确认请求');
           setTimeout(()=> {
             this.$router.push('/');
           }, 2000);
           break;
-        case '4002':
+        case 402:
           this.$message.error('验证码已过期，请重新注册');
           setTimeout(()=> {
             this.$router.push('/unverified_email');
@@ -53,45 +62,7 @@ export default {
     })
   },
   methods: {
-    applyToAuthor() {
-      this.$axios({
-        method: 'GET',
-        url: '/apply/',
-      })
-      .then(res => {
-        switch (res.data.status_code) {
-          case '2000':
-            this.$message.success('申请成功！');
-            user.getters.getUser(user.state()).user.usertype = '作者';
-            setTimeout(()=> {
-              this.$router.push('/');
-            },1500);
-            break;
-          case '4001':
-            this.$message.warning('请先完成邮箱验证！');
-            setTimeout(()=> {
-              this.$router.push('/unverified_email');
-            },1500);
-            break;
-          case '4002':
-            this.$message.warning('请完善个人资料！');
-            setTimeout(()=> {
-              this.$router.push('/edit');
-            },1500);
-            break;
-          case '4003':
-            this.$message.warning('您已是作者，请勿重复申请！');
-            setTimeout(()=> {
-              this.$router.push('/');
-            },1500);
-            break;
-          default:
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    }
+
   }
 }
 </script>

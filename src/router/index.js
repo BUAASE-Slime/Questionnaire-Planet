@@ -6,6 +6,11 @@ Vue.use(VueRouter)
 
 const routes = [
     {
+        path: '/',
+        name: 'Home',
+        component: () => import('../views/home/Home.vue')
+    },
+    {
         path: '/login',
         name: 'SignIn',
         component: () => import('../views/user-sign/SignIn.vue'),
@@ -54,6 +59,13 @@ router.beforeEach((to, from, next) => {
 
     // require not sign in
     if (userInfo && to.meta.requireNotAuth) {
+        next({
+            name: 'Home',
+        })
+    }
+
+    //邮箱验证后不能访问的页面 如再次验证邮箱
+    if (userInfo && userInfo.user.confirmed && to.meta.requireAuthNotConfirmed) {
         next({
             name: 'Home',
         })
