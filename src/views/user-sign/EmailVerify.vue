@@ -28,21 +28,21 @@ export default {
       })
       .then(res => {
         switch (res.data.status_code) {
-          case '2000':
+          case 200:
             this.$message.success('验证邮件发送成功！');
             this.username = res.data.username;
             this.email = res.data.email;
             break;
-          case '4001':
+          case 401:
             this.$message.warning('用户未登录！');
             break;
-          case '4002':
+          case 402:
             this.$message.warning('用户已验证，无需重新验证！');
             setTimeout(()=> {
               this.$router.push('/');
             }, 1500)
             break;
-          case '4003':
+          case 403:
             this.$message.error('邮件地址错误，请重新注册！');
             break;
         }

@@ -195,7 +195,7 @@ export default {
           })
           .then(res => {
             switch (res.data.status_code) {
-              case "2000":
+              case 200:
                 this.$store.dispatch('saveUserInfo', {user: {
                     'username': this.ruleForm.username,
                     'confirmed': false,
@@ -205,16 +205,22 @@ export default {
                   this.$router.push('/unverified_email');
                 },1500);
                 break;
-              case "3001":
+              case 301:
                 this.$message.warning('请检查填写的内容！');
                 break;
-              case "4001":
+              case 401:
                 this.$message.warning('用户名已注册！');
                 break;
-              case "4002":
+              case 402:
                 this.$message.error('邮箱已注册或不可用！');
                 break;
-              case "4005":
+              case 403:
+                this.$message.error('密码不符合规则，需满足8-18，英文字母+数字！');
+                break;
+              case 404:
+                this.$message.error('两次输入的密码不一致！');
+                break;
+              case 405:
                 this.$message.error('邮件验证码发送失败，请检查邮箱是否填写正确！');
                 break;
             }
