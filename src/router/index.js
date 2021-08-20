@@ -8,7 +8,10 @@ const routes = [
     {
         path: '/',
         name: 'Home',
-        component: () => import('../views/home/Home.vue')
+        component: () => import('../views/home/Home.vue'),
+        meta: {
+            requireNotAuth: true,
+        },
     },
     {
         path: '/login',
@@ -41,9 +44,12 @@ const routes = [
         component: () => import('../views/user-sign/EmailConfirm.vue'),
     },
     {
-        path: '/home',
+        path: '/index',
         name: 'QnCenter',
-        component: () => import( '../views/qn-manage/QnCenter.vue')
+        component: () => import( '../views/qn-manage/QnCenter.vue'),
+        meta: {
+            requireAuth: true,
+        }
     },
 
     {
@@ -62,10 +68,17 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
     const userInfo = user.getters.getUser(user.state())
 
+    // require sign in
+    if (!userInfo && to.meta.requireAuth) {
+        next({
+            name: 'Home',
+        })
+    }
+
     // require not sign in
     if (userInfo && to.meta.requireNotAuth) {
         next({
-            name: 'Home',
+            name: 'QnCenter',
         })
     }
 
