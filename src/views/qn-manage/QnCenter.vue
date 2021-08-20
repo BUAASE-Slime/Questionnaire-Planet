@@ -47,7 +47,7 @@
                 </el-dropdown-menu>
                 </el-dropdown>
             </div>
-            <el-card v-for="(msg,index) in QnaireList" class="box-card" :key='index'>
+            <el-card v-for="(msg,index) in QnList" class="box-card" :key='index'>
                 <div slot="header" style="display:flex">
                 <el-row>
                     <el-col span=20>{{msg.title}}</el-col>
@@ -88,7 +88,7 @@ export default {
   data() {
     return {
         input: '',
-        QnaireList: [
+      QnList: [
         {
             title:'易灿和他的问卷',
             paper_id:19373000,
@@ -111,90 +111,90 @@ export default {
 </script>
 
 <style scoped>
-    #sum{
-        height: 1000px;
-        width: 100%;
-        min-width: 2500px;
-        background-color: rgb(241, 241, 241);
-    }
-    #aside{
-        width: 25%;
-        /* background-color: antiquewhite; */
-        min-width: 650px;
-    }
-    #mainpage{
-        width: 75%;
-        /* background-color: aquamarine; */
-        min-width: 1900px;
-    }
-    #newButton{
-        width: 60%;
-        height: 100px;
-        font-size: 30px;
-        margin-top: 50px;
-    }
-    #list{
-        width: 100%;
-        margin-top: 50px;
-        padding: 0 20px;
+#sum{
+    height: 1000px;
+    width: 100%;
+    min-width: 2500px;
+    background-color: rgb(241, 241, 241);
+}
+#aside{
+    width: 25%;
+    /* background-color: antiquewhite; */
+    min-width: 650px;
+}
+#mainpage{
+    width: 75%;
+    /* background-color: aquamarine; */
+    min-width: 1900px;
+}
+#newButton{
+    width: 60%;
+    height: 100px;
+    font-size: 30px;
+    margin-top: 50px;
+}
+#list{
+    width: 100%;
+    margin-top: 50px;
+    padding: 0 20px;
 
-    }
-    #list .el-menu{
-        width: 65%;
-        margin: 0 108px;
-    }
-    #list .el-menu-item{
-        height: 100px;
-        font-size: 25px;
-        padding: 28px 0;
-        text-align: center;
-    }
-
-    #title{
-
-        height: 70px;
-        font-size: 40px;
-        text-align: left;
-        padding: 60px 20px;
-    }
-    .el-dropdown-link {
-        cursor: pointer;
-    }
-    .el-icon-arrow-down {
-        font-size: 12px;
-    }
-    .el-input{
-        width: 300px;
-    }
-    .right{
-        float: right;
-        margin: 0 50px; 
-        /* margin-top: 10px; */
-        padding: 25px 0;
-    }
-
-    .box-card {
-    margin: 50px 100px;
-    width: 89%;
-    height: auto;
+}
+#list .el-menu{
+    width: 65%;
+    margin: 0 108px;
+}
+#list .el-menu-item{
+    height: 100px;
     font-size: 25px;
-    }
-    .el-col-20{
-        text-align: left;
-        font-size: 30px;
-        padding: 10px 30px;
-        width: 800px;
-        font-weight: bold;
-    }
-    .headspan{
-        padding: 15px 28px;
-    }
-    .leftside{
-        float: left;
-        padding: 20px ;
-    }
-    .rightside{
-        float: right;
-        padding: 20px;
-    }
+    padding: 28px 0;
+    text-align: center;
+}
+
+#title{
+
+    height: 70px;
+    font-size: 40px;
+    text-align: left;
+    padding: 60px 20px;
+}
+.el-dropdown-link {
+    cursor: pointer;
+}
+.el-icon-arrow-down {
+    font-size: 12px;
+}
+.el-input{
+    width: 300px;
+}
+.right{
+    float: right;
+    margin: 0 50px;
+    /* margin-top: 10px; */
+    padding: 25px 0;
+}
+
+.box-card {
+margin: 50px 100px;
+width: 89%;
+height: auto;
+font-size: 25px;
+}
+.el-col-20{
+    text-align: left;
+    font-size: 30px;
+    padding: 10px 30px;
+    width: 800px;
+    font-weight: bold;
+}
+.headspan{
+    padding: 15px 28px;
+}
+.leftside{
+    float: left;
+    padding: 20px ;
+}
+.rightside{
+    float: right;
+    padding: 20px;
+}
 </style>

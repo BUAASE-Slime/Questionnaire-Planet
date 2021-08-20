@@ -135,11 +135,5 @@ export default{
 .cover{
   position:absolute;width: 100%;height: 100%;background-color: rgba(0,0,0,0.6);z-index: 100;left: 0;top:0;color: white;font-size: 50px;line-height: 60px;padding-top: 180px;
 }
-.lj{
-
-}
-.b{
-  font-weight: 700;
-}
 
 </style>
