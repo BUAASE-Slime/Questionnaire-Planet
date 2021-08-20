@@ -40,6 +40,16 @@ const routes = [
         name: 'EmailConfirm',
         component: () => import('../views/user-sign/EmailConfirm.vue'),
     },
+    {
+        path: '/create_ques',
+        name: 'CreateQues',
+        component: () => import('../views/questionnaire-create/CreateQues.vue'),
+    },
+    {
+        path: '/investigation',
+        name: 'Investigation',
+        component: () => import('../views/questionnaire-create/questionnaire-form/investigation'),
+    },
 
     {
         path: '/*',
