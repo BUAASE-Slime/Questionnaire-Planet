@@ -1,7 +1,7 @@
 <template>
   <div class="register">
     <div>
-      <img class="logo-name" src="../../assets/images/publish-logo.png" alt="logo" @click="handleToHome"/>
+      <img class="logo-name" src="../../assets/images/sign-in-logo.png" alt="logo" @click="handleToHome"/>
     </div>
 
     <div class="register-wrap">
@@ -68,8 +68,8 @@
 }
 .logo-name {
   margin-top: 30px;
-  width: 300px;
-  height: 150px;
+  width: 350px;
+  height: 175px;
   cursor: pointer;
   overflow: hidden;
 }
@@ -83,23 +83,23 @@
 .register {
   width: 100%;
   height: 100%;
-  background: url("../../assets/images/sign-in.png") no-repeat;
+  background: url("../../assets/images/sign-in-5.jpg") no-repeat;
   background-size: cover;
   overflow: hidden;
   position: fixed;
 }
 .title{
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 .register-wrap {
   width: 350px;
-  height: 430px;
+  height: 440px;
   padding: 20px 25px 0 25px;
   line-height: 40px;
   position: relative;
   display: inline-block;
-  background-color: rgb(255, 255, 255, 0.8);
+  background-color: rgb(255, 255, 255, 0.85);
   border-radius: 20px;
 }
 </style>
