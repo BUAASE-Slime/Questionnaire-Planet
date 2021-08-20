@@ -40,6 +40,11 @@ const routes = [
         name: 'EmailConfirm',
         component: () => import('../views/user-sign/EmailConfirm.vue'),
     },
+    {
+        path: '/questioncenter',
+        name: 'QuestionCenter',
+        component: () => import( '../views/QestionnaireCenter.vue')
+    },
 
     {
         path: '/*',
