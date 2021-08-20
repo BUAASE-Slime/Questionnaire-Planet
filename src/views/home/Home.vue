@@ -61,9 +61,12 @@ export default{
     gotoLogin() {
       const userInfo = user.getters.getUser(user.state())
       if (userInfo) {
-        this.$router.push('/home');
+        this.$router.push('/index');
       } else {
-        this.$router.push('/login');
+        this.$message.warning('请先登录！');
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 500);
       }
     }
   }
