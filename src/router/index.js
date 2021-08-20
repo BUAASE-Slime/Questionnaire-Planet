@@ -41,9 +41,9 @@ const routes = [
         component: () => import('../views/user-sign/EmailConfirm.vue'),
     },
     {
-        path: '/questioncenter',
-        name: 'QuestionCenter',
-        component: () => import( '../views/QestionnaireCenter.vue')
+        path: '/home',
+        name: 'QnCenter',
+        component: () => import( '../views/qn-manage/QnCenter.vue')
     },
 
     {
