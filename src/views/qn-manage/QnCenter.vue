@@ -25,9 +25,9 @@
         </div>
         <div id='mainpage'>
             <div id='title'>
-                <span style="margin-left: 70px">问卷列表</span>
-                <el-input class='right' v-model="input" placeholder="根据问卷名或id搜索" suffix-icon="el-icon-search"></el-input>
-                <el-dropdown split-button class='right'>
+                <span style="margin-left: 35px">问卷列表</span>
+                <el-input class='right' v-model="input" size="small" placeholder="根据问卷名或id搜索" suffix-icon="el-icon-search"></el-input>
+                <el-dropdown split-button class='right' size="small">
                 状态
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item>已发布</el-dropdown-item>
@@ -35,7 +35,7 @@
                     <el-dropdown-item>所有</el-dropdown-item>
                 </el-dropdown-menu>
                 </el-dropdown>
-                <el-dropdown split-button class='right'>
+                <el-dropdown split-button class='right' size="small">
                 排序
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item>按创建时间正序</el-dropdown-item>
@@ -63,7 +63,7 @@
                     <span class="leftside el-icon-view"> 预览</span>
                     <span class="leftside el-icon-share"> 分享</span>
                     <span class="leftside el-icon-s-data"> 统计</span>
-                    <el-dropdown split-button class="leftside">
+                    <el-dropdown split-button class="leftside" size="mini" id="download">
                     导出
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item>统计分析</el-dropdown-item>
@@ -93,14 +93,14 @@ export default {
             title:'易灿和他的问卷',
             paper_id:19373000,
             recycling_num: 8,
-            create_time:'2021/6/10',
+            create_time:'2021/6/10 5:10',
             is_released: false
         },
         {
             title:'nn和他的问卷',
             paper_id:19373000,
-            recycling_num: 8,
-            create_time:'2021/6/10',
+            recycling_num: 1118,
+            create_time:'2021/6/10 23:10',
             is_released: true
         },
         ]
@@ -111,90 +111,93 @@ export default {
 </script>
 
 <style scoped>
-#sum{
-    height: 1000px;
-    width: 100%;
-    min-width: 2500px;
-    background-color: rgb(241, 241, 241);
-}
-#aside{
-    width: 25%;
-    /* background-color: antiquewhite; */
-    min-width: 650px;
-}
-#mainpage{
-    width: 75%;
-    /* background-color: aquamarine; */
-    min-width: 1900px;
-}
-#newButton{
-    width: 60%;
-    height: 100px;
-    font-size: 30px;
-    margin-top: 50px;
-}
-#list{
-    width: 100%;
-    margin-top: 50px;
-    padding: 0 20px;
+    #sum{
+        height: 1000px;
+        width: 100%;
+        min-width: 1200px;
+        background-color: rgb(241, 241, 241);
+    }
+    #aside{
+        width: 25%;
+        /* background-color: antiquewhite; */
+        min-width: 325px;
+    }
+    #mainpage{
+        width: 70%;
+        /* background-color: aquamarine; */
+        min-width: 850px;
+    }
+    #newButton{
+        width: 60%;
+        height: 50px;
+        font-size: 15px;
+        margin-top: 25px;
+    }
+    #list{
+        width: 100%;
+        margin-top: 25px;
+        padding: 0 10px;
 
-}
-#list .el-menu{
-    width: 65%;
-    margin: 0 108px;
-}
-#list .el-menu-item{
-    height: 100px;
-    font-size: 25px;
-    padding: 28px 0;
-    text-align: center;
-}
+    }
+    #list .el-menu{
+        width: 65%;
+        margin: 0 54px;
+    }
+    #list .el-menu-item{
+        height: 50px;
+        font-size: 12px;
+        text-align: center;
+    }
 
-#title{
+    #title{
 
-    height: 70px;
-    font-size: 40px;
-    text-align: left;
-    padding: 60px 20px;
-}
-.el-dropdown-link {
-    cursor: pointer;
-}
-.el-icon-arrow-down {
+        height: 35px;
+        font-size: 30px;
+        text-align: left;
+        padding: 30px 10px;
+        font-weight: bold;
+    }
+    .el-dropdown-link {
+        cursor: pointer;
+    }
+    .el-icon-arrow-down {
+        font-size: 6px;
+    }
+    .el-input{
+        width: 200px;
+    }
+    .right{
+        float: right;
+        margin: 0 15px; 
+        /* margin-top: 10px; */
+        padding: 13px 0;
+    }
+
+    .box-card {
+    margin: 25px 50px;
+    width: 89%;
+    height: auto;
     font-size: 12px;
-}
-.el-input{
-    width: 300px;
-}
-.right{
-    float: right;
-    margin: 0 50px;
-    /* margin-top: 10px; */
-    padding: 25px 0;
-}
-
-.box-card {
-margin: 50px 100px;
-width: 89%;
-height: auto;
-font-size: 25px;
-}
-.el-col-20{
-    text-align: left;
-    font-size: 30px;
-    padding: 10px 30px;
-    width: 800px;
-    font-weight: bold;
-}
-.headspan{
-    padding: 15px 28px;
-}
-.leftside{
-    float: left;
-    padding: 20px ;
-}
-.rightside{
-    float: right;
-    padding: 20px;
-}
+    }
+    .el-col-20{
+        text-align: left;
+        font-size: 15px;
+        padding: 5px 15px;
+        width: 350px;
+        /* font-weight: bold; */
+    }
+    .headspan{
+        padding: 7px 7px;
+    }
+    .leftside{
+        float: left;
+        padding: 10px ;
+    }
+    .rightside{
+        float: right;
+        padding: 10px;
+    }
+    #download{
+        padding: 3px 10px 12px 10px;
+    }
 </style>
