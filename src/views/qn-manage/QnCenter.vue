@@ -5,7 +5,8 @@
                 <el-col :span="12" id='list'>
                     <el-menu id='item'
                     default-active="1"
-                    class="el-menu-vertical-demo">
+                    class="el-menu-vertical-demo"
+                    @select="handleSelect">
                     <el-menu-item index="1">
                         <i class="el-icon-document"></i>
                         <span slot="title">全部问卷</span>
@@ -108,30 +109,34 @@ export default {
   },
   data() {
     return {
+      activeIdx: "1",
+
       qnType: '问卷状态',
       orderQn: '排序依据',
+
       qnKey: '',
       orderItem: 'default',
       orderType: 'default',
       hasQn: true,
       input: '',
       is_released: "default",
+      is_collected: 0,
       QnList: [
-        {
-            title:'易灿和他的问卷',
-            paper_id:19373000,
-            recycling_num: 8,
-            create_time:'2021/6/10 5:10',
-            is_released: false,
-            is_deleted: false
-        },
-        {
-            title:'nn和他的问卷',
-            paper_id:19373000,
-            recycling_num: 1118,
-            create_time:'2021/6/10 23:10',
-            is_released: true
-        },
+        // {
+        //     title:'易灿和他的问卷',
+        //     paper_id:19373000,
+        //     recycling_num: 8,
+        //     create_time:'2021/6/10 5:10',
+        //     is_released: false,
+        //     is_deleted: false
+        // },
+        // {
+        //     title:'nn和他的问卷',
+        //     paper_id:19373000,
+        //     recycling_num: 1118,
+        //     create_time:'2021/6/10 23:10',
+        //     is_released: true
+        // },
       ],
     }
   },
@@ -150,6 +155,43 @@ export default {
       this.QnList[index].is_released=true
     },
 
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    initParams() {
+      this.qnType = '问卷状态';
+      this.orderQn = '排序依据';
+      this.qnKey = '';
+      this.orderType = 'default';
+      this.orderItem = 'default';
+      this.hasQn = true;
+      this.is_released = 'default';
+      this.is_collected = 0;
+      this.input = '';
+    },
+    handleSelect(key) {
+      this.activeIdx = key;
+
+      this.initParams();
+
+      switch (this.activeIdx) {
+        case "1":
+          this.is_collected = 0;
+          this.searchQns();
+          break;
+        case "2":
+          this.is_collected = 1;
+          this.searchQns();
+          break;
+        case "3":
+
+          break;
+      }
+    },
+
     linkCreate() {
       this.$router.push('/create_ques');
     },
@@ -162,12 +204,13 @@ export default {
       this.qnType = command;
       switch (command) {
         case "所有":
+          this.is_released = "default";
           break;
         case "已发布":
-          this.is_released = 1;
+          this.is_released = "1";
           break;
         case "未发布":
-          this.is_released = 0;
+          this.is_released = "0";
           break;
       }
       this.searchQns();
@@ -210,20 +253,32 @@ export default {
     },
 
     searchQns() {
-      const formData = new FormData();
+      let formData = new FormData();
       const userInfo = user.getters.getUser(user.state());
       formData.append("username", userInfo.user.username);
 
-      if (this.is_released === 1 || this.is_released === 0)
-        formData.append("is_released", this.is_released);
+      if (this.is_released === "1")
+      {
+        formData.append("is_released", 1);
+        console.log("1");
+      }
+      else if (this.is_released === "0")
+      {
+        formData.append("is_released", 0);
+        console.log("0");
+      }
+
       if (this.orderItem !== "default" && this.orderType !== "default") {
         formData.append("order_item", this.orderItem);
         formData.append("order_type", this.orderType);
       }
       if (this.qnKey !== "")
         formData.append("title_key", this.qnKey);
+      if (this.is_collected === 1)
+        formData.append("is_collected", this.is_collected);
+
       this.$axios({
-        method: 'get',
+        method: 'post',
         url: '/qn/get_list',
         data: formData,
       })
