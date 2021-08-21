@@ -65,6 +65,32 @@ const routes = [
         path: '/stat',
         name: 'QnStat',
         component: () => import('../views/qn-stat/QnStat'),
+        children :[
+            {
+                path: '/recyconcept',
+                name: 'recyconcept',
+                
+                component: () => import('../views/qn-stat/sub-stat/recyconcept')
+            },
+            {
+                path: '/chartreport',
+                name: 'chartreport',
+                
+                component: () => import('../views/qn-stat/sub-stat/chartreport')              
+            },
+            {
+                path: '/crossover',
+                name: 'crossover',
+                
+                component: () => import('../views/qn-stat/sub-stat/crossover')              
+            },
+            {
+                path: '/download',
+                name: 'download',
+                
+                component: () => import('../views/qn-stat/sub-stat/download')              
+            },
+        ]
     },
 
     {

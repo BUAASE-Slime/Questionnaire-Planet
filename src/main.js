@@ -9,6 +9,9 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 import GlobalInfo from './GlobalInfo'
 
+import * as echarts from 'echarts';
+// import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
 
 
 // global mounted
