@@ -5,9 +5,7 @@
                 <el-col :span="12" id='list'>
                     <el-menu id='item'
                     default-active="1"
-                    class="el-menu-vertical-demo"
-                    @open="handleOpen"
-                    @close="handleClose">
+                    class="el-menu-vertical-demo">
                     <el-menu-item index="1">
                         <i class="el-icon-document"></i>
                         <span slot="title">全部问卷</span>
@@ -30,78 +28,94 @@
                     class='right'
                     v-model="input"
                     size="small"
-                    placeholder="根据问卷名或id搜索"
-                    suffix-icon="el-icon-search"
-                    @keyup.enter.native="searchQn"/>
-                <el-dropdown split-button class='right' size="small">
-                状态
+                    placeholder="根据问卷名进行搜索.."
+                    @keyup.enter.native="searchQn">
+                  <i slot="suffix" class="el-input__icon el-icon-search" @click="searchQn" style="cursor: pointer"></i>
+                </el-input>
+
+                <el-dropdown @command="selectType" split-button class='right' size="small">
+                  {{ qnType }}
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>已发布</el-dropdown-item>
-                    <el-dropdown-item>未发布</el-dropdown-item>
-                    <el-dropdown-item>所有</el-dropdown-item>
+                    <el-dropdown-item command="所有">所有</el-dropdown-item>
+                    <el-dropdown-item command="已发布">已发布</el-dropdown-item>
+                    <el-dropdown-item command="未发布">未发布</el-dropdown-item>
                 </el-dropdown-menu>
                 </el-dropdown>
-                <el-dropdown split-button class='right' size="small">
-                排序
+                <el-dropdown @command="orderIndex" split-button class='right' size="small">
+                  {{ orderQn }}
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>按创建时间正序</el-dropdown-item>
-                    <el-dropdown-item>按创建时间倒序</el-dropdown-item>
-                    <el-dropdown-item>按发布时间正序</el-dropdown-item>
-                    <el-dropdown-item>按发布时间倒序</el-dropdown-item>
-                    <el-dropdown-item>按答题人数正序</el-dropdown-item>
-                    <el-dropdown-item>按答题人数倒序</el-dropdown-item>
+                    <el-dropdown-item command="1">按创建时间正序</el-dropdown-item>
+                    <el-dropdown-item command="2">按创建时间倒序</el-dropdown-item>
+                    <el-dropdown-item command="3">按发布时间正序</el-dropdown-item>
+                    <el-dropdown-item command="4">按发布时间倒序</el-dropdown-item>
+                    <el-dropdown-item command="5">按答题人数正序</el-dropdown-item>
+                    <el-dropdown-item command="6">按答题人数倒序</el-dropdown-item>
                 </el-dropdown-menu>
                 </el-dropdown>
+
             </div>
-            <el-card v-for="(msg,index) in QnList" class="box-card" :key='index'>
+
+
+            <div v-if="hasQn">
+              <el-card v-for="(msg,index) in QnList" class="box-card" :key='index'>
                 <div slot="header" style="display:flex">
-                <el-row>
+                  <el-row>
                     <el-col span=20>{{msg.title}}</el-col>
-                </el-row>
-                <span class="headspan">id：{{msg.paper_id}}</span>
-                <span class="headspan">答卷：{{msg.recycling_num}}</span>
-                <span v-if="msg.is_released" class="headspan">已发布</span>
-                <span v-else class="headspan">未发布</span>
-                <span class="headspan">创建时间：{{msg.create_time}}</span>
+                  </el-row>
+                  <span class="headspan">id：{{msg.paper_id}}</span>
+                  <span class="headspan">答卷：{{msg.recycling_num}}</span>
+                  <span v-if="msg.is_released" class="headspan">已发布</span>
+                  <span v-else class="headspan">未发布</span>
+                  <span class="headspan">创建时间：{{msg.create_time}}</span>
                 </div>
                 <div slot="default" class="card-body">
-                    <el-link href="investigation" target="_blank" :underline="false" class="leftside el-icon-edit"> 编辑</el-link>
-                    <el-link href="PageNotFound" target="_blank" :underline="false" class="leftside el-icon-view"> 预览</el-link>
-                    <span class="leftside el-icon-share"> 分享</span>
-                    <span class="leftside el-icon-s-data"> 统计</span>
-                    <el-dropdown split-button class="leftside" size="mini" id="download">
+                  <el-link href="investigation" target="_blank" :underline="false" class="leftside el-icon-edit">编辑</el-link>
+                  <el-link href="PageNotFound" target="_blank" :underline="false" class="leftside el-icon-view">预览</el-link>
+                  <span class="leftside el-icon-share"> 分享</span>
+                  <span class="leftside el-icon-s-data"> 统计</span>
+                  <el-dropdown split-button class="leftside" size="mini" id="download">
                     导出
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>统计分析</el-dropdown-item>
-                        <el-dropdown-item>下载答卷</el-dropdown-item>
-                        <el-dropdown-item>来源分析</el-dropdown-item>
+                      <el-dropdown-item>导出Word</el-dropdown-item>
+                      <el-dropdown-item>导出PDF</el-dropdown-item>
                     </el-dropdown-menu>
-                    </el-dropdown>
-                    <el-button type="text" class="rightside el-icon-delete"> 删除</el-button>
-                    <el-button type="text" class="rightside el-icon-star-off"> 收藏</el-button>
-                    <el-button type="text" class="rightside el-icon-document"> 复制</el-button>
-                    <el-button type="text" v-if="msg.is_released" @click="recycle(index)" class="rightside el-icon-video-pause"> 暂停</el-button>
-                    <el-button type="text" v-else @click="release(index)" class="rightside el-icon-video-play"> 发布</el-button>
+                  </el-dropdown>
+                  <el-button type="text" class="rightside el-icon-delete"> 删除</el-button>
+                  <el-button type="text" class="rightside el-icon-star-off"> 收藏</el-button>
+                  <el-button type="text" class="rightside el-icon-document"> 复制</el-button>
+                  <el-button type="text" v-if="msg.is_released" @click="recycle(index)" class="rightside el-icon-video-pause"> 暂停</el-button>
+                  <el-button type="text" v-else @click="release(index)" class="rightside el-icon-video-play"> 发布</el-button>
                 </div>
-            </el-card>
+              </el-card>
+            </div>
+          <div v-else>
+            <el-divider/>
+            <el-empty :image-size="225" description="未查询到满足条件的问卷！">
+              <el-button type="primary">创建问卷</el-button>
+            </el-empty>
+          </div>
         </div>
     </div>
 
 </template>
 
 <script>
-export default {
-  mounted() {
+import user from "@/store/user";
 
-  },
-  methods: {
-    searchQn() {
-      console.log(this.input);
-    }
+export default {
+  created() {
+    this.searchQns();
   },
   data() {
     return {
+      qnType: '问卷状态',
+      orderQn: '排序依据',
+      qnKey: '',
+      orderItem: 'default',
+      orderType: 'default',
+      hasQn: true,
       input: '',
+      is_released: "default",
       QnList: [
         {
             title:'易灿和他的问卷',
@@ -118,25 +132,123 @@ export default {
             create_time:'2021/6/10 23:10',
             is_released: true
         },
-        ]
-      
+      ],
     }
   },
   methods:{
+    recycle:function (index){
+      this.$alert('问卷已暂停', '', {
+        confirmButtonText: '确定',
+      });
+      this.QnList[index].is_released=false
 
-      recycle:function (index){
-        this.$alert('问卷已暂停', '', {
-          confirmButtonText: '确定',
-        });
-        this.QnList[index].is_released=false
-        
-      },
-      release:function(index){
-        this.$alert('问卷已发布', '', {
-          confirmButtonText: '确定',
-        });          
-        this.QnList[index].is_released=true
+    },
+    release:function(index){
+      this.$alert('问卷已发布', '', {
+        confirmButtonText: '确定',
+      });
+      this.QnList[index].is_released=true
+    },
+
+    linkCreate() {
+      this.$router.push('/create_ques');
+    },
+
+    searchQn() {
+      this.qnKey = this.input;
+      this.searchQns();
+    },
+    selectType(command) {
+      this.qnType = command;
+      switch (command) {
+        case "所有":
+          break;
+        case "已发布":
+          this.is_released = 1;
+          break;
+        case "未发布":
+          this.is_released = 0;
+          break;
       }
+      this.searchQns();
+    },
+    orderIndex(command) {
+      console.log(command);
+      switch (command) {
+        case "1":
+          this.orderQn = "按创建时间正序";
+          this.orderItem = "created_time";
+          this.orderType = "desc";
+          break;
+        case "2":
+          this.orderQn = "按创建时间倒序";
+          this.orderItem = "created_time";
+          this.orderType = "asc";
+          break;
+        case "3":
+          this.orderQn = "按发布时间正序";
+          this.orderItem = "release_time";
+          this.orderType = "desc";
+          break;
+        case "4":
+          this.orderQn = "按发布时间倒序";
+          this.orderItem = "release_time";
+          this.orderType = "asc";
+          break;
+        case "5":
+          this.orderQn = "按答题人数正序";
+          this.orderItem = "recycling_num";
+          this.orderType = "desc";
+          break;
+        case "6":
+          this.orderQn = "按答题人数倒序";
+          this.orderItem = "recycling_num";
+          this.orderType = "asc";
+          break;
+      }
+      this.searchQns();
+    },
+
+    searchQns() {
+      const formData = new FormData();
+      const userInfo = user.getters.getUser(user.state());
+      formData.append("username", userInfo.user.username);
+
+      if (this.is_released === 1 || this.is_released === 0)
+        formData.append("is_released", this.is_released);
+      if (this.orderItem !== "default" && this.orderType !== "default") {
+        formData.append("order_item", this.orderItem);
+        formData.append("order_type", this.orderType);
+      }
+      if (this.qnKey !== "")
+        formData.append("title_key", this.qnKey);
+      this.$axios({
+        method: 'get',
+        url: '/qn/get_list',
+        data: formData,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 401:
+            this.$message.warning("您无权访问！");
+            break;
+          case 403:
+            this.$message.warning("您无权访问！");
+            break;
+          case 404:
+            this.hasQn = false;
+            console.log('success! qn none!')
+            break;
+          default:
+            this.QnList = JSON.parse(res.data);
+            console.log('success');
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    }
   }
 }
 </script>
@@ -181,9 +293,9 @@ export default {
     #title{
 
         height: 35px;
-        font-size: 25px;
+        font-size: 22px;
         text-align: left;
-        padding: 30px 10px;
+        margin: 15px;
         font-weight: bold;
     }
     .el-dropdown-link {
