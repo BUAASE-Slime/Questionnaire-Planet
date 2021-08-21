@@ -30,11 +30,12 @@ export default {
 <style>
 #app {
   min-height: 800px;
+  min-width: 1500px;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background-color: #f3f3f3;
+  background-color: rgb(241, 241, 241);
 }
 </style>

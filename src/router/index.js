@@ -61,6 +61,11 @@ const routes = [
         name: 'Investigation',
         component: () => import('../views/qn-create/qn-form/investigation'),
     },
+    {
+        path: '/stat',
+        name: 'QnStat',
+        component: () => import('../views/qn-stat/QnStat'),
+    },
 
     {
         path: '/*',
