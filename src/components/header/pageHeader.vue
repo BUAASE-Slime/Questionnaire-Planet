@@ -7,24 +7,35 @@
       </el-menu-item>
       <el-menu-item index="2" @click="gotoIndex">个人问卷</el-menu-item>
 <!--      <el-menu-item index="3">导航二</el-menu-item>-->
-      <el-submenu index="4" style="float: right">
+      <el-submenu index="4" style="float: right" v-if="isLogin">
         <template slot="title">{{ userName }}</template>
         <el-menu-item index="4-1" class="big-item">账户设置</el-menu-item>
         <el-menu-item index="4-2" class="big-item">退出</el-menu-item>
       </el-submenu>
-      <i class="el-icon-bell" style="padding-top: 28px; font-size: 24px; float: right;" @click="openNews"></i>
+      <i class="el-icon-bell" v-if="isLogin" style="padding-top: 28px; font-size: 24px; float: right;" @click="openNews"></i>
+      <div class="login-button">
+        <el-button index="4" style="float: right" v-if="!isLogin" type="primary" @click="gotoLogin">登录</el-button>
+      </div>
     </el-menu>
   </div>
 </template>
 
 <script>
+  import user from "@/store/user";
+
   export default {
     name: 'pageHeader',
     data() {
       return {
         userName: 'Zuo_zuo',
         activeIndex: '1',
+        isLogin: false,
       };
+    },
+    created() {
+      const userInfo = user.getters.getUser(user.state());
+      if (userInfo)
+        this.isLogin = true;
     },
     methods: {
       handleSelect(key, keyPath) {
@@ -38,6 +49,9 @@
       },
       gotoIndex: function () {
         this.$router.push('/index');
+      },
+      gotoLogin() {
+        this.$router.push('/login');
       }
     }
   }
@@ -89,4 +103,12 @@
   line-height: 50px!important;
 }
 
+.login-button {
+  padding: 20px;
+}
+
+.login-button button {
+  width: 100px;
+  background-color: #1687fd;
+}
 </style>
