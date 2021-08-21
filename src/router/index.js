@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import user from "@/store/user";
 
 Vue.use(VueRouter)
 
@@ -81,28 +82,28 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    // const userInfo = user.getters.getUser(user.state())
-    //
-    // // require sign in
-    // if (!userInfo && to.meta.requireAuth) {
-    //     next({
-    //         name: 'Home',
-    //     })
-    // }
-    //
-    // // require not sign in
-    // if (userInfo && to.meta.requireNotAuth) {
-    //     next({
-    //         name: 'QnCenter',
-    //     })
-    // }
-    //
-    // //邮箱验证后不能访问的页面 如再次验证邮箱
-    // if (userInfo && userInfo.user.confirmed && to.meta.requireAuthNotConfirmed) {
-    //     next({
-    //         name: 'Home',
-    //     })
-    // }
+    const userInfo = user.getters.getUser(user.state())
+
+    // require sign in
+    if (!userInfo && to.meta.requireAuth) {
+        next({
+            name: 'Home',
+        })
+    }
+
+    // require not sign in
+    if (userInfo && to.meta.requireNotAuth) {
+        next({
+            name: 'QnCenter',
+        })
+    }
+
+    //邮箱验证后不能访问的页面 如再次验证邮箱
+    if (userInfo && userInfo.user.confirmed && to.meta.requireAuthNotConfirmed) {
+        next({
+            name: 'Home',
+        })
+    }
 
     next()
 })
