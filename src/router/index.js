@@ -18,6 +18,7 @@ const routes = [
         component: () => import('../views/user-sign/SignIn.vue'),
         meta: {
             requireNotAuth: true,
+            noNav: true
         }
     },
     {
@@ -25,7 +26,7 @@ const routes = [
         name: 'SignUp',
         component: () => import('../views/user-sign/SignUp.vue'),
         meta: {
-
+            noNav: true
         }
     },
     {
@@ -49,6 +50,16 @@ const routes = [
         meta: {
             requireAuth: true,
         }
+    },
+    {
+        path: '/create_ques',
+        name: 'CreateQues',
+        component: () => import('../views/qn-create/CreateQn.vue'),
+    },
+    {
+        path: '/investigation',
+        name: 'Investigation',
+        component: () => import('../views/qn-create/qn-form/investigation'),
     },
 
     {
