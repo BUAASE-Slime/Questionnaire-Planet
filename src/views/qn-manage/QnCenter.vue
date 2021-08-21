@@ -65,11 +65,11 @@
                 <span class="headspan">创建时间：{{msg.create_time}}</span>
                 </div>
                 <div slot="default" class="card-body">
-                    <span class="leftside el-icon-edit" style="font-size: 14px"> 编辑</span>
-                    <span class="leftside el-icon-view" style="font-size: 14px"> 预览</span>
-                    <span class="leftside el-icon-share" style="font-size: 14px"> 分享</span>
-                    <span class="leftside el-icon-s-data" style="font-size: 14px"> 统计</span>
-                    <el-dropdown split-button class="leftside" size="mini" id="download" style="font-size: 14px">
+                    <el-link href="investigation" target="_blank" :underline="false" class="leftside el-icon-edit"> 编辑</el-link>
+                    <el-link href="PageNotFound" target="_blank" :underline="false" class="leftside el-icon-view"> 预览</el-link>
+                    <span class="leftside el-icon-share"> 分享</span>
+                    <span class="leftside el-icon-s-data"> 统计</span>
+                    <el-dropdown split-button class="leftside" size="mini" id="download">
                     导出
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item>统计分析</el-dropdown-item>
@@ -77,11 +77,11 @@
                         <el-dropdown-item>来源分析</el-dropdown-item>
                     </el-dropdown-menu>
                     </el-dropdown>
-                    <span class="rightside el-icon-delete"> 删除</span>
-                    <span class="rightside el-icon-star-off"> 收藏</span>
-                    <span class="rightside el-icon-document"> 复制</span>
-                    <span v-if="msg.is_released" class="rightside el-icon-video-pause"> 暂停</span>
-                    <span v-else class="rightside el-icon-video-play"> 发布</span>
+                    <el-button type="text" class="rightside el-icon-delete"> 删除</el-button>
+                    <el-button type="text" class="rightside el-icon-star-off"> 收藏</el-button>
+                    <el-button type="text" class="rightside el-icon-document"> 复制</el-button>
+                    <el-button type="text" v-if="msg.is_released" @click="recycle(index)" class="rightside el-icon-video-pause"> 暂停</el-button>
+                    <el-button type="text" v-else @click="release(index)" class="rightside el-icon-video-play"> 发布</el-button>
                 </div>
             </el-card>
         </div>
@@ -108,7 +108,8 @@ export default {
             paper_id:19373000,
             recycling_num: 8,
             create_time:'2021/6/10 5:10',
-            is_released: false
+            is_released: false,
+            is_deleted: false
         },
         {
             title:'nn和他的问卷',
@@ -120,6 +121,22 @@ export default {
         ]
       
     }
+  },
+  methods:{
+
+      recycle:function (index){
+        this.$alert('问卷已暂停', '', {
+          confirmButtonText: '确定',
+        });
+        this.QnList[index].is_released=false
+        
+      },
+      release:function(index){
+        this.$alert('问卷已发布', '', {
+          confirmButtonText: '确定',
+        });          
+        this.QnList[index].is_released=true
+      }
   }
 }
 </script>
@@ -129,7 +146,7 @@ export default {
         /*height: 1000px;*/
         width: 100%;
         min-width: 1200px;
-        background-color: rgb(241, 241, 241);
+        /* background-color: rgb(241, 241, 241); */
     }
     #aside{
         width: 340px;
@@ -208,6 +225,7 @@ export default {
     .rightside{
         float: right;
         padding: 10px;
+        color: black;
     }
     #download{
         padding: 3px 10px 12px 10px;
