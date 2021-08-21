@@ -81,8 +81,8 @@
 <style>
 .header .el-menu{
   height: 80px;
-  padding-left: 100px;
-  padding-right: 100px;
+  padding-left: 50px;
+  padding-right: 50px;
 }
 
 .header .el-menu--horizontal>.el-menu-item {
