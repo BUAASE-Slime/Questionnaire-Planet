@@ -26,7 +26,13 @@
         <div id='mainpage'>
             <div id='title'>
                 <span style="margin-left: 35px">问卷列表</span>
-                <el-input class='right' v-model="input" size="small" placeholder="根据问卷名或id搜索" suffix-icon="el-icon-search"></el-input>
+                <el-input
+                    class='right'
+                    v-model="input"
+                    size="small"
+                    placeholder="根据问卷名或id搜索"
+                    suffix-icon="el-icon-search"
+                    @keyup.enter.native="searchQn"/>
                 <el-dropdown split-button class='right' size="small">
                 状态
                 <el-dropdown-menu slot="dropdown">
@@ -85,9 +91,17 @@
 
 <script>
 export default {
+  mounted() {
+
+  },
+  methods: {
+    searchQn() {
+      console.log(this.input);
+    }
+  },
   data() {
     return {
-        input: '',
+      input: '',
       QnList: [
         {
             title:'易灿和他的问卷',
