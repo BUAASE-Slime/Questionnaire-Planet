@@ -30,6 +30,7 @@ export default {
 <style>
 #app {
   min-height: 800px;
+  min-width: 1500px;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
