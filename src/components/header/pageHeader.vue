@@ -1,11 +1,11 @@
 <template>
   <div class="header">
     <el-menu :default-active="activeIndex" mode="horizontal" @select="handleSelect">
-      <el-menu-item index="1" style="font-size: 26px">
+      <el-menu-item index="1" style="font-size: 26px" @click="gotoHome">
         <img src="../../assets/images/star-logo.png" alt="logo">
         星球问卷
       </el-menu-item>
-      <el-menu-item index="2">个人问卷</el-menu-item>
+      <el-menu-item index="2" @click="gotoIndex">个人问卷</el-menu-item>
 <!--      <el-menu-item index="3">导航二</el-menu-item>-->
       <el-submenu index="4" style="float: right">
         <template slot="title">{{ userName }}</template>
@@ -33,6 +33,12 @@
       openNews: function () {
         alert('Wow');
       },
+      gotoHome: function () {
+        this.$router.push('/');
+      },
+      gotoIndex: function () {
+        this.$router.push('/index');
+      }
     }
   }
 </script>
@@ -77,6 +83,10 @@
 .el-menu--horizontal>.el-submenu.is-active .el-submenu__title {
   border-bottom: none !important;
   color: black;
+}
+
+.big-item .el-menu-item li {
+  line-height: 50px!important;
 }
 
 </style>

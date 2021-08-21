@@ -24,8 +24,8 @@
 <!--    <img src="/static/images/demo3.png" class="demoImg"><br><br>-->
 
     <el-footer class="bottom">
-      <p>Copyright © 2021 Zewan.cc. All rights reserved.</p>
-      <p>官方邮箱：<a href="mailto:zewancc@126.com">zewancc@126.com</a></p>
+      <p>Copyright © 2021 {{ domain }}. All rights reserved.</p>
+      <p>官方邮箱：<a :href=sendtoEmail>{{ email }}</a></p>
       <p><a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备2021021248号</a></p>
     </el-footer>
   </div>
@@ -38,6 +38,9 @@ export default{
   data(){
     return{
       userNum: 100,
+      domain: this.GLOBAL.domain,
+      sendtoEmail: 'mailto:' + this.GLOBAL.email,
+      email: this.GLOBAL.email,
       topImg:[
         {
           'title':'免费问卷调查系统',
@@ -110,7 +113,7 @@ export default{
 }
 .bottom{
   height: 150px!important;
-  background-color: #f1f3f5;
+  background-color: #ebecec;
   color: #9b9ea0;
   position: relative;
   padding: 20px;
