@@ -5,12 +5,12 @@
         <img src="../../assets/images/star-logo.png" alt="logo">
         星球问卷
       </el-menu-item>
-      <el-menu-item index="2">导航一</el-menu-item>
-      <el-menu-item index="3">导航二</el-menu-item>
+      <el-menu-item index="2">个人问卷</el-menu-item>
+<!--      <el-menu-item index="3">导航二</el-menu-item>-->
       <el-submenu index="4" style="float: right">
         <template slot="title">{{ userName }}</template>
-        <el-menu-item index="4-1">链接一</el-menu-item>
-        <el-menu-item index="4-2">链接二</el-menu-item>
+        <el-menu-item index="4-1" class="big-item">账户设置</el-menu-item>
+        <el-menu-item index="4-2" class="big-item">退出</el-menu-item>
       </el-submenu>
       <i class="el-icon-bell" style="padding-top: 28px; font-size: 24px; float: right;" @click="openNews"></i>
     </el-menu>

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import user from "@/store/user";
 
 Vue.use(VueRouter)
 
@@ -8,7 +7,10 @@ const routes = [
     {
         path: '/',
         name: 'Home',
-        component: () => import('../views/home/Home.vue')
+        component: () => import('../views/home/Home.vue'),
+        meta: {
+            requireNotAuth: true,
+        },
     },
     {
         path: '/login',
@@ -16,6 +18,7 @@ const routes = [
         component: () => import('../views/user-sign/SignIn.vue'),
         meta: {
             requireNotAuth: true,
+            noNav: true
         }
     },
     {
@@ -23,7 +26,7 @@ const routes = [
         name: 'SignUp',
         component: () => import('../views/user-sign/SignUp.vue'),
         meta: {
-
+            noNav: true
         }
     },
     {
@@ -41,14 +44,22 @@ const routes = [
         component: () => import('../views/user-sign/EmailConfirm.vue'),
     },
     {
+        path: '/index',
+        name: 'QnCenter',
+        component: () => import( '../views/qn-manage/QnCenter.vue'),
+        meta: {
+            requireAuth: true,
+        }
+    },
+    {
         path: '/create_ques',
         name: 'CreateQues',
-        component: () => import('../views/questionnaire-create/CreateQues.vue'),
+        component: () => import('../views/qn-create/CreateQn.vue'),
     },
     {
         path: '/investigation',
         name: 'Investigation',
-        component: () => import('../views/questionnaire-create/questionnaire-form/investigation'),
+        component: () => import('../views/qn-create/qn-form/investigation'),
     },
 
     {
@@ -65,21 +76,28 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    const userInfo = user.getters.getUser(user.state())
-
-    // require not sign in
-    if (userInfo && to.meta.requireNotAuth) {
-        next({
-            name: 'Home',
-        })
-    }
-
-    //邮箱验证后不能访问的页面 如再次验证邮箱
-    if (userInfo && userInfo.user.confirmed && to.meta.requireAuthNotConfirmed) {
-        next({
-            name: 'Home',
-        })
-    }
+    // const userInfo = user.getters.getUser(user.state())
+    //
+    // // require sign in
+    // if (!userInfo && to.meta.requireAuth) {
+    //     next({
+    //         name: 'Home',
+    //     })
+    // }
+    //
+    // // require not sign in
+    // if (userInfo && to.meta.requireNotAuth) {
+    //     next({
+    //         name: 'QnCenter',
+    //     })
+    // }
+    //
+    // //邮箱验证后不能访问的页面 如再次验证邮箱
+    // if (userInfo && userInfo.user.confirmed && to.meta.requireAuthNotConfirmed) {
+    //     next({
+    //         name: 'Home',
+    //     })
+    // }
 
     next()
 })
