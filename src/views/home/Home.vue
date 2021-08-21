@@ -66,10 +66,10 @@ export default{
       if (userInfo) {
         this.$router.push('/index');
       } else {
-        this.$message.warning('请先登录！');
-        setTimeout(() => {
+        // this.$message.warning('请先登录！');
+        // setTimeout(() => {
           this.$router.push('/login');
-        }, 500);
+        // }, 500);
       }
     }
   }
