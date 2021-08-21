@@ -1,10 +1,10 @@
 <template>
     <div id='sum' style="display: flex">
         <div id='aside'> 
-              <el-button type="primary" id='newButton' icon='el-icon-plus'> 创建问卷</el-button>
+              <el-button type="primary" id='newButton' icon='el-icon-plus'> <span style="font-weight: bold; font-size: 16px">创建问卷</span></el-button>
                 <el-col :span="12" id='list'>
                     <el-menu id='item'
-                    default-active="2"
+                    default-active="1"
                     class="el-menu-vertical-demo"
                     @open="handleOpen"
                     @close="handleClose">
@@ -59,11 +59,11 @@
                 <span class="headspan">创建时间：{{msg.create_time}}</span>
                 </div>
                 <div slot="default" class="card-body">
-                    <span class="leftside el-icon-edit"> 编辑</span>
-                    <span class="leftside el-icon-view"> 预览</span>
-                    <span class="leftside el-icon-share"> 分享</span>
-                    <span class="leftside el-icon-s-data"> 统计</span>
-                    <el-dropdown split-button class="leftside" size="mini" id="download">
+                    <span class="leftside el-icon-edit" style="font-size: 14px"> 编辑</span>
+                    <span class="leftside el-icon-view" style="font-size: 14px"> 预览</span>
+                    <span class="leftside el-icon-share" style="font-size: 14px"> 分享</span>
+                    <span class="leftside el-icon-s-data" style="font-size: 14px"> 统计</span>
+                    <el-dropdown split-button class="leftside" size="mini" id="download" style="font-size: 14px">
                     导出
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item>统计分析</el-dropdown-item>
@@ -112,13 +112,13 @@ export default {
 
 <style scoped>
     #sum{
-        height: 1000px;
+        /*height: 1000px;*/
         width: 100%;
         min-width: 1200px;
         background-color: rgb(241, 241, 241);
     }
     #aside{
-        width: 25%;
+        width: 340px;
         /* background-color: antiquewhite; */
         min-width: 325px;
     }
@@ -136,23 +136,21 @@ export default {
     #list{
         width: 100%;
         margin-top: 25px;
-        padding: 0 10px;
-
     }
     #list .el-menu{
-        width: 65%;
+        width: 240px;
         margin: 0 54px;
     }
     #list .el-menu-item{
         height: 50px;
-        font-size: 12px;
+        font-size: 14px;
         text-align: center;
     }
 
     #title{
 
         height: 35px;
-        font-size: 30px;
+        font-size: 25px;
         text-align: left;
         padding: 30px 10px;
         font-weight: bold;
@@ -181,9 +179,9 @@ export default {
     }
     .el-col-20{
         text-align: left;
-        font-size: 15px;
+        font-size: 16px;
         padding: 5px 15px;
-        width: 350px;
+        width: 520px;
         /* font-weight: bold; */
     }
     .headspan{
@@ -199,5 +197,10 @@ export default {
     }
     #download{
         padding: 3px 10px 12px 10px;
+    }
+
+    #newButton {
+      width: 240px;
+      height: 56px;
     }
 </style>
