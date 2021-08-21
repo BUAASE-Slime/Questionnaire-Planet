@@ -1,19 +1,28 @@
 <template>
   <div id="app">
-    <pageHeader></pageHeader>
+    <pageHeader v-if="!$route.meta.noNav"/>
     <router-view/>
   </div>
 </template>
 
 <script>
-import pageHeader from "./components/header/pageHeader";
 import PageHeader from "./components/header/pageHeader";
+import user from "@/store/user";
 
 export default {
   name: 'App',
-  components: {PageHeader},
-  component:{
-    pageHeader
+  components: {
+    PageHeader
+  },
+  data() {
+    return {
+      isLogin: false,
+    }
+  },
+  mounted() {
+    const userInfo = user.getters.getUser(user.state())
+    if (userInfo)
+      this.isLogin = true
   }
 }
 </script>
