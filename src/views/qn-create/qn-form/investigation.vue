@@ -13,36 +13,39 @@
     <el-container class="container">
 
       <el-aside class="side">
-        <el-tabs v-model="activeName">
+        <el-tabs v-model="activeName" @tab-click="initOutline">
 
-          <el-tab-pane label="题目类型" name="first">
-            <div class="edit">
-              <div class="ques-type">
-                <i class="el-icon-check"></i>
-                <span> 单选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='radio';qsEditDialogVisible=true"></i>
-              </div>
-              <div class="ques-type">
-                <i class="el-icon-finished"></i>
-                <span> 多选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='checkbox';qsEditDialogVisible=true"></i>
-              </div>
-              <div class="ques-type">
-                <i class="el-icon-edit-outline"></i>
-                <span> 填空题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='text';qsEditDialogVisible=true"></i>
-              </div>
-              <div class="ques-type">
-                <i class="el-icon-star-off"></i>
-                <span> 评分题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='mark';qsEditDialogVisible=true"></i>
-              </div>
-            </div>
-          </el-tab-pane>
 
-          <el-tab-pane label="问卷大纲" name="second">
-            <el-tree :data="outline" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-          </el-tab-pane>
+            <el-tab-pane label="题目类型" name="first">
+              <div class="edit">
+                <div class="ques-type">
+                  <i class="el-icon-check"></i>
+                  <span> 单选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='radio';qsEditDialogVisible=true"></i>
+                </div>
+                <div class="ques-type">
+                  <i class="el-icon-finished"></i>
+                  <span> 多选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='checkbox';qsEditDialogVisible=true"></i>
+                </div>
+                <div class="ques-type">
+                  <i class="el-icon-edit-outline"></i>
+                  <span> 填空题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='text';qsEditDialogVisible=true"></i>
+                </div>
+                <div class="ques-type">
+                  <i class="el-icon-star-off"></i>
+                  <span> 评分题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='mark';qsEditDialogVisible=true"></i>
+                </div>
+              </div>
+            </el-tab-pane>
+
+            <el-tab-pane label="问卷大纲" name="second">
+              <div class="outline">
+                <el-tree :data="outline" :props="defaultProps"></el-tree>
+              </div>
+            </el-tab-pane>
 
         </el-tabs>
       </el-aside>
@@ -95,11 +98,21 @@
 
               <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
                 <el-button-group>
-                  <el-button class="bt" type="primary" icon="el-icon-edit" @click="edit(item.id)"></el-button>
-                  <el-button class="bt" type="primary" icon="el-icon-document-copy" @click="copy(item.id)"></el-button>
-                  <el-button class="bt" type="primary" icon="el-icon-delete" @click="del_pre(item.id)"></el-button>
-                  <el-button class="bt" type="primary" icon="el-icon-caret-top" @click="up(item.id)"></el-button>
-                  <el-button class="bt" type="primary" icon="el-icon-caret-bottom" @click="down(item.id)"></el-button>
+                  <el-tooltip class="item" effect="light" content="编辑" placement="bottom">
+                    <el-button class="bt" type="primary" icon="el-icon-edit" @click="edit(item.id)"></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="light" content="复制" placement="bottom">
+                    <el-button class="bt" type="primary" icon="el-icon-document-copy" @click="copy(item.id)"></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="light" content="删除" placement="bottom">
+                    <el-button class="bt" type="primary" icon="el-icon-delete" @click="del_pre(item.id)"></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="light" content="上移" placement="bottom">
+                    <el-button class="bt" type="primary" icon="el-icon-caret-top" @click="up(item.id)"></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="light" content="下移" placement="bottom">
+                    <el-button class="bt" type="primary" icon="el-icon-caret-bottom" @click="down(item.id)"></el-button>
+                  </el-tooltip>
                 </el-button-group>
               </el-col>
 
@@ -186,21 +199,30 @@ export default {
       activeName: 'first',
       title: this.$route.query.title,
       description: '这是一张测试基本功能的问卷。现阶段完成功能有：问卷题目和说明的修改，不同种问题类型的添加，以及单个问题的五个快捷操作的功能实现。',
+      preOutline: {
+
+      },
       outline: [
         {
-          label: '第一页',
-          children: [{
-            label: '问题 1',
-          }, {
-            label: '问题 2',
-          }]
+          id: '1',
+          label: '1. 这是一个什么网站？',
         },
         {
-          label: '第二页',
-          children: [{
-            label: '问题 3',
-          }]
-        }
+          id: '2',
+          label: '2. 软工小学期助教都有谁？',
+        },
+        {
+          id: '3',
+          label: '3. 软工小学期累不累',
+        },
+        {
+          id: '4',
+          label: '4. 您对小学期的评价如何？',
+        },
+        {
+          id: '5',
+          label: '5. 给小学期打个分吧~',
+        },
       ],
       defaultProps: {
         children: 'children',
@@ -349,6 +371,9 @@ export default {
         this.questions[index].options=this.willAddQuestion.options;
         this.questions[index].score=this.willAddQuestion.score;
         this.qsEditDialogTitle="";
+        // 大纲更新
+        this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+        // 重置
         this.willAddQuestion={
           id:0,
           type:'',
@@ -369,12 +394,15 @@ export default {
         });
       }
       else{
-        this.willAddQuestion.id=this.questions.length+1;
+        this.willAddQuestion.id = this.questions.length + 1;
+        // 大纲更新
+        this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
         this.questions.push(this.willAddQuestion);
         this.$message({
           type: 'success',
           message: '添加成功!'
         });
+        // 重置
         this.willAddQuestion={
           id:0,
           type:'',
@@ -432,22 +460,30 @@ export default {
       index--;
       let questions = this.questions;
       if (index!==0) {
+        // 问卷更新
         questions[index].id--;
         questions[index-1].id++;
         let temp = questions[index];
         questions[index] = questions[index-1];
         questions[index-1] = temp;
+        // 大纲更新
+        this.updateOutline(index, questions[index-1].title);
+        this.updateOutline(index+1, questions[index].title);
       }
     },
     down: function (index) {
       index--;
       let questions = this.questions;
       if (index!==questions.length-1) {
+        // 问卷更新
         questions[index].id++;
         questions[index+1].id--;
         let temp = questions[index];
         questions[index] = questions[index+1];
         questions[index+1] = temp;
+        // 大纲更新
+        this.updateOutline(index+1, questions[index].title);
+        this.updateOutline(index+2, questions[index+1].title);
       }
     },
     del_pre: function (index) {
@@ -471,19 +507,27 @@ export default {
     del: function (index) {
       index--;
       let questions = this.questions;
+      let outline = this.outline;
       for (let num=index+1; num<questions.length; num++) {
         questions[num].id--;
       }
+      outline.splice(index,1);
       questions.splice(index,1);
+      for (let num=index; num<outline.length; num++) {
+        this.updateOutline(num+1, questions[num].title);
+      }
     },
     copy: function (index) {
       index--;
       let questions = this.questions;
+      // 大纲更新
+      this.updateOutline(this.outline.length + 1, questions[index].title);
+      // 问卷更新
       let temp = this.deepClone(questions[index]);
       temp.id = questions.length+1;
       questions.push(temp);
+
     },
-    /* ================ 深拷贝 ================ */
     deepClone :function(initialObj) {
       let obj = {};
       try {
@@ -491,7 +535,23 @@ export default {
         // eslint-disable-next-line no-empty
       } finally {}
       return obj;
-    }
+    },    // 深拷贝
+    updateOutline: function (id, label) {
+      if (label.length > 12) {
+        label = id + '. ' + label.substring(0, 11) + '...';
+      } else {
+        label = id + '. ' + label;
+      }
+      if (id <= this.questions.length) {
+        this.outline[id-1].id = id;
+        this.outline[id-1].label = label;
+      } else {
+        this.outline.push({
+          id: id,
+          label: label,
+        })
+      }
+    },
   }
 }
 </script>
@@ -524,6 +584,13 @@ export default {
 
 .investigation .edit {
   margin-top: 0;
+  overflow: auto;
+  height: 550px;
+}
+
+.investigation .outline {
+  overflow: auto;
+  height: 550px;
 }
 
 .investigation .ques-type {
