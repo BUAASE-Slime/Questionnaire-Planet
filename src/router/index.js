@@ -53,6 +53,11 @@ const routes = [
         }
     },
     {
+        path: '/bin',
+        name: 'QnBin',
+        component: () => import( '../views/qn-manage/QnBin.vue'),
+    },
+    {
         path: '/create_ques',
         name: 'CreateQues',
         component: () => import('../views/qn-create/CreateQn.vue'),
