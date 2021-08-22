@@ -191,6 +191,7 @@
 
 <script>
 import editHeader from "../../../components/header/editHeader";
+import user from "@/store/user";
 
 export default {
   name: "investigation",
@@ -207,23 +208,23 @@ export default {
       },
       outline: [
         {
-          id: '1',
+          id: 1,
           label: '1. 这是一个什么网站？',
         },
         {
-          id: '2',
+          id: 2,
           label: '2. 软工小学期助教都有谁？',
         },
         {
-          id: '3',
+          id: 3,
           label: '3. 软工小学期累不累',
         },
         {
-          id: '4',
+          id: 4,
           label: '4. 您对小学期的评价如何？',
         },
         {
-          id: '5',
+          id: 5,
           label: '5. 给小学期打个分吧~',
         },
       ],
@@ -231,94 +232,95 @@ export default {
         children: 'children',
         label: 'label'
       },
+      type: 1,
       questions: [
         {
-          id: '1',
+          id: 1,
           type: 'radio',
           title: '这是一个什么网站？',
           must: true,
           options: [{
-            id: '1',
+            id: 1,
             title: '问卷系统',
           }, {
-            id: '2',
+            id: 2,
             title: '出版系统',
           }],
-          row: '',
-          score: '',
+          row: 0,
+          score: 0,
         },
         {
-          id: '2',
+          id: 2,
           type: 'checkbox',
           title: '软工小学期助教都有谁？',
           must: false,
           options: [{
-            id: '1',
+            id: 1,
             title: 'ZYH',
           }, {
-            id: '2',
+            id: 2,
             title: 'LKW',
           },{
-            id: '3',
+            id: 3,
             title: 'ZXH',
           }, {
-            id: '4',
+            id: 4,
             title: 'HZH',
           }],
-          row: '',
-          score: '',
+          row: 0,
+          score: 0,
         },
         {
-          id: '3',
+          id: 3,
           type: 'radio',
           title: '软工小学期累不累',
           must: false,
           options: [{
-            id: '1',
+            id: 1,
             title: '累',
           }, {
-            id: '2',
+            id: 2,
             title: '非常累',
           }],
-          row: '',
-          score: '',
+          row: 0,
+          score: 0,
         },
         {
-          id: '4',
+          id: 4,
           type: 'text',
           title: '您对小学期的评价如何？',
           must: false,
           options: [{
-            id: '',
+            id: 0,
             title: '',
           }],
           row: 3,
-          score: '',
+          score: 0,
         },
         {
-          id: '5',
+          id: 5,
           type: 'mark',
           title: '给小学期打个分吧~',
           must: true,
           options: [{
-            id: '',
+            id: 0,
             title: '',
           }],
-          row: 1,
+          row: 0,
           score: 10,
         },
       ],
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
       willAddQuestion:{
-        id: '0',
+        id: 0,
         type:'',
         title:'',
         must:false, //是否必填
         options:[
           {
             title:'', //选项标题
-            id: '0' //选项id
+            id: 0 //选项id
           }
         ],
         row:1, //填空区域行数
@@ -385,7 +387,7 @@ export default {
           options:[
             {
               title:'', //选项标题
-              id: '0' //选项id
+              id: 0 //选项id
             }],
           row:1,
           score:10,
@@ -414,7 +416,7 @@ export default {
           options:[
             {
               title:'', //选项标题
-              id: '0' //选项id
+              id: 0 //选项id
             }],
           row:1,
           score:10,
@@ -432,7 +434,7 @@ export default {
           options:[
             {
               title:'', //选项标题
-              id: '0' //选项id
+              id: 0 //选项id
             }],
           row:1,
           score:10,
@@ -463,7 +465,48 @@ export default {
 
     },
     save() {
-
+      const userInfo = user.getters.getUser(user.state());
+      var param = {
+        username: userInfo.user.username,
+        title: this.title,
+        description: this.description,
+        type: this.type,
+        qn_id: this.$route.query.pid,
+        questions: this.questions
+      }
+      var paramer = JSON.stringify(param, {questions: 'brackets'})
+      this.$axios({
+        method: 'post',
+        url: '/sm/save/qn',
+        data: paramer,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 0:
+            this.$message.warning("登录信息失效，请重新登录！");
+            setTimeout(() => {
+              this.$store.dispatch('clear');
+              location.reload();
+            }, 500);
+            break;
+          case 1:
+            this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+              distinguishCancelAndClose: true,
+              confirmButtonText: '返回问卷中心',
+              cancelButtonText: '继续编辑'
+            })
+            .then(() => {
+              this.$router.push('/index');
+            });
+            break;
+          default:
+            this.$message.error("保存失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     },
     preview() {
 
@@ -564,6 +607,12 @@ export default {
         })
       }
     },
+  },
+  created() {
+    this.$axios({
+      method: 'post',
+      url: '/sm/get/qn_detail',
+    })
   }
 }
 </script>
