@@ -184,7 +184,7 @@ export default {
       selectDisAble:false,
       hoverItem:0,
       activeName: 'first',
-      title: '测试问卷',
+      title: this.$route.query.title,
       description: '这是一张测试基本功能的问卷。现阶段完成功能有：问卷题目和说明的修改，不同种问题类型的添加，以及单个问题的五个快捷操作的功能实现。',
       outline: [
         {

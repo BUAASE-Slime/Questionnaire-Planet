@@ -1,7 +1,9 @@
 <template>
     <div id='sum' style="display: flex">
         <div id='aside'> 
-              <el-button type="primary" id='newButton' icon='el-icon-plus'> <span style="font-weight: bold; font-size: 16px">创建问卷</span></el-button>
+              <el-button type="primary" id='newButton' icon='el-icon-plus' @click="linkCreate">
+                <span style="font-weight: bold; font-size: 16px">创建问卷</span>
+              </el-button>
                 <el-col :span="12" id='list'>
                     <el-menu id='item'
                     default-active="1"
@@ -92,7 +94,7 @@
           <div v-else>
             <el-divider/>
             <el-empty :image-size="225" description="未查询到满足条件的问卷！">
-              <el-button type="primary">创建问卷</el-button>
+              <el-button type="primary" @click="linkCreate">创建问卷</el-button>
             </el-empty>
           </div>
         </div>
