@@ -58,7 +58,38 @@
 
             </div>
 
-
+          <el-card v-for="(msg,index) in QnList" class="box-card" :key='index'>
+            <div slot="header" style="display:flex">
+              <el-row>
+                <el-col span=20>{{msg.title}}</el-col>
+              </el-row>
+              <span class="headspan">id：{{msg.paper_id}}</span>
+              <span class="headspan">答卷：{{msg.recycling_num}}</span>
+              <span v-if="msg.is_released" class="headspan">已发布</span>
+              <span v-else class="headspan">未发布</span>
+              <span class="headspan">创建时间：{{msg.create_time}}</span>
+            </div>
+            <div slot="default" class="card-body">
+              <el-link :href="editUrl(msg)" target="_blank" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
+              <el-link :href="previewUrl(msg)" target="_blank" :underline="false" class="leftside el-icon-view">&nbsp;预览</el-link>
+              <el-link href="PageNotFound" target="_blank" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
+              <el-link href="PageNotFound" target="_blank" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
+              <el-dropdown split-button class="leftside" size="mini" id="download" @command="selectExportType">
+                导出
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="word">导出Word</el-dropdown-item>
+                  <el-dropdown-item command="pdf">导出PDF</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+              <el-button type="text" class="rightside el-icon-delete"> 删除</el-button>
+              <el-button type="text" class="rightside el-icon-star-on" @click="uncollectQn(index)" v-if="msg.is_collected"> 收藏</el-button>
+              <el-button type="text" class="rightside el-icon-star-off" @click="collectQn(index)" v-else> 收藏</el-button>
+              <el-button type="text" class="rightside el-icon-document" @click="copyQn(msg)"> 复制</el-button>
+              <el-button type="text" v-if="msg.is_released" @click="recycle(index)" class="rightside el-icon-video-pause"> 暂停</el-button>
+              <el-button type="text" v-else @click="release(index)" class="rightside el-icon-video-play"> 发布</el-button>
+            </div>
+          </el-card>
+<!--
             <div v-if="hasQn">
               <el-card v-for="(msg,index) in QnList" class="box-card" :key='index'>
                 <div slot="header" style="display:flex">
@@ -97,6 +128,7 @@
               <el-button type="primary" @click="linkCreate">创建问卷</el-button>
             </el-empty>
           </div>
+          -->
         </div>
     </div>
 
@@ -124,37 +156,103 @@ export default {
       is_released: "default",
       is_collected: 0,
       QnList: [
-        // {
-        //     title:'易灿和他的问卷',
-        //     paper_id:19373000,
-        //     recycling_num: 8,
-        //     create_time:'2021/6/10 5:10',
-        //     is_released: false,
-        //     is_deleted: false
-        // },
-        // {
-        //     title:'nn和他的问卷',
-        //     paper_id:19373000,
-        //     recycling_num: 1118,
-        //     create_time:'2021/6/10 23:10',
-        //     is_released: true
-        // },
+        {
+            title:'易灿和他的问卷',
+            paper_id:19373000,
+            recycling_num: 8,
+            create_time:'2021/6/10 5:10',
+            is_released: false,
+            is_deleted: false,
+            is_collected: false,
+        },
+        {
+            title:'nn和他的问卷',
+            paper_id:19373000,
+            recycling_num: 1118,
+            create_time:'2021/6/10 23:10',
+            is_released: true,
+            is_collected: true,
+        },
       ],
     }
   },
   methods:{
     recycle:function (index){
-      this.$alert('问卷已暂停', '', {
+      this.$alert('问卷暂停成功', '', {
         confirmButtonText: '确定',
       });
       this.QnList[index].is_released=false
 
     },
     release:function(index){
-      this.$alert('问卷已发布', '', {
+      this.$alert('问卷发布成功', '', {
         confirmButtonText: '确定',
       });
       this.QnList[index].is_released=true
+    },
+
+    uncollectQn(index) {
+      const formData = new FormData();
+      formData.append("survey_id", this.QnList[index].paper_id);
+      this.$axios({
+        method: 'post',
+        url: '/qn/not_collect',
+        data: formData
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 200:
+            this.QnList[index].is_collected = false;
+            break;
+          case 401:
+            this.$message.error("您无权执行此操作！");
+            break;
+          case 403:
+            this.$message.error("您无权执行此操作！");
+            break;
+          default:
+            this.$message.warning("操作失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+    collectQn(index) {
+      const formData = new FormData();
+      formData.append("survey_id", this.QnList[index].paper_id);
+      this.$axios({
+        method: 'post',
+        url: '/qn/collect',
+        data: formData
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 200:
+            this.QnList[index].is_collected = true;
+            break;
+          case 401:
+            this.$message.error("您无权执行此操作！");
+            break;
+          case 403:
+            this.$message.error("您无权执行此操作！");
+            break;
+          default:
+            this.$message.warning("操作失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+
+    editUrl(index) {
+      return 'investigation?pid=' + index.paper_id;
+    },
+    previewUrl(index) {
+      return 'preview?pid=' + index.paper_id;
     },
 
     handleOpen(key, keyPath) {
@@ -190,6 +288,18 @@ export default {
           break;
         case "3":
 
+          break;
+      }
+    },
+
+    selectExportType(command) {
+      console.log(command);
+      switch (command) {
+        case "word":
+          window.alert("导出word");
+          break;
+        case "pdf":
+          window.alert("导出pdf");
           break;
       }
     },
@@ -395,6 +505,7 @@ export default {
         float: right;
         padding: 10px;
         color: black;
+      font-size: 13px;
     }
     #download{
         padding: 3px 10px 12px 10px;
@@ -403,5 +514,17 @@ export default {
     #newButton {
       width: 240px;
       height: 56px;
+    }
+
+    .el-icon-my-star {
+        background: url("/src/assets/icon/star.png") center no-repeat;
+        background-size: cover;
+      font-family: element-icons;
+    }
+    .el-icon-my-star:before {
+      font-size: 13px;
+      content: "66ff";
+      visibility: hidden;
+      font-family: element-icons,serif!important;
     }
 </style>
