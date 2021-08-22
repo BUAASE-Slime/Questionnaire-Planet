@@ -7,7 +7,7 @@
         <el-table
             :data="binData"
             stripe
-            style="width: 60%"
+            style="width: 70%"
             :header-cell-style="{'text-align':'center'}"
             :cell-style="{'text-align':'center'}">
           <el-table-column
@@ -16,12 +16,13 @@
               min-width="350">
           </el-table-column>
           <el-table-column
-              prop="date"
-              label="发布时间"
+              prop="create_time"
+              label="创建时间"
+              min-width="120"
               >
           </el-table-column>
           <el-table-column
-              prop="num"
+              prop="recycling_num"
               label="答卷数"
               >
           </el-table-column>
@@ -31,7 +32,7 @@
             <template slot-scope="scope">
               <el-button
                   type="text"
-                  v-if="scope.row.num !== '0'" @click="clearData_pre(scope.$index)">清空数据</el-button>
+                  v-if="scope.row.recycling_num !== 0" @click="clearData_pre(scope.$index)">清空数据</el-button>
             </template>
             <el-button ></el-button>
           </el-table-column>
@@ -62,40 +63,42 @@
 </template>
 
 <script>
+import user from "@/store/user";
+
 export default {
   name: "QnBin",
   data() {
     return {
       binData: [
         {
-          id: '1',
+          survey_id: 1,
           title: '测试问卷1',
-          date: '2021-08-22',
-          num: '0',
+          create_time: '2021/08/22 12:00',
+          recycling_num: 0,
         },
         {
-          id: '2',
+          survey_id: 2,
           title: '测试问卷2',
-          date: '2021-08-22',
-          num: '10',
+          create_time: '2021/08/22 12:00',
+          recycling_num: 10,
         },
         {
-          id: '3',
+          survey_id: 3,
           title: '普通调查问卷',
-          date: '2021-08-21',
-          num: '100',
+          create_time: '2021/08/22 12:00',
+          recycling_num: 100,
         },
         {
-          id: '4',
+          survey_id: 4,
           title: '特殊调查问卷',
-          date: '2021-08-21',
-          num: '100',
+          create_time: '2021/08/22 12:00',
+          recycling_num: 100,
         },
         {
-          id: '5',
+          survey_id: 5,
           title: '已作废的问卷',
-          date: '2021-08-21',
-          num: '100',
+          create_time: '2021/08/22 12:00',
+          recycling_num: 100,
         },
       ]
     }
@@ -107,11 +110,30 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.empty()
-        this.$message({
-          type: 'success',
-          message: '操作成功'
-        });
+        if (this.binData.length === 0) {
+          this.$message.info("回收站为空，无需执行此操作！");
+        } else {
+          const formData = new FormData();
+          formData.append("username", user.getters.getUser(user.state()).user.username);
+          this.$axios({
+            method: 'post',
+            url: '/sm/delete/qn/empty',
+            data: formData,
+          })
+          .then(res => {
+            if (res.data.status_code === 1) {
+              this.empty()
+              this.$message({
+                type: 'success',
+                message: '操作成功'
+              });
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+        }
+
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -128,21 +150,35 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.clearData(index);
-        this.$message({
-          type: 'success',
-          message: '清空成功'
-        });
+        const formData = new FormData();
+        formData.append("qn_id", this.binData[index].survey_id);
+        this.$axios({
+          method: 'post',
+          url: '/sm/delete/all_submit',
+          data: formData,
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 0:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            case 1:
+              this.clearData(index);
+              this.$message({
+                type: 'success',
+                message: '清空成功'
+              });
+              break;
+            default:
+              this.$message.error("清空失败！");
+              break;
+          }
+        })
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消清空'
-        });
       });
     },
     clearData:function (index){
-      this.binData[index].num=0;
-      /////清空数据操作
+      this.binData[index].recycling_num=0;
     },
     del_pre: function (index) {
       this.$confirm('彻底删除将不可再恢复，确定吗？', '提示', {
@@ -150,16 +186,32 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.del(index)
-        this.$message({
-          type: 'success',
-          message: '删除成功'
-        });
+        const formData = new FormData();
+        formData.append("qn_id", this.binData[index].survey_id);
+        this.$axios({
+          url: '/sm/delete/qn/real',
+          method: 'post',
+          data: formData
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 0:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            case 1:
+              this.del(index)
+              this.$message({
+                type: 'success',
+                message: '删除成功'
+              });
+              break;
+            default:
+              this.$message.error("删除失败！");
+              break;
+          }
+        })
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消删除'
-        });
+
       });
     },
     del: function (index) {
@@ -172,15 +224,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.recovery(index)
-        this.$message({
-          type: 'success',
-          message: '恢复成功'
-        });
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消恢复'
-        });
       });
     },
     recovery: function (index) {
@@ -189,8 +233,46 @@ export default {
       恢复的相关后台操作
 
        */
+      this.$message({
+        type: 'success',
+        message: '恢复成功'
+      });
       this.binData.splice(index,1);
     }
+  },
+  created() {
+    let formData = new FormData();
+    const userInfo = user.getters.getUser(user.state());
+    formData.append("username", userInfo.user.username);
+    formData.append("is_deleted", 1);
+    this.$axios({
+      method: 'post',
+      url: '/qn/get_list',
+      data: formData,
+    })
+    .then(res => {
+      switch (res.data.status_code) {
+        case 401:
+          this.$message.warning("您无权访问！");
+          location.reload();
+          break;
+        case 403:
+          this.$message.warning("您无权访问！");
+          location.reload();
+          break;
+        case 404:
+          this.binData = []
+          console.log('success! qn none!')
+          break;
+        default:
+          this.binData = JSON.parse(res.data.data);
+          console.log('success');
+          break;
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
   }
 }
 </script>
