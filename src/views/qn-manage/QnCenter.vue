@@ -85,7 +85,7 @@
                   <el-button type="text" class="rightside el-icon-delete" @click="deleteQn(index)"> 删除</el-button>
                   <el-button type="text" class="rightside el-icon-star-on" @click="uncollectQn(index)" v-if="msg.is_collected"> 收藏</el-button>
                   <el-button type="text" class="rightside el-icon-star-off" @click="collectQn(index)" v-else> 收藏</el-button>
-                  <el-button type="text" class="rightside el-icon-document" @click="copyQn(msg)"> 复制</el-button>
+                  <el-button type="text" class="rightside el-icon-document" @click="copyQn(index)"> 复制</el-button>
                   <el-button type="text" v-if="msg.is_released" @click="recycle(index)" class="rightside el-icon-video-pause"> 暂停</el-button>
                   <el-button type="text" v-else @click="release(index)" class="rightside el-icon-video-play"> 发布</el-button>
                 </div>
@@ -255,6 +255,49 @@ export default {
             break;
           default:
             this.$message.warning("操作失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+
+    copyQn(index) {
+      const formData = new FormData();
+      formData.append("qn_id", this.QnList[index].survey_id);
+      console.log(this.QnList[index].survey_id);
+      this.$axios({
+        method: 'post',
+        url: '/sm/duplicate/qn',
+        data: formData,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 1:
+            var newForm = new FormData();
+            newForm.append("survey_id", res.data.qn_id);
+            newForm.append("username", user.getters.getUser(user.state()).user.username);
+            this.$axios({
+              method: 'post',
+              url: '/qn/get_list',
+              data: newForm,
+            })
+            .then(res => {
+              if (res.data.status_code === 402) {
+                this.$message.error("操作失败！");
+              } else {
+                this.$message.success("复制成功！");
+                this.QnList.unshift(res.data);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            })
+
+            break;
+          default:
+            this.$message.error("操作失败！");
             break;
         }
       })
