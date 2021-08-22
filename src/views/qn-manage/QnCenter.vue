@@ -81,7 +81,7 @@
                   <el-dropdown-item command="pdf">导出PDF</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
-              <el-button type="text" class="rightside el-icon-delete"> 删除</el-button>
+              <el-button type="text" class="rightside el-icon-delete" @click="deleteQn(index)"> 删除</el-button>
               <el-button type="text" class="rightside el-icon-star-on" @click="uncollectQn(index)" v-if="msg.is_collected"> 收藏</el-button>
               <el-button type="text" class="rightside el-icon-star-off" @click="collectQn(index)" v-else> 收藏</el-button>
               <el-button type="text" class="rightside el-icon-document" @click="copyQn(msg)"> 复制</el-button>
@@ -189,6 +189,45 @@ export default {
         confirmButtonText: '确定',
       });
       this.QnList[index].is_released=true
+    },
+
+    deleteQn(index) {
+      this.$confirm('此操作将问卷移入回收站, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const formData = new FormData();
+        formData.append("qn_id", this.QnList[index].paper_id);
+        this.$axios({
+          method: 'post',
+          url: '/qn/delete/qn/not_real',
+          data: formData
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 1:
+              this.QnList.splice(index, 1);
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              break;
+            default:
+              this.$message.error("操作失败！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+
     },
 
     uncollectQn(index) {
