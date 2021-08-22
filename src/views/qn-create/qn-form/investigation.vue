@@ -98,19 +98,19 @@
 
               <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
                 <el-button-group>
-                  <el-tooltip class="item" effect="light" content="编辑" placement="bottom">
+                  <el-tooltip class="item" effect="light" content="编辑" placement="bottom" open-delay="400">
                     <el-button class="bt" type="primary" icon="el-icon-edit" @click="edit(item.id)"></el-button>
                   </el-tooltip>
-                  <el-tooltip class="item" effect="light" content="复制" placement="bottom">
+                  <el-tooltip class="item" effect="light" content="复制" placement="bottom" open-delay="400">
                     <el-button class="bt" type="primary" icon="el-icon-document-copy" @click="copy(item.id)"></el-button>
                   </el-tooltip>
-                  <el-tooltip class="item" effect="light" content="删除" placement="bottom">
+                  <el-tooltip class="item" effect="light" content="删除" placement="bottom" open-delay="400">
                     <el-button class="bt" type="primary" icon="el-icon-delete" @click="del_pre(item.id)"></el-button>
                   </el-tooltip>
-                  <el-tooltip class="item" effect="light" content="上移" placement="bottom">
+                  <el-tooltip class="item" effect="light" content="上移" placement="bottom" open-delay="400">
                     <el-button class="bt" type="primary" icon="el-icon-caret-top" @click="up(item.id)"></el-button>
                   </el-tooltip>
-                  <el-tooltip class="item" effect="light" content="下移" placement="bottom">
+                  <el-tooltip class="item" effect="light" content="下移" placement="bottom" open-delay="400">
                     <el-button class="bt" type="primary" icon="el-icon-caret-bottom" @click="down(item.id)"></el-button>
                   </el-tooltip>
                 </el-button-group>
