@@ -176,6 +176,8 @@ export default {
           switch (res.data.status_code) {
             case 1:
               this.QnList.splice(index, 1);
+              if (this.QnList.length === 0)
+                this.hasQn = false;
               this.$message({
                 type: 'success',
                 message: '删除成功!'
@@ -210,7 +212,12 @@ export default {
         switch (res.data.status_code) {
           case 200:
             this.QnList[index].is_collected = false;
-            this.QnList.splice(index, 1);
+            if (this.activeIdx === 2) {
+              this.QnList.splice(index, 1);
+            }
+            if (this.QnList.length === 0) {
+              this.hasQn = false;
+            }
             break;
           case 401:
             this.$message.error("您无权执行此操作！");
