@@ -74,6 +74,12 @@ const routes = [
                 component: () => import('../views/qn-stat/sub-stat/recyconcept')
             },
             {
+                path: '/answerdata',
+                name: 'answerdata',
+                
+                component: () => import('../views/qn-stat/sub-stat/answerdata')              
+            },
+            {
                 path: '/chartreport',
                 name: 'chartreport',
                 
@@ -93,7 +99,6 @@ const routes = [
             },
         ]
     },
-
     {
         path: '/*',
         name: 'PageNotFound',
