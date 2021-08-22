@@ -310,7 +310,7 @@ export default {
       return 'edit?pid=' + index.survey_id;
     },
     previewUrl(index) {
-      return 'preview?pid=' + index.survey_id;
+      return 'preview?pid=' + index.survey_id + '&mode=0';
     },
 
     handleOpen(key, keyPath) {

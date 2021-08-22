@@ -202,7 +202,6 @@
               <el-input :placeholder=linkShare v-model="linkShare" id="copyText" :disabled="true">
               </el-input>
             </el-col>
-<!--            <el-button type="info" plain id="copyBtn" @click="clickCopyBtn()" data-clipboard-target="#copyText">复制链接</el-button></el-row>-->
             <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
           <el-row style="margin-top: 25px">
             <el-button type="primary" plain @click="download">下载二维码</el-button>
@@ -226,7 +225,6 @@
   </div>
 </template>
 
-<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
 <script>
 import editHeader from "../../../components/header/editHeader";
 import user from "@/store/user";
@@ -420,40 +418,41 @@ export default {
     dialogConfirm(){
       let index=this.editIndex;
       this.qsEditDialogVisible=false;
-      if(this.qsEditDialogTitle==="编辑题目"){
-        this.questions[index].id=this.willAddQuestion.id;
-        this.questions[index].row=this.willAddQuestion.row;
-        this.questions[index].must=this.willAddQuestion.must;
-        this.questions[index].title=this.willAddQuestion.title;
-        this.questions[index].options=this.willAddQuestion.options;
-        this.questions[index].score=this.willAddQuestion.score;
-        this.qsEditDialogTitle="";
+      if(this.qsEditDialogTitle==="编辑题目") {
+        this.questions[index].id = this.willAddQuestion.id;
+        this.questions[index].row = this.willAddQuestion.row;
+        this.questions[index].must = this.willAddQuestion.must;
+        this.questions[index].title = this.willAddQuestion.title;
+        this.questions[index].options = this.willAddQuestion.options;
+        this.questions[index].score = this.willAddQuestion.score;
+        this.qsEditDialogTitle = "";
         // 大纲更新
         this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+        if (this.willAddQuestion.title === '') {
+          this.editWrongMsg = "标题不能为空！！！";
+          this.editWrongMsgVisible = true;
+        } else {
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          });
+        }
         // 重置
-        this.willAddQuestion={
-          id:0,
-          type:'',
-          title:'',
-          must:false,
-          options:[
+        this.willAddQuestion = {
+          id: 0,
+          type: '',
+          title: '',
+          must: false,
+          options: [
             {
-              title:'', //选项标题
+              title: '', //选项标题
               id: 0 //选项id
             }],
-          row:1,
-          score:10,
+          row: 1,
+          score: 10,
         };
-        this.selectDisAble=false;
-        this.$message({
-          type: 'success',
-          message: '修改成功!'
-        });
-      if(this.willAddQuestion.title===''){
-        this.editWrongMsg="标题不能为空！！！";
-        this.editWrongMsgVisible=true;
+        this.selectDisAble = false;
       }
-
       else{
         this.willAddQuestion.id = this.questions.length + 1;
         // 大纲更新
@@ -477,7 +476,6 @@ export default {
           row:1,
           score:10,
         };
-      }
       }
     },
     dialogCancel: function(){
@@ -694,13 +692,6 @@ export default {
           label: (i+1) + ". " + this.questions[i].title
         })
       }
-    },
-    clickCopyBtn: function () {
-      var clipboard = new ClipboardJS('#copyText');
-      clipboard.on("success", function (e) {
-        this.$message.success("复制成功");
-        e.clearSelection();
-      })
     },
     copyToClip(message) {
       var aux = document.createElement("input");
