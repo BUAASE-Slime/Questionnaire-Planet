@@ -14,6 +14,11 @@
             <br>
             <span slot="title">回收概况</span>
           </el-menu-item>
+          <el-menu-item index="/answerdata">
+            <i class="el-icon-document nav-icon"></i>
+            <br>
+            <span slot="title">回收数据</span>
+          </el-menu-item>
           <el-menu-item index="/chartreport">
             <i class="el-icon-s-data nav-icon"></i>
             <br>

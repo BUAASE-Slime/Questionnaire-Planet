@@ -10,8 +10,6 @@ export default {
   name: 'echart',
   data () {
     return {
-      chart1_title: '',
-      chart1_dataName:'填写人数',
       chart1_name:null,
       chart1_data:null,
     }
@@ -20,8 +18,8 @@ export default {
     // `this` 指向 vm 实例
     that = this
 
-    that.chart1_name =  ["8.15","8.16","8.17","8.18","8.19","8.20","8.21"];
-    that.chart1_data =  [5, 20, 36, 10, 10, 20, 3];
+    that.chart1_name =  ["a","b","c","d"];
+    that.chart1_data =  [5, 20, 36, 10];
   },
   mounted(){
     //页面加载完成后,才执行
@@ -38,7 +36,7 @@ export default {
             tooltip: {},
             xAxis: {
                 data:that.chart1_name,
-                name: '日期'
+                name: '选项'
             },
             yAxis: {
                 type: 'value',
