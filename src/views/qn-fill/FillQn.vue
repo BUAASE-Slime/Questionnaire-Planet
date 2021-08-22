@@ -75,85 +75,9 @@ export default {
   data() {
     return {
       mode: this.$route.query.mode,
-      title: this.$route.query.title,
-      description: '这是一张测试预览效果的问卷。',
-      questions: [
-        {
-          id: '1',
-          type: 'radio',
-          title: '这是一个什么网站？',
-          must: true,
-          options: [{
-            id: '1',
-            title: '问卷系统',
-          }, {
-            id: '2',
-            title: '出版系统',
-          }],
-          row: '',
-          score: '',
-        },
-        {
-          id: '2',
-          type: 'checkbox',
-          title: '软工小学期助教都有谁？',
-          must: true,
-          options: [{
-            id: '1',
-            title: 'ZYH',
-          }, {
-            id: '2',
-            title: 'LKW',
-          },{
-            id: '3',
-            title: 'ZXH',
-          }, {
-            id: '4',
-            title: 'HZH',
-          }],
-          row: '',
-          score: '',
-        },
-        {
-          id: '3',
-          type: 'radio',
-          title: '软工小学期累不累',
-          must: true,
-          options: [{
-            id: '1',
-            title: '累',
-          }, {
-            id: '2',
-            title: '非常累',
-          }],
-          row: '',
-          score: '',
-        },
-        {
-          id: '4',
-          type: 'text',
-          title: '您对小学期的评价如何？',
-          must: true,
-          options: [{
-            id: '',
-            title: '',
-          }],
-          row: 3,
-          score: '',
-        },
-        {
-          id: '5',
-          type: 'mark',
-          title: '给小学期打个分吧~',
-          must: true,
-          options: [{
-            id: '',
-            title: '',
-          }],
-          row: 1,
-          score: 10,
-        },
-      ],
+      title: '',
+      description: '',
+      questions: [],
       answers: [
         {
           question_id: '1',
@@ -185,7 +109,8 @@ export default {
           ans: null,
           ansList: [],
         },
-      ]
+      ],
+      type: ''
     }
   },
   methods: {
@@ -204,7 +129,7 @@ export default {
         }
       }
       if (bool) {
-        alert('必填问题' + num + '尚未作答完毕');
+        this.$message.warning('必填问题 ' + num + ' 尚未作答完毕，无法提交');
         return;
       }
       // 预览mode判断
@@ -233,8 +158,39 @@ export default {
       });
     },
     quit: function () {
-      alert('退出预览');
+      this.$router.push('/index');
     },
+  },
+  created() {
+    const formData = new FormData();
+    formData.append("qn_id", this.$route.query.pid)
+    this.$axios({
+      method: 'post',
+      url: '/sm/get/qn_detail',
+      data: formData,
+    })
+    .then(res => {
+      switch (res.data.status_code) {
+        case 0:
+          this.$message.error("您无权访问！");
+          this.$router.push('/');
+          break;
+        case 1:
+          this.title = res.data.title;
+          this.description = res.data.description;
+          this.type = res.data.type;
+          this.questions = res.data.questions;
+
+          this.InitOutline();
+          break;
+        default:
+          this.$message.error("访问失败！");
+          break;
+      }
+    })
+        .catch(err => {
+          console.log(err);
+        })
   },
 }
 </script>
