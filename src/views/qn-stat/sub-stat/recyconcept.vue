@@ -3,6 +3,7 @@
         <div id=title>
             <h1>问卷回收量</h1>
         </div>
+        <el-card class="box-card">
         <div id="chartswitch"  >
             <el-radio-group v-model="radio2" size="medium">
             <el-radio-button label="柱状图" @click.native="columngrams"></el-radio-button>
@@ -26,6 +27,7 @@
         <div v-else>
             <linechart></linechart>
         </div>
+        </el-card>
     </div>
 </template>
 
@@ -88,7 +90,9 @@ export default {
     h2{
         padding: 30px 70px;
     }
-
+    .box-card{
+        margin: 20px;
+    }
 
 
 </style>
