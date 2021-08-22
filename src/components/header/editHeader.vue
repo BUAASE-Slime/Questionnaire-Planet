@@ -64,11 +64,7 @@ export default {
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
-        this.publishSuccess()
-        this.$message({
-          type: 'success',
-          message: '发布成功'
-        });
+        this.publishSuccess();
       }).catch(() => {
         this.$message({
           type: 'info',

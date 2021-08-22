@@ -197,9 +197,15 @@
         </el-col>
         <el-col span="16">
           <el-row><h2>链接与二维码</h2></el-row>
-          <el-row style="margin-top:15px"><el-col :span="16" style="margin-right: 5px"><el-input placeholder="链接"></el-input></el-col><el-button type="info" plain>复制链接</el-button></el-row>
+          <el-row style="margin-top:15px">
+            <el-col :span="16" style="margin-right: 5px">
+              <el-input :placeholder=linkShare v-model="linkShare" id="copyText" :disabled="true">
+              </el-input>
+            </el-col>
+<!--            <el-button type="info" plain id="copyBtn" @click="clickCopyBtn()" data-clipboard-target="#copyText">复制链接</el-button></el-row>-->
+            <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
           <el-row style="margin-top: 25px">
-            <el-button type="primary" plain>下载二维码</el-button>
+            <el-button type="primary" plain @click="download">下载二维码</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -220,6 +226,7 @@
   </div>
 </template>
 
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
 <script>
 import editHeader from "../../../components/header/editHeader";
 import user from "@/store/user";
@@ -228,6 +235,7 @@ export default {
   name: "investigation",
   data() {
     return {
+      linkShare: 'https://zewan.cc/',
       editWrongMsg:"",
       editWrongMsgVisible:false,
       qsLinkDialogVisible:false,
@@ -236,8 +244,8 @@ export default {
       selectDisAble:false,
       hoverItem:0,
       activeName: 'first',
-      title: '小学期问卷',
-      description: '这是一张测试基本功能的问卷。现阶段完成功能有：问卷题目和说明的修改，不同种问题类型的添加，以及单个问题的五个快捷操作的功能实现。',
+      title: '',
+      description: '',
       outline: [],
       defaultProps: {
         children: 'children',
@@ -685,6 +693,26 @@ export default {
           id: this.questions[i].id,
           label: (i+1) + ". " + this.questions[i].title
         })
+      }
+    },
+    clickCopyBtn: function () {
+      var clipboard = new ClipboardJS('#copyText');
+      clipboard.on("success", function (e) {
+        this.$message.success("复制成功");
+        e.clearSelection();
+      })
+    },
+    copyToClip(message) {
+      var aux = document.createElement("input");
+      aux.setAttribute("value", this.linkShare);
+      document.body.appendChild(aux);
+      aux.select();
+      document.execCommand("copy");
+      document.body.removeChild(aux);
+      if (message !== null) {
+        this.$message.success("复制成功");
+      } else{
+        this.$message.error("复制失败");
       }
     }
   },

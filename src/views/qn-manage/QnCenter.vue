@@ -71,10 +71,10 @@
                   <span class="headspan">创建时间：{{msg.create_time}}</span>
                 </div>
                 <div slot="default" class="card-body">
-                  <el-link :href="editUrl(msg)" target="_blank" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
-                  <el-link :href="previewUrl(msg)" target="_blank" :underline="false" class="leftside el-icon-view">&nbsp;预览</el-link>
-                  <el-link href="PageNotFound" target="_blank" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
-                  <el-link href="PageNotFound" target="_blank" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
+                  <el-link :href="editUrl(msg)" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
+                  <el-link :href="previewUrl(msg)" :underline="false" class="leftside el-icon-view">&nbsp;预览</el-link>
+                  <el-link href="PageNotFound" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
+                  <el-link href="PageNotFound" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
                   <el-dropdown split-button class="leftside" size="mini" id="download" @command="selectExportType">
                     导出
                     <el-dropdown-menu slot="dropdown">
