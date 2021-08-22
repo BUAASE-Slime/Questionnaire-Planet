@@ -239,34 +239,49 @@ export default {
       activeName: 'first',
       title: '小学期问卷',
       description: '这是一张测试基本功能的问卷。现阶段完成功能有：问卷题目和说明的修改，不同种问题类型的添加，以及单个问题的五个快捷操作的功能实现。',
-      outline: [
-        {
-          id: 1,
-          label: '1. 这是一个什么网站？',
-        },
-        {
-          id: 2,
-          label: '2. 软工小学期助教都有谁？',
-        },
-        {
-          id: 3,
-          label: '3. 软工小学期累不累',
-        },
-        {
-          id: 4,
-          label: '4. 您对小学期的评价如何？',
-        },
-        {
-          id: 5,
-          label: '5. 给小学期打个分吧~',
-        },
-      ],
+      outline: [],
       defaultProps: {
         children: 'children',
         label: 'label'
       },
       type: 1,
-      questions: [
+      questions: [],
+
+      qsEditDialogVisible:false,
+      qsEditDialogTitle:"新建题目",
+      willAddQuestion:{
+        id: 0,
+        type:'',
+        title:'',
+        must:false, //是否必填
+        options:[
+          {
+            title:'', //选项标题
+            id: 0 //选项id
+          }
+        ],
+        row:1, //填空区域行数
+        score:10, //最大评分
+      },
+      allType:[
+        {
+          value:'radio',
+          label:'单选题',
+        },
+        {
+          value:'checkbox',
+          label:'多选题',
+        },
+        {
+          value:'text',
+          label:'填空题',
+        },{
+          value: 'mark',
+          label: '评分题',
+        }
+      ],
+
+      xiaoxueqi_questions: [
         {
           id: 1,
           type: 'radio',
@@ -343,39 +358,28 @@ export default {
           score: 10,
         },
       ],
-      qsEditDialogVisible:false,
-      qsEditDialogTitle:"新建题目",
-      willAddQuestion:{
-        id: 0,
-        type:'',
-        title:'',
-        must:false, //是否必填
-        options:[
-          {
-            title:'', //选项标题
-            id: 0 //选项id
-          }
-        ],
-        row:1, //填空区域行数
-        score:10, //最大评分
+      xiaoxueqi_outline: [
+      {
+        id: 1,
+        label: '1. 这是一个什么网站？',
       },
-      allType:[
-        {
-          value:'radio',
-          label:'单选题',
-        },
-        {
-          value:'checkbox',
-          label:'多选题',
-        },
-        {
-          value:'text',
-          label:'填空题',
-        },{
-          value: 'mark',
-          label: '评分题',
-        }
-      ],
+      {
+        id: 2,
+        label: '2. 软工小学期助教都有谁？',
+      },
+      {
+        id: 3,
+        label: '3. 软工小学期累不累',
+      },
+      {
+        id: 4,
+        label: '4. 您对小学期的评价如何？',
+      },
+      {
+        id: 5,
+        label: '5. 给小学期打个分吧~',
+      },
+    ],
     }
   },
   components: {
@@ -668,12 +672,45 @@ export default {
           title: this.title,
         }
       });
+    },
+    InitOutline() {
+      for (var i = 0; i < this.questions.length; i++) {
+        this.outline.push({
+          id: this.questions[i].id,
+          label: (i+1) + ". " + this.questions[i].title
+        })
+      }
     }
   },
   created() {
+    const formData = new FormData();
+    formData.append("qn_id", this.$route.query.pid)
     this.$axios({
       method: 'post',
       url: '/sm/get/qn_detail',
+      data: formData,
+    })
+    .then(res => {
+      switch (res.data.status_code) {
+        case 0:
+          this.$message.error("您无权访问！");
+          this.$router.push('/');
+          break;
+        case 1:
+          this.title = res.data.title;
+          this.description = res.data.description;
+          this.type = res.data.type;
+          this.questions = res.data.questions;
+
+          this.InitOutline();
+          break;
+        default:
+          this.$message.error("访问失败！");
+          break;
+      }
+    })
+    .catch(err => {
+      console.log(err);
     })
   },
 }
