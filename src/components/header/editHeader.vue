@@ -3,7 +3,7 @@
     <el-col :span="2" class="lf-bt"><el-button icon="el-icon-edit" @click="open_1">编辑标题</el-button></el-col>
     <el-col :span="2" class="lf-bt"><el-button icon="el-icon-edit-outline" @click="open_2">编辑说明</el-button></el-col>
     <el-col :span="2" class="lf-bt"><el-button icon="el-icon-setting">高级设置</el-button></el-col>
-    <el-col :span="2" class="button"><el-button type="success" icon="el-icon-upload2" @click="publish">发布</el-button></el-col>
+    <el-col :span="2" class="button"><el-button type="success" icon="el-icon-upload2" @click="open_3">发布</el-button></el-col>
     <el-col :span="2" class="button"><el-button type="warning" icon="el-icon-receiving" @click="save">保存</el-button></el-col>
     <el-col :span="2" class="button"><el-button type="primary" icon="el-icon-view" @click="preview">预览</el-button></el-col>
   </el-row>
@@ -58,6 +58,27 @@ export default {
         });
       });
     },
+    open_3:function (){
+      this.$confirm('确认发布？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        this.publishSuccess()
+        this.$message({
+          type: 'success',
+          message: '发布成功'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消发布'
+        });
+      });
+    },
+    publishSuccess:function (){
+      this.$emit("publishSuccess");
+    },
     changeTitle: function (value) {
       this.$emit("titleChanged", value);
     },
@@ -70,9 +91,9 @@ export default {
     save() {
       this.$emit("saveClicked");
     },
-    preview() {
-      this.$emit("previewClicked");
-    }
+    preview: function () {
+      this.$emit("qnPreview", '0');
+    },
   }
 }
 </script>

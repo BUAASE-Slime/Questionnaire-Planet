@@ -9,6 +9,9 @@
           v-on:publishClicked="publish($event)"
           v-on:saveClicked="save($event)"
           v-on:previewClicked="preview($event)"
+          v-on:qnPreview="toFillQn($event)"
+          v-on:publishSuccess="publishSuccess($event)"
+          v-on:onConfirm="dialogCancel($event)"
       >
       </edit-header>
     </el-header>
@@ -126,7 +129,7 @@
       </el-main>
 
     </el-container>
-    <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false" class="dialog" >
+    <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible"  :before-close="cancel_pre" class="dialog" >
       <el-form ref="form" :model="willAddQuestion" label-width="100px">
         <el-form-item label="题目类型" >
           <el-select :disabled="selectDisAble" v-model="willAddQuestion.type" placeholder="请选择题目类型" @change="typeChange">
@@ -163,7 +166,7 @@
         </template>
 
 
-        <template v-if="willAddQuestion.type==='text'">
+        <template v-if="willAddQuestion.type==='text'" >
           <el-form-item label="填空">
             <el-input type="textarea"
                       :rows="willAddQuestion.row"  resize="none"></el-input>
@@ -182,9 +185,38 @@
       <span slot="footer" class="dialog-footer" style="text-align: center">
                   <el-row>
                     <el-button :span="6" type="primary" @click="dialogConfirm">确 定</el-button>
-                    <el-button :span="6" @click="dialogCancel">取 消</el-button>
+                    <el-button :span="6" @click="cancel_pre" >取 消</el-button>
                   </el-row>
             </span>
+    </el-dialog>
+    <el-dialog :visible.sync="qsLinkDialogVisible" :title="qsLinkDialogTitle" class="linkDialog" :show-close="false" width="800px" >
+      <el-row>
+        <el-col span="8" style="text-align: center">
+          <el-row>
+            <img src="../../../assets/images/example.jpg" height="200px" width="200px">
+          </el-row>
+        </el-col>
+        <el-col span="16">
+          <el-row><h2>链接与二维码</h2></el-row>
+          <el-row style="margin-top:15px"><el-col :span="16" style="margin-right: 5px"><el-input placeholder="链接"></el-input></el-col><el-button type="info" plain>复制链接</el-button></el-row>
+          <el-row style="margin-top: 25px">
+            <el-button type="primary" plain>下载二维码</el-button>
+          </el-row>
+        </el-col>
+      </el-row>
+      <span slot="footer" class="dialog-footer" style="text-align: center">
+                  <el-row>
+                    <el-button :span="6" type="success" style="width: 80px"  @click="finish">完 成</el-button>
+                  </el-row>
+      </span>
+    </el-dialog>
+    <el-dialog :visible.sync="editWrongMsgVisible"  class="linkDialog" :show-close="false" :close-on-click-modal="false" width="300px" >
+      <span>{{editWrongMsg}}</span>
+      <span slot="footer" class="dialog-footer" style="text-align: center">
+                  <el-row>
+                    <el-button :span="6" type="danger" style="width: 80px"  @click="editWrongMsgVisible=false">知道了</el-button>
+                  </el-row>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -197,15 +229,16 @@ export default {
   name: "investigation",
   data() {
     return {
+      editWrongMsg:"",
+      editWrongMsgVisible:false,
+      qsLinkDialogVisible:false,
+      qsLinkDialogTitle:"发布成功！",
       editIndex:0,
       selectDisAble:false,
       hoverItem:0,
       activeName: 'first',
       title: '小学期问卷',
       description: '这是一张测试基本功能的问卷。现阶段完成功能有：问卷题目和说明的修改，不同种问题类型的添加，以及单个问题的五个快捷操作的功能实现。',
-      preOutline: {
-
-      },
       outline: [
         {
           id: 1,
@@ -349,6 +382,13 @@ export default {
     editHeader,
   },
   methods: {
+    finish(){
+      this.qsLinkDialogVisible=false;
+      this.$router.push('/index')// 跳转到问卷中心？
+    },
+    publishSuccess:function (){
+      this.qsLinkDialogVisible=true;
+    },
     edit:function (index){
       index--;
       this.willAddQuestion={
@@ -397,7 +437,11 @@ export default {
           type: 'success',
           message: '修改成功!'
         });
+      if(this.willAddQuestion.title===''){
+        this.editWrongMsg="标题不能为空！！！";
+        this.editWrongMsgVisible=true;
       }
+
       else{
         this.willAddQuestion.id = this.questions.length + 1;
         // 大纲更新
@@ -422,11 +466,11 @@ export default {
           score:10,
         };
       }
+      }
     },
-    dialogCancel(){
-      if(this.qsEditDialogTitle==="编辑题目"){
-        this.qsEditDialogTitle="";
-        this.willAddQuestion={
+    dialogCancel: function(){
+      this.qsEditDialogTitle="";
+      this.willAddQuestion={
           id:0,
           type:'',
           title:'',
@@ -439,9 +483,18 @@ export default {
           row:1,
           score:10,
         };
-      }
       this.qsEditDialogVisible=false;
       this.selectDisAble=false;
+    },
+    cancel_pre: function () {
+      this.$confirm('已编辑的题目信息将不会保存,确认关闭？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.dialogCancel();
+      }).catch(() => {
+      });
     },
     typeChange(value){
       this.willAddQuestion.type=value;
@@ -607,17 +660,29 @@ export default {
         })
       }
     },
+    toFillQn: function (value) {
+      this.$router.push({
+        name: 'FillQn',
+        query: {
+          mode: value,
+          title: this.title,
+        }
+      });
+    }
   },
   created() {
     this.$axios({
       method: 'post',
       url: '/sm/get/qn_detail',
     })
-  }
+  },
 }
 </script>
 
 <style>
+.investigation .linkDialog{
+  text-align: left;
+}
 .investigation .container {
   padding: 0;
   height: auto;
