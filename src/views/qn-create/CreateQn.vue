@@ -66,7 +66,7 @@
         </el-card>
       </el-col>
 
-      <el-dialog title=请输入问卷标题 :visible.sync="dialogVisible" width="30%">
+      <el-dialog title=请输入问卷标题 :visible.sync="dialogVisible" width="30%" style="margin-top: 100px">
         <el-input  v-model="quesTitle" ></el-input>
         <span slot="footer" class="dialog-footer" style="text-align: center">
             <el-row>
@@ -97,7 +97,12 @@ export default {
     createConfirm(){
       this.dialogVisible=false;
       if (this.quesType===1){
-        this.$router.push("/investigation");
+        this.$router.push({
+          name: 'Investigation',
+          query: {
+            title: this.quesTitle
+          }
+        });
       }
       else if(this.quesType===2){
         this.$message('创建了一个新的考试问卷');

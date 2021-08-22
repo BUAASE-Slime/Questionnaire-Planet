@@ -27,7 +27,7 @@
     name: 'pageHeader',
     data() {
       return {
-        userName: 'Zuo_zuo',
+        userName: '',
         activeIndex: '1',
         isLogin: false,
       };
@@ -35,7 +35,10 @@
     created() {
       const userInfo = user.getters.getUser(user.state());
       if (userInfo)
+      {
         this.isLogin = true;
+        this.userName = userInfo.user.username;
+      }
     },
     methods: {
       handleSelect(key, keyPath) {
@@ -48,7 +51,11 @@
         this.$router.push('/');
       },
       gotoIndex: function () {
-        this.$router.push('/index');
+        const userInfo = user.getters.getUser(user.state());
+        if (userInfo)
+          this.$router.push('/index');
+        else
+          this.$router.push('/login');
       },
       gotoLogin() {
         this.$router.push('/login');
