@@ -126,7 +126,7 @@ export default {
       QnList: [
         // {
         //     title:'易灿和他的问卷',
-        //     paper_id:19373000,
+        //     survey_id:19373000,
         //     recycling_num: 8,
         //     create_time:'2021/6/10 5:10',
         //     is_released: false,
@@ -135,7 +135,7 @@ export default {
         // },
         // {
         //     title:'nn和他的问卷',
-        //     paper_id:19373000,
+        //     survey_id:19373000,
         //     recycling_num: 1118,
         //     create_time:'2021/6/10 23:10',
         //     is_released: true,
@@ -345,7 +345,7 @@ export default {
           this.searchQns();
           break;
         case "3":
-
+          this.$router.push('/bin');
           break;
       }
     },
