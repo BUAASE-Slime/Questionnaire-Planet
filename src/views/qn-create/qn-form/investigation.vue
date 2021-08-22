@@ -8,7 +8,7 @@
           v-on:descriptionChanged="changeDescription($event)"
           v-on:publishClicked="publish($event)"
           v-on:saveClicked="save($event)"
-          v-on:qnPreview="toFillQn($event)"
+          v-on:qnPreview="preview($event)"
           v-on:publishSuccess="publishSuccess($event)"
           v-on:onConfirm="dialogCancel($event)"
       >
@@ -245,6 +245,7 @@ export default {
       },
       type: 1,
       questions: [],
+      pid: this.$route.query.pid,
 
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
@@ -565,7 +566,13 @@ export default {
       })
     },
     preview() {
-
+      this.$router.push({
+        name: 'Preview',
+        query: {
+          mode: 0,
+          pid: this.$route.query.pid
+        }
+      })
     },
     up: function (index) {
       index--;
