@@ -10,7 +10,7 @@
             </el-radio-group>
         </div>
         <div>
-            <div style="margin-left: 300px">
+            <div style="clear:both">
             <span>总回收量</span>
             <span>日回收量</span>
             <span>周回收量</span>
