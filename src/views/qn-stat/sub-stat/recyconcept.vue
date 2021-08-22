@@ -31,7 +31,7 @@
 
 <script>
 import histogram1 from '../Echart/histogram1.vue'
-import linechart from '../Echart/linchart.vue'
+import linechart from '../Echart/linchart1.vue'
 export default {
   components:{
     histogram1,

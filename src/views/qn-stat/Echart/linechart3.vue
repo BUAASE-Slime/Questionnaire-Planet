@@ -12,8 +12,6 @@ export default {
   name: 'echart',
   data () {
     return {
-      chart4_title: '周视图',
-      chart1_dataName:'填写人数',
       chart1_name:null,
       chart1_data:null,
     }
@@ -21,8 +19,8 @@ export default {
   created: function () {
     // `this` 指向 vm 实例
     that = this
-    that.chart4_name =  ["8.15","8.16","8.17","8.18","8.19","8.20","8.21"];
-    that.chart4_data =  [5, 20, 36, 10, 10, 20, 3];
+    that.chart4_name =  ["a","b","c","d"];
+    that.chart4_data =  [5, 20, 36, 10];
   },
   mounted(){
     //页面加载完成后,才执行
@@ -49,7 +47,7 @@ export default {
             xAxis: [
                 {
                     type: 'category',
-                    name:'日期',
+                    name:'选项',
                     data:that.chart4_name,
                     axisPointer: {
                         type: 'shadow'
@@ -95,8 +93,8 @@ export default {
 
 .chart-view{
   margin: 20px auto;
-  width: 500px;
-  height: 500px;
+  width: 400px;
+  height: 400px;
 }
 
 </style>
