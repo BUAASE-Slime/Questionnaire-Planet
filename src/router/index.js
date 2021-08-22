@@ -93,7 +93,6 @@ const routes = [
             },
         ]
     },
-
     {
         path: '/*',
         name: 'PageNotFound',
