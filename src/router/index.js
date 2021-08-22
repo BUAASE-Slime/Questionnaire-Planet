@@ -91,12 +91,12 @@ const routes = [
                 
                 component: () => import('../views/qn-stat/sub-stat/crossover')              
             },
-            {
-                path: '/download',
-                name: 'download',
+            // {
+            //     path: '/download',
+            //     name: 'download',
                 
-                component: () => import('../views/qn-stat/sub-stat/download')              
-            },
+            //     component: () => import('../views/qn-stat/sub-stat/download')              
+            // },
         ]
     },
     {
