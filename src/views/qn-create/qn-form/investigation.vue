@@ -8,7 +8,6 @@
           v-on:descriptionChanged="changeDescription($event)"
           v-on:publishClicked="publish($event)"
           v-on:saveClicked="save($event)"
-          v-on:previewClicked="preview($event)"
           v-on:qnPreview="toFillQn($event)"
           v-on:publishSuccess="publishSuccess($event)"
           v-on:onConfirm="dialogCancel($event)"
