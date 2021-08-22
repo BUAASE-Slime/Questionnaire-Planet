@@ -406,9 +406,11 @@ export default {
         switch (res.data.status_code) {
           case 401:
             this.$message.warning("您无权访问！");
+            location.reload();
             break;
           case 403:
             this.$message.warning("您无权访问！");
+            location.reload();
             break;
           case 404:
             this.hasQn = false;
