@@ -71,6 +71,14 @@ const routes = [
         },
     },
     {
+        path: '/preview',
+        name: 'Preview',
+        component: () => import('../views/qn-fill/FillQn'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
         path: '/stat',
         name: 'QnStat',
         component: () => import('../views/qn-stat/QnStat'),
