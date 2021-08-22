@@ -72,6 +72,25 @@ export default{
         // }, 500);
       }
     }
+  },
+  created() {
+    this.$axios({
+      method: 'post',
+      url: '/all_count/submit',
+    })
+    .then(res => {
+      switch (res.data.status_code) {
+        case 1:
+          this.userNum = res.data.count;
+          break;
+        default:
+          this.$message.warning("后端服务出问题了！");
+          break;
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
   }
 }
 </script>
