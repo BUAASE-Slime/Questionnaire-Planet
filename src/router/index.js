@@ -58,8 +58,8 @@ const routes = [
         component: () => import('../views/qn-create/CreateQn.vue'),
     },
     {
-        path: '/investigation',
-        name: 'Investigation',
+        path: '/edit',
+        name: 'Edit',
         component: () => import('../views/qn-create/qn-form/investigation'),
     },
     {

@@ -6,6 +6,9 @@
           :description="description"
           v-on:titleChanged="changeTitle($event)"
           v-on:descriptionChanged="changeDescription($event)"
+          v-on:publishClicked="publish($event)"
+          v-on:saveClicked="save($event)"
+          v-on:previewClicked="preview($event)"
       >
       </edit-header>
     </el-header>
@@ -197,7 +200,7 @@ export default {
       selectDisAble:false,
       hoverItem:0,
       activeName: 'first',
-      title: this.$route.query.title,
+      title: '小学期问卷',
       description: '这是一张测试基本功能的问卷。现阶段完成功能有：问卷题目和说明的修改，不同种问题类型的添加，以及单个问题的五个快捷操作的功能实现。',
       preOutline: {
 
@@ -455,6 +458,15 @@ export default {
     },
     changeDescription: function (value) {
       this.description = value;
+    },
+    publish() {
+
+    },
+    save() {
+
+    },
+    preview() {
+
     },
     up: function (index) {
       index--;
