@@ -26,7 +26,7 @@
             <!--                  单选-->
             <div v-if="item.type==='radio'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
-                <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].ans" :label="opt.id">
+                <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].ans" :label="opt.title">
                   {{ opt.title }}
                 </el-radio>
               </div>
@@ -34,7 +34,7 @@
 
             <!--                  多选-->
             <el-checkbox-group class="q-opt" v-if="item.type==='checkbox'" v-model="answers[item.id-1].ansList">
-              <el-checkbox v-for="opt in item.options" :key="opt.id" :label="opt.id">
+              <el-checkbox v-for="opt in item.options" :key="opt.id" :label="opt.title">
                 {{ opt.title }}
               </el-checkbox>
             </el-checkbox-group>
@@ -74,42 +74,15 @@ export default {
   name: "FillQn",
   data() {
     return {
+      success: false,
+      close: false,
+
       mode: this.$route.query.mode,
+      open: 1,
       title: '',
       description: '',
       questions: [],
-      answers: [
-        {
-          question_id: '1',
-          type: '1',
-          ans: null,
-          ansList: [],
-        },
-        {
-          question_id: '2',
-          type: '2',
-          ans: null,
-          ansList: [],
-        },
-        {
-          question_id: '3',
-          type: '1',
-          ans: null,
-          ansList: [],
-        },
-        {
-          question_id: '4',
-          type: '3',
-          ans: null,
-          ansList: [],
-        },
-        {
-          question_id: '5',
-          type: '4',
-          ans: null,
-          ansList: [],
-        },
-      ],
+      answers: [],
       type: ''
     }
   },
@@ -122,7 +95,7 @@ export default {
       let num = '';
       for (let i=0; i<answers.length; i++) {
         if (questions[i].must
-            && (answers[i].ans===null || answers[i].ans==='' || (answers[i].ans===0 && answers[i].type==='4'))
+            && (answers[i].ans===null || answers[i].ans==='' || (answers[i].ans===0 && answers[i].type==='mark'))
             && answers[i].ansList.length===0) {
           num += (i+1).toString() + ' ';
           bool = true;
@@ -140,32 +113,81 @@ export default {
         });
         return;
       }
+      // 数据转换
+      for (var i=0; i<this.answers.length; i++) {
+        var ans = this.answers[i].ans;
+        var anslist = this.answers[i].ansList;
+        this.answers[i].question_id = this.questions[i].question_id;
+        switch (this.answers[i].type) {
+          case "radio":
+            this.answers[i].answer = this.answers[i].ans;
+            break;
+          case "checkbox":
+            var ansl = '';
+            for (var j=0; j<anslist.length-1; j++) {
+              ansl = ansl + anslist[j] + '-<^-^>-';
+            }
+            ansl = ansl + anslist[j];
+            this.answers[i].answer = ansl;
+            break;
+          case "text":
+            this.answers[i].answer = ans;
+            break;
+          case "mark":
+            this.answers[i].answer = ans.toString();
+            break;
+        }
+      }
       // 提交确认
       this.$confirm('确认提交问卷？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '问卷提交成功'
-        });
+        var param = {
+          code: this.$route.query.code,
+          answers: this.answers,
+        };
+        var paramer = JSON.stringify(param, {answers: 'brackets'})
+        this.$axios({
+          method: 'post',
+          url: '/qn/save_ans',
+          data: paramer,
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 1:
+              this.$message({
+                type: 'success',
+                message: '问卷提交成功'
+              });
+              this.success = true;
+              break;
+            case 2:
+              this.$message.success("问卷已结束，感谢您的参与！");
+              break;
+            default:
+              this.$message.error("操作失败！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消提交'
-        });
+
       });
     },
     quit: function () {
       this.$router.push('/index');
     },
   },
+  mounted() {
+  },
   created() {
-    const formData = new FormData();
-    formData.append("qn_id", this.$route.query.pid)
-
     if (this.mode === '0') {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
       this.$axios({
         method: 'post',
         url: '/sm/get/qn_detail',
@@ -182,6 +204,60 @@ export default {
             this.description = res.data.description;
             this.type = res.data.type;
             this.questions = res.data.questions;
+
+            //建立答案框架
+            for (var i=0; i<this.questions.length; i++) {
+              this.answers.push({
+                  question_id: this.questions[i].question_id,
+                  type: this.questions[i].type,
+                  ans: null,
+                  ansList: [],
+                  answer: ''
+              })
+            }
+
+            break;
+          default:
+            this.$message.error("访问失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    }
+    else if (this.mode === '1') {
+      const formData = new FormData();
+      formData.append("code", this.$route.query.code);
+      this.$axios({
+        method: 'post',
+        url: '/sm/get/qn_for_fill',
+        data: formData,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 2:
+            this.$router.push('PageNotFound');
+            break;
+          case 1:
+            this.title = res.data.title;
+            this.description = res.data.description;
+            this.type = res.data.type;
+            this.questions = res.data.questions;
+
+            //建立答案框架
+            for (var i=0; i<this.questions.length; i++) {
+              this.answers.push({
+                question_id: this.questions[i].question_id,
+                type: this.questions[i].type,
+                ans: null,
+                ansList: [],
+                answer: ''
+              })
+            }
+            break;
+          case 3:
+            this.open = 0;
             break;
           default:
             this.$message.error("访问失败！");
