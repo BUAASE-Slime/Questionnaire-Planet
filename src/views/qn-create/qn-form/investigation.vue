@@ -892,7 +892,7 @@ export default {
 
 .investigation .ques .description {
   text-align: left;
-  font-size: 18px;
+  font-size: 16px;
   padding-bottom: 30px;
   color: black;
   line-height: 30px;
