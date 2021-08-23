@@ -87,4 +87,7 @@ export default {
 a {
   text-decoration: none;
 }
+.el-container{
+  margin-bottom: 20px;
+}
 </style>

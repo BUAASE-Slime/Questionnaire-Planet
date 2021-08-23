@@ -9,14 +9,6 @@
                     border
                     style="width: 100%"
                     >
-                    <el-table-column label="操作" width="250" align="center">
-                        <div style="display:inline">
-                        <el-button type="text" class="el-icon-document" style="color: black">预览</el-button>
-                        </div>
-                        <div style="display:inline">
-                        <el-button type="text" class="el-icon-delete" style="color: red">删除</el-button>
-                        </div>
-                    </el-table-column>
                     <el-table-column
                     prop="num"
                     label="序号"
@@ -39,6 +31,14 @@
                     label="完成率"
                     width="180"
                     align="center">
+                    </el-table-column>
+                    <el-table-column label="操作" width="250" align="center">
+                        <div style="display:inline">
+                        <el-button type="text" class="el-icon-document" style="color: black">预览</el-button>
+                        </div>
+                        <div style="display:inline">
+                        <el-button type="text" class="el-icon-delete" style="color: red">删除</el-button>
+                        </div>
                     </el-table-column>
                 </el-table>
         </div>
