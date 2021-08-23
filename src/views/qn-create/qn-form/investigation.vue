@@ -9,7 +9,6 @@
           v-on:publishClicked="publish($event)"
           v-on:saveClicked="save($event)"
           v-on:qnPreview="preview($event)"
-          v-on:publishSuccess="publishSuccess($event)"
           v-on:onConfirm="dialogCancel($event)"
       >
       </edit-header>
@@ -525,7 +524,43 @@ export default {
       this.description = value;
     },
     publish() {
+      this.$confirm('确认发布？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        const formData = new FormData();
+        formData.append("survey_id", this.pid);
+        this.$axios({
+          url: '/qn/get_code',
+          method: 'post',
+          data: formData,
+        })
+        .then(res => {
+          console.log(res.data.status_code);
+          switch (res.data.status_code) {
+            case 200:
+              this.linkShare = this.GLOBAL.baseUrl + '/fill?code=' + res.data.code;
+              this.publishSuccess();
+              break;
+            case 403:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            default:
+              this.$message.error("发布失败，请检查登录信息！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
 
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消发布'
+        });
+      });
     },
     save() {
       const userInfo = user.getters.getUser(user.state());

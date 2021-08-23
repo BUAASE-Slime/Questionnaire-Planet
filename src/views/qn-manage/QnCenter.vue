@@ -73,7 +73,7 @@
                 <div slot="default" class="card-body">
                   <el-link :href="editUrl(msg)" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
                   <el-link :href="previewUrl(msg)" :underline="false" class="leftside el-icon-view">&nbsp;预览</el-link>
-                  <el-link @click="openShare(msg)" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
+                  <el-link @click="openShare(index)" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
                   <el-link href="PageNotFound" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
                   <el-dropdown split-button class="leftside" size="mini" id="download" @command="selectExportType">
                     导出
@@ -195,22 +195,91 @@ export default {
     },
 
     recycle:function (index){
-      this.$alert('问卷暂停成功', '', {
-        confirmButtonText: '确定',
-      });
-      this.QnList[index].is_released=false
-
+      const formData = new FormData();
+      formData.append("qn_id", this.QnList[index].survey_id);
+      this.$axios({
+        url: '/sm/pause_qn',
+        method: 'post',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.$message.success("暂停发布成功");
+          this.QnList[index].is_released=false;
+        } else {
+          this.$message.error("执行操作失败");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     },
     release:function(index){
-      this.$alert('问卷发布成功', '', {
-        confirmButtonText: '确定',
-      });
-      this.QnList[index].is_released=true
+      const formData = new FormData();
+      formData.append("qn_id", this.QnList[index].survey_id);
+      this.$axios({
+        url: '/sm/deploy_qn',
+        method: 'post',
+        data: formData,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 7:
+            this.$message.error("问卷题目为空，不可发布");
+            break;
+          case 1:
+            this.$message.success("问卷发布成功！");
+            this.QnList[index].is_released=true;
+            break;
+          case 10:
+            this.$message.success("问卷发布成功！");
+            this.QnList[index].is_released=true;
+            this.shareOpen = true;
+            this.share_surveyId = this.QnList[index].survey_id;
+            this.linkShare = this.GLOBAL.baseUrl + "/fill?code=" + res.data.code;
+            break;
+          default:
+            this.$message.error("问卷发布失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     },
 
     openShare(index) {
-      this.shareOpen = true;
-      this.share_surveyId = index.survey_id;
+      if (this.QnList[index].is_released === true) {
+        this.shareOpen = true;
+        this.share_surveyId = this.QnList[index].survey_id;
+        const formData = new FormData();
+        formData.append("survey_id", this.share_surveyId);
+        this.$axios({
+          url: '/qn/get_code_existed',
+          method: 'post',
+          data: formData
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 0:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            case 1:
+              this.linkShare = this.GLOBAL.baseUrl + "/fill?code=" + res.data.code;
+              break;
+            default:
+              this.$message.error("操作失败！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      } else {
+        this.$alert('问卷未发布，请先发布', '问题提示', {
+          confirmButtonText: '确定',
+        });
+      }
     },
 
     deleteQn(index) {
