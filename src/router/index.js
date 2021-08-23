@@ -121,6 +121,12 @@ const routes = [
         ]
     },
     {
+        path: '/account',
+        name: 'account',
+        
+        component: () => import('../views/account-set/account.vue')              
+    },
+    {
         path: '/*',
         name: 'PageNotFound',
         component: () => import('../views/error/PageNotFound'),
