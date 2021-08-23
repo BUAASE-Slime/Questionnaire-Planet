@@ -56,8 +56,32 @@
             </el-col>
         </div>
 
-        <div>
-        <div v-if="item.type!='text'">
+        <el-row :gutter="20" style="clear:both" v-if="item.type!='text'">
+        
+        <el-col :span="6">
+        <h3 style="float:left; margin: 30px 0">数据统计</h3>
+        <div id="staticdata" style="">
+          <el-table
+            :data="item.options"
+            border
+            style="width: 100%">
+            <el-table-column
+              prop=title
+              label="选项"
+              >
+            </el-table-column>
+            <el-table-column
+              prop=choosed
+              label="选择人数"
+              >
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="grid-content bg-purple"></div></el-col>
+
+        <el-col :span="6">
+        <div id="staticgram">
+        <div >
         <div style="margin: 20px; float: left; clear:both" >
         <el-radio-group v-model="radio2" size="medium">
             <el-radio-button label="饼图" @click.native="pieswi"></el-radio-button>
@@ -71,6 +95,11 @@
             <piechart3 v-else></piechart3>
         </div>        
         </div>
+        </div>
+        <div class="grid-content bg-purple"></div></el-col>
+
+        </el-row>
+
         <div v-else>
             <el-table
                 :data="tableData"
@@ -87,7 +116,8 @@
                 </el-table-column>
             </el-table>
         </div>
-        </div>
+
+
         </el-card>
     </div>
 </div>
@@ -128,9 +158,11 @@ export default{
             options: [{
                 id: '1',
                 title: '问卷系统',
+                choosed: 15
             }, {
                 id: '2',
                 title: '出版系统',
+                choosed: 13
             }],
             row: '',
             score: '',
@@ -143,15 +175,19 @@ export default{
             options: [{
                 id: '1',
                 title: 'ZYH',
+                choosed: 15
             }, {
                 id: '2',
                 title: 'LKW',
+                choosed: 153
             },{
                 id: '3',
                 title: 'ZXH',
+                choosed: 151
             }, {
                 id: '4',
                 title: 'HZH',
+                choosed: 153
             }],
             row: '',
             score: '',
@@ -164,9 +200,11 @@ export default{
           options: [{
             id: '1',
             title: '累',
+            choosed: 10
           }, {
             id: '2',
             title: '非常累',
+            choosed: 11
           }],
           row: '',
           score: '',
@@ -189,7 +227,7 @@ export default{
           title: '给小学期打个分吧~',
           must: true,
           options: [{
-            id: '',
+            id: '1',
             title: '',
           }],
           row: 1,
@@ -270,8 +308,17 @@ export default{
   padding: 5px 10px 10px;
 }
 
+.el-col-17 {
+    margin-bottom: 50px;
+}
+
+.el-col-6 {
+    width: 50%;
+    height: 535px;
+    padding: 20px 50px !important;
+    padding-top: 0 !important;
+}
 /* #que{
-    background-color: rgb(197, 224, 255);
-    height: 250px;
+   margin-bottom: 50px;
 } */
 </style>

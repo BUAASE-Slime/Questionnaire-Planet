@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="box">
-      <statside></statside>
+      <statside ></statside>
+      <!-- style="position:fixed; z-index:1" -->
       <router-view /> 
     </div>
   </div>
