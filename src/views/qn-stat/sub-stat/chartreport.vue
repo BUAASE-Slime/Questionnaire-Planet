@@ -237,7 +237,8 @@ export default{
         }
     },
     created: function () {
-    this.item=this.questions[this.nowid-1]
+      this.item=this.questions[this.nowid-1];
+      this.$emit('getPidFromChild', this.$route.query.pid);
     },
     methods:{
         frontpage: function(){

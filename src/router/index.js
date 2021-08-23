@@ -91,24 +91,28 @@ const routes = [
             {
                 path: '/recyconcept',
                 name: 'recyconcept',
+                props: true,
                 
                 component: () => import('../views/qn-stat/sub-stat/recyconcept')
             },
             {
                 path: '/answerdata',
                 name: 'answerdata',
+                props: true,
                 
                 component: () => import('../views/qn-stat/sub-stat/answerdata')              
             },
             {
                 path: '/chartreport',
                 name: 'chartreport',
+                props: true,
                 
                 component: () => import('../views/qn-stat/sub-stat/chartreport')              
             },
             {
                 path: '/crossover',
                 name: 'crossover',
+                props: true,
                 
                 component: () => import('../views/qn-stat/sub-stat/crossover')              
             },

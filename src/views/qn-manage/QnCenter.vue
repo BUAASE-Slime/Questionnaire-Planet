@@ -74,7 +74,7 @@
                   <el-link :href="editUrl(msg)" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
                   <el-link :href="previewUrl(msg)" :underline="false" class="leftside el-icon-view">&nbsp;预览</el-link>
                   <el-link @click="openShare(index)" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
-                  <el-link href="PageNotFound" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
+                  <el-link :href="statUrl(msg)" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
                   <el-dropdown split-button class="leftside" size="mini" id="download" @command="selectExportType">
                     导出
                     <el-dropdown-menu slot="dropdown">
@@ -492,6 +492,9 @@ export default {
     },
     previewUrl(index) {
       return 'preview?pid=' + index.survey_id + '&mode=0';
+    },
+    statUrl(index) {
+      return 'recyconcept?pid=' + index.survey_id;
     },
 
     handleOpen(key, keyPath) {
