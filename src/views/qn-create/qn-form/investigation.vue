@@ -72,6 +72,13 @@
                   {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
                 </div>
 
+                <div
+                    class="block-description"
+                    v-if="item.description!=='' && item.description!==null && item.description!==undefined"
+                >
+                  {{ item.description }}
+                </div>
+
                 <div class="block-choice" v-for="ans in item.options" :key="ans.id">
 
                   <!--                  单选-->
@@ -128,6 +135,7 @@
       </el-main>
 
     </el-container>
+
     <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible"  :before-close="cancel_pre" class="dialog" >
       <el-form ref="form" :model="willAddQuestion" label-width="100px">
         <el-form-item label="题目类型" >
@@ -143,6 +151,10 @@
 
         <el-form-item label="题目标题" style="width: 100%;">
           <el-input v-model="willAddQuestion.title" placeholder="请输入标题" ></el-input>
+        </el-form-item>
+
+        <el-form-item label="题目描述" style="width: 100%;">
+          <el-input v-model="willAddQuestion.description" placeholder="请输入题目描述"></el-input>
         </el-form-item>
 
         <el-form-item label="是否必填" >
@@ -164,11 +176,13 @@
           <el-button type="primary" plain class="addOptionButton" @click="addOption">新增选项</el-button>
         </template>
 
-
         <template v-if="willAddQuestion.type==='text'" >
           <el-form-item label="填空">
-            <el-input type="textarea"
-                      :rows="willAddQuestion.row"  resize="none"></el-input>
+            <el-input
+                type="textarea"
+                :rows="willAddQuestion.row"
+                resize="none">
+            </el-input>
           </el-form-item>
           <el-form-item label="行数">
             <el-input-number v-model="willAddQuestion.row" :min="1" :max="10" ></el-input-number>
@@ -182,11 +196,12 @@
         </template>
       </el-form>
       <span slot="footer" class="dialog-footer" style="text-align: center">
-                  <el-row>
-                    <el-button :span="6" type="primary" @click="dialogConfirm">确 定</el-button>
-                    <el-button :span="6" @click="cancel_pre" >取 消</el-button>
-                  </el-row>
-            </span>
+        <el-row>
+          <el-button :span="6" type="primary" @click="dialogConfirm">确定</el-button>
+          &emsp;
+          <el-button :span="6" @click="cancel_pre" >取消</el-button>
+        </el-row>
+      </span>
     </el-dialog>
     <el-dialog :visible.sync="qsLinkDialogVisible" :title="qsLinkDialogTitle" class="linkDialog" :show-close="false" width="800px" >
       <el-row>
@@ -215,7 +230,7 @@
       </span>
     </el-dialog>
     <el-dialog :visible.sync="editWrongMsgVisible"  class="linkDialog" :show-close="false" :close-on-click-modal="false" width="300px" >
-      <span>{{editWrongMsg}}</span>
+      <span>{{ editWrongMsg }}</span>
       <span slot="footer" class="dialog-footer" style="text-align: center">
                   <el-row>
                     <el-button :span="6" type="danger" style="width: 80px"  @click="editWrongMsgVisible=false">知道了</el-button>
@@ -244,30 +259,31 @@ export default {
       activeName: 'first',
       title: '',
       description: '',
-      outline: [],
       defaultProps: {
         children: 'children',
         label: 'label'
       },
       type: 1,
       questions: [],
+      outline: [],
       pid: this.$route.query.pid,
 
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
-      willAddQuestion:{
+      willAddQuestion: {
         id: 0,
         type:'',
         title:'',
-        must:false, //是否必填
+        must: false, // 是否必填
+        description: '', // 问题描述
         options:[
           {
-            title:'', //选项标题
-            id: 0 //选项id
+            title:'', // 选项标题
+            id: 0 // 选项id
           }
         ],
-        row:1, //填空区域行数
-        score:10, //最大评分
+        row:1, // 填空区域行数
+        score:10, // 最大评分
       },
       allType:[
         {
@@ -292,6 +308,7 @@ export default {
           id: 1,
           type: 'radio',
           title: '这是一个什么网站？',
+          description: '请考虑妥当后填写',
           must: true,
           options: [{
             id: 1,
@@ -307,6 +324,7 @@ export default {
           id: 2,
           type: 'checkbox',
           title: '软工小学期助教都有谁？',
+          description: '请考虑妥当后填写',
           must: false,
           options: [{
             id: 1,
@@ -328,6 +346,7 @@ export default {
           id: 3,
           type: 'radio',
           title: '软工小学期累不累',
+          description: '请考虑妥当后填写',
           must: false,
           options: [{
             id: 1,
@@ -343,6 +362,7 @@ export default {
           id: 4,
           type: 'text',
           title: '您对小学期的评价如何？',
+          description: '请考虑妥当后填写',
           must: false,
           options: [{
             id: 0,
@@ -355,6 +375,7 @@ export default {
           id: 5,
           type: 'mark',
           title: '给小学期打个分吧~',
+          description: '请考虑妥当后填写',
           must: true,
           options: [{
             id: 0,
@@ -406,6 +427,7 @@ export default {
         type:this.questions[index].type,
         title:this.questions[index].title,
         must:this.questions[index].must,
+        description: this.questions[index].description,
         options:this.questions[index].options,
         row:this.questions[index].row,
         score:this.questions[index].score,
@@ -416,12 +438,13 @@ export default {
       this.qsEditDialogVisible=true;
     },
     dialogConfirm(){
-      let index=this.editIndex;
-      this.qsEditDialogVisible=false;
+      let index = this.editIndex;
+      this.qsEditDialogVisible = false;
       if(this.qsEditDialogTitle==="编辑题目") {
         this.questions[index].id = this.willAddQuestion.id;
         this.questions[index].row = this.willAddQuestion.row;
         this.questions[index].must = this.willAddQuestion.must;
+        this.questions[index].description = this.willAddQuestion.description;
         this.questions[index].title = this.willAddQuestion.title;
         this.questions[index].options = this.willAddQuestion.options;
         this.questions[index].score = this.willAddQuestion.score;
@@ -468,6 +491,7 @@ export default {
           type:'',
           title:'',
           must:false,
+          description: '',
           options:[
             {
               title:'', //选项标题
@@ -481,17 +505,18 @@ export default {
     dialogCancel: function(){
       this.qsEditDialogTitle="";
       this.willAddQuestion={
-          id:0,
-          type:'',
-          title:'',
-          must:false,
-          options:[
-            {
-              title:'', //选项标题
-              id: 0 //选项id
-            }],
-          row:1,
-          score:10,
+        id:0,
+        type:'',
+        title:'',
+        must:false,
+        description: '',
+        options:[
+          {
+            title:'', // 选项标题
+            id: 0 // 选项id
+          }],
+        row:1,
+        score:10,
         };
       this.qsEditDialogVisible=false;
       this.selectDisAble=false;
@@ -865,6 +890,16 @@ export default {
   font-size: 16px;
   padding: 20px 10px 10px;
   font-weight: bold;
+}
+
+.investigation .block-description {
+  text-align: left;
+  /*border: solid 1px black;*/
+  font-size: 14px;
+  padding-top: 5px;
+  padding-bottom: 15px;
+  padding-left: 10px;
+  color: #969696;
 }
 
 .investigation .block-choice {
