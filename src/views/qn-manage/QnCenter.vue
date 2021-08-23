@@ -236,7 +236,7 @@ export default {
             this.QnList[index].is_released=true;
             this.shareOpen = true;
             this.share_surveyId = this.QnList[index].survey_id;
-            this.linkShare = this.GLOBAL.baseUrl + "/fill?code=" + res.data.code;
+            this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
             break;
           default:
             this.$message.error("问卷发布失败！");
@@ -265,7 +265,7 @@ export default {
               this.$message.warning("您无权执行此操作！");
               break;
             case 1:
-              this.linkShare = this.GLOBAL.baseUrl + "/fill?code=" + res.data.code;
+              this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
               break;
             default:
               this.$message.error("操作失败！");
@@ -514,32 +514,32 @@ export default {
         case "1":
           this.orderQn = "按创建时间正序";
           this.orderItem = "created_time";
-          this.orderType = "desc";
+          this.orderType = "asc";
           break;
         case "2":
           this.orderQn = "按创建时间倒序";
           this.orderItem = "created_time";
-          this.orderType = "asc";
+          this.orderType = "desc";
           break;
         case "3":
           this.orderQn = "按发布时间正序";
           this.orderItem = "release_time";
-          this.orderType = "desc";
+          this.orderType = "asc";
           break;
         case "4":
           this.orderQn = "按发布时间倒序";
           this.orderItem = "release_time";
-          this.orderType = "asc";
+          this.orderType = "desc";
           break;
         case "5":
           this.orderQn = "按答题人数正序";
           this.orderItem = "recycling_num";
-          this.orderType = "desc";
+          this.orderType = "asc";
           break;
         case "6":
           this.orderQn = "按答题人数倒序";
           this.orderItem = "recycling_num";
-          this.orderType = "asc";
+          this.orderType = "desc";
           break;
       }
       this.searchQns();
