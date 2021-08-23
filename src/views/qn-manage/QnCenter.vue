@@ -102,7 +102,8 @@
         <el-row>
           <el-col span="8" style="text-align: center">
             <el-row>
-              <img src="../../assets/images/example.jpg" height="200px" width="200px">
+              <div id="qrcode_1" style="height:200px; width:200px; margin-left: 22px;"></div>
+<!--              <img src="../../assets/images/example.jpg" height="200px" width="200px">-->
             </el-row>
           </el-col>
           <el-col span="16">
@@ -132,6 +133,7 @@
 import user from "@/store/user";
 import * as Axios from "core-js";
 import { saveAs } from "file-saver";
+import QRCode from 'qrcodejs2';
 
 export default {
   created() {
@@ -139,11 +141,14 @@ export default {
   },
   data() {
     return {
+      image_url: '',
+      qrcode: null,
+
       shareOpen: false,
       shareOpenTitle: '分享',
       share_surveyId: 0,
 
-      linkShare: 'https://zewan.cc/',
+      linkShare: '',
 
       activeIdx: "1",
 
@@ -184,6 +189,24 @@ export default {
         'index': index,
         'format': format
       }
+    },
+    download() {
+      // 获取base64的图片节点
+      var img = document.getElementById('qrcode_1').getElementsByTagName('img')[0];
+      // 构建画布
+      var canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      // 构造url
+      var url = canvas.toDataURL('image/png');
+      console.log(url);
+      // 构造a标签并模拟点击
+      var downloadLink = document.createElement('a');
+      downloadLink.download = '二维码.png';
+      downloadLink.href = url;
+      downloadLink.click();
+      downloadLink.remove();
     },
     finish() {
       this.shareOpen = false;
@@ -245,6 +268,19 @@ export default {
             this.shareOpen = true;
             this.share_surveyId = this.QnList[index].survey_id;
             this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+
+            if (this.qrcode != null) {
+              this.qrcode.clear();
+            }
+            this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
+              text: this.linkShare,
+              width: 200, //生成的二维码的宽度
+              height: 200, //生成的二维码的高度
+              colorDark : "#000000", // 生成的二维码的深色部分
+              colorLight : "#ffffff", //生成二维码的浅色部分
+              correctLevel : QRCode.CorrectLevel.H
+            });
+
             break;
           default:
             this.$message.error("问卷发布失败！");
@@ -274,6 +310,18 @@ export default {
               break;
             case 1:
               this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+
+              if (this.qrcode != null) {
+                this.qrcode.clear();
+              }
+              this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
+                text: this.linkShare,
+                width: 200, //生成的二维码的宽度
+                height: 200, //生成的二维码的高度
+                colorDark : "#000000", // 生成的二维码的深色部分
+                colorLight : "#ffffff", //生成二维码的浅色部分
+                correctLevel : QRCode.CorrectLevel.H
+              });
               break;
             default:
               this.$message.error("操作失败！");
