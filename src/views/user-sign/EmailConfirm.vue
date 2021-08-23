@@ -22,7 +22,7 @@ export default {
       success: false,
     }
   },
-  mounted() {
+  created() {
     const codeForm = new FormData();
     codeForm.append("code", this.$route.query.code);  // this.$route.query.code获取url中?code=后的参数
     this.$axios({
