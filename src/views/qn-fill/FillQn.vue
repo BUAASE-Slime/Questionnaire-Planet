@@ -1,6 +1,6 @@
 <template>
   <div class="qn-fill">
-    <div class="back-bt" v-if="mode==='0'">
+    <div class="back-bt" v-if="mode==='0' || mode===0">
       <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
     </div>
     <div class="paper">
@@ -21,6 +21,13 @@
 
             <div class="q-title">
               {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
+            </div>
+
+            <div
+                class="q-description"
+                v-if="item.description!=='' && item.description!==null && item.description!==undefined"
+            >
+              {{ item.description }}
             </div>
 
             <!--                  单选-->
@@ -324,12 +331,21 @@ export default {
   margin: 0;
 }
 
-.qn-fill .body  .q-title {
+.qn-fill .body .q-title {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
   padding: 40px 10px 10px;
   font-weight: bold;
+}
+
+.qn-fill .body .q-description {
+  text-align: left;
+  font-size: 14px;
+  padding-left: 10px;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  color: #969696;
 }
 
 .qn-fill .body .must {
