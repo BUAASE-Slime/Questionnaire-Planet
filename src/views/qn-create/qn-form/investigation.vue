@@ -572,13 +572,7 @@ export default {
       })
     },
     preview() {
-      this.$router.push({
-        name: 'Preview',
-        query: {
-          mode: 0,
-          pid: this.$route.query.pid
-        }
-      })
+      location.href = 'preview?mode=0&pid=' + this.$route.query.pid;
     },
     up: function (index) {
       index--;
