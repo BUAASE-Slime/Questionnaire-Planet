@@ -136,6 +136,9 @@ const routes = [
         path: '/*',
         name: 'PageNotFound',
         component: () => import('../views/error/PageNotFound'),
+        meta: {
+            noNav: true
+        }
     },
 ]
 
