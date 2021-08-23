@@ -73,7 +73,7 @@
                 <div slot="default" class="card-body">
                   <el-link :href="editUrl(msg)" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
                   <el-link :href="previewUrl(msg)" :underline="false" class="leftside el-icon-view">&nbsp;预览</el-link>
-                  <el-link href="PageNotFound" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
+                  <el-link @click="openShare(msg)" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
                   <el-link href="PageNotFound" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
                   <el-dropdown split-button class="leftside" size="mini" id="download" @command="selectExportType">
                     导出
@@ -98,6 +98,32 @@
             </el-empty>
           </div>
         </div>
+      <el-dialog :visible.sync="shareOpen" :title="shareOpenTitle" style="text-align: left" :show-close="false" width="800px" >
+        <el-row>
+          <el-col span="8" style="text-align: center">
+            <el-row>
+              <img src="../../assets/images/example.jpg" height="200px" width="200px">
+            </el-row>
+          </el-col>
+          <el-col span="16">
+            <el-row><h2>链接与二维码</h2></el-row>
+            <el-row style="margin-top:15px">
+              <el-col :span="16" style="margin-right: 5px">
+                <el-input :placeholder=linkShare v-model="linkShare" id="copyText" :disabled="true">
+                </el-input>
+              </el-col>
+              <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
+            <el-row style="margin-top: 25px">
+              <el-button type="primary" plain @click="download">下载二维码</el-button>
+            </el-row>
+          </el-col>
+        </el-row>
+        <span slot="footer" class="dialog-footer" style="text-align: center">
+                  <el-row>
+                    <el-button :span="6" type="success" style="width: 80px"  @click="finish">完 成</el-button>
+                  </el-row>
+      </span>
+      </el-dialog>
     </div>
 
 </template>
@@ -111,6 +137,12 @@ export default {
   },
   data() {
     return {
+      shareOpen: false,
+      shareOpenTitle: '分享',
+      share_surveyId: 0,
+
+      linkShare: 'https://zewan.cc/',
+
       activeIdx: "1",
 
       qnType: '问卷状态',
@@ -145,6 +177,23 @@ export default {
     }
   },
   methods:{
+    finish() {
+      this.shareOpen = false;
+    },
+    copyToClip(message) {
+      var aux = document.createElement("input");
+      aux.setAttribute("value", this.linkShare);
+      document.body.appendChild(aux);
+      aux.select();
+      document.execCommand("copy");
+      document.body.removeChild(aux);
+      if (message !== null) {
+        this.$message.success("复制成功");
+      } else{
+        this.$message.error("复制失败");
+      }
+    },
+
     recycle:function (index){
       this.$alert('问卷暂停成功', '', {
         confirmButtonText: '确定',
@@ -157,6 +206,11 @@ export default {
         confirmButtonText: '确定',
       });
       this.QnList[index].is_released=true
+    },
+
+    openShare(index) {
+      this.shareOpen = true;
+      this.share_surveyId = index.survey_id;
     },
 
     deleteQn(index) {
@@ -212,7 +266,7 @@ export default {
         switch (res.data.status_code) {
           case 200:
             this.QnList[index].is_collected = false;
-            if (this.activeIdx === 2) {
+            if (this.activeIdx === "2") {
               this.QnList.splice(index, 1);
             }
             if (this.QnList.length === 0) {
@@ -531,7 +585,7 @@ export default {
     .el-icon-arrow-down {
         font-size: 6px;
     }
-    .el-input{
+    #title .el-input{
         width: 200px;
     }
     .right{

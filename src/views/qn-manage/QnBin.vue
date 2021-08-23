@@ -69,6 +69,7 @@ export default {
   name: "QnBin",
   data() {
     return {
+      /*
       binData: [
         {
           survey_id: 1,
@@ -101,6 +102,8 @@ export default {
           recycling_num: 100,
         },
       ]
+       */
+      binData: []
     }
   },
   methods:{
