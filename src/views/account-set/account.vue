@@ -40,15 +40,49 @@
                   </div> -->
                   <div class="ainfo2" v-if="haveemail" >
                     <span style="display:inline-block; width: 400px">邮箱地址：{{email}}</span>
-                    <el-button type="primary" size="small" >更改</el-button>
+                    <el-button type="primary" size="small" @click="dialogFormVisible2=true">更改</el-button>
                   </div>
                   <div class="ainfo2" v-else >
-                    <span style="display:inline-block; width: 400px">邮箱地址：去绑定</span>
-                    <el-button type="primary" size="small" >去绑定</el-button>
+                    <span style="display:inline-block; width: 400px">邮箱地址：未绑定</span>
+                    <el-button type="primary" size="small" @click="dialogFormVisible2=true">去绑定</el-button>
                   </div>
                   <div class="ainfo2">
                     <span style="display:inline-block; width: 100px">密码：</span>
-                    <el-button type="primary" size="small" >修改密码</el-button>
+                    <el-button type="primary" size="small" @click="dialogFormVisible = true">修改密码</el-button>
+                  </div>
+
+                  <div>
+                  <el-dialog  width="515px" title="修改密码" :visible.sync="dialogFormVisible">
+                    <el-form :model="form">
+                      <el-form-item label="旧密码" :label-width="formLabelWidth">
+                        <el-input type="password" v-model="form.old" autocomplete="off"></el-input>
+                      </el-form-item>
+                      <el-form-item label="新密码" :label-width="formLabelWidth">
+                        <el-input type="password" v-model="form.new" autocomplete="off"></el-input>
+                      </el-form-item>
+                      <el-form-item label="确认密码" :label-width="formLabelWidth">
+                        <el-input  type="password" v-model="form.newagain" autocomplete="off"></el-input>
+                      </el-form-item>                                            
+                    </el-form>
+                    <div slot="footer" class="dialog-footer">
+                      <el-button @click="dialogFormVisible = false">取 消</el-button>
+                      <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                    </div>
+                  </el-dialog>
+                  </div>
+
+                  <div>
+                  <el-dialog  width="515px" title="绑定邮件地址" :visible.sync="dialogFormVisible2">
+                    <el-form :model="form">
+                      <el-form-item label="邮箱地址" :label-width="formLabelWidth">
+                        <el-input v-model="form.email" autocomplete="off"></el-input>
+                      </el-form-item>                                         
+                    </el-form>
+                    <div slot="footer" class="dialog-footer">
+                      <el-button @click="dialogFormVisible2 = false">取 消</el-button>
+                      <el-button type="primary" @click="dialogFormVisible2 = false">确 定</el-button>
+                    </div>
+                  </el-dialog>
                   </div>
 
                 </div>
@@ -68,8 +102,17 @@
           phone:"15545677845",
           email:"wenjuanxingqiu@126.com",
           password:"eeerty",
-          haveemail:true,
-          havephone:false
+          haveemail:false,
+          havephone:false,
+        dialogFormVisible: false,
+        dialogFormVisible2: false,
+        form: {
+          old:'',
+          new:'',
+          newagain:'',
+          email: ''
+        },
+        formLabelWidth: '120px'
       }
     }
   }
