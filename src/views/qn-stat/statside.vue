@@ -3,28 +3,32 @@
     <el-container>
       <el-aside class="left-nav">
         <el-menu
-            default-active="2"
+            default-active="1"
             class="el-menu-vertical-demo"
             @open="handleOpen"
             @close="handleClose"
             unique-opened
             router>
-          <el-menu-item index="/recyconcept">
+          <el-menu-item :index="recyconcept"
+                        :route={path:recyconcept,query:{qnId}}
+          >
             <i class="el-icon-time nav-icon"></i>
             <br>
             <span slot="title">回收概况</span>
           </el-menu-item>
-          <el-menu-item index="/answerdata">
+          <el-menu-item :index="answerdata"
+                        :route={path:answerdata,query:{qnId}}
+          >
             <i class="el-icon-document nav-icon"></i>
             <br>
             <span slot="title">回收数据</span>
           </el-menu-item>
-          <el-menu-item index="/chartreport">
+          <el-menu-item :index="chartreport">
             <i class="el-icon-s-data nav-icon"></i>
             <br>
             <span slot="title">图表报告</span>
           </el-menu-item>
-          <el-menu-item index="/crossover">
+          <el-menu-item :index="crossover">
             <i class="el-icon-data-analysis nav-icon"></i>
             <br>
             <span slot="title">交叉分析</span>
@@ -43,10 +47,17 @@
 <script>
 export default {
   name: "QnStat",
+  props: {
+    pid: String,
+  },
   data() {
     return {
       qnId: '',
       qnTitle: '问卷标题',
+      recyconcept: '/recyconcept?pid=' + this.pid,
+      answerdata: '/answerdata?pid=' + this.pid,
+      chartreport: '/chartreport?pid=' + this.pid,
+      crossover: '/crossover?pid=' + this.pid,
     };
   },
   methods: {

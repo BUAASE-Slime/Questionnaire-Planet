@@ -45,7 +45,9 @@ export default {
       sum_collect: 115,
       day_collect: 3,
       week_collect: 104,
-      radio2: '柱状图'
+      radio2: '柱状图',
+
+      surveyId: '',
     }
   },
   methods:{
@@ -57,6 +59,34 @@ export default {
       this.swigram=false
       console.log(this.swigram)
     },
+  },
+  created() {
+    this.$emit('getPidFromChild', this.$route.query.pid);
+
+    const formData = new FormData();
+    formData.append("survey_id", parseInt(this.$route.query.pid));
+    this.$axios({
+      method: 'post',
+      url: '/qn/get_recycling_num',
+      data: formData,
+    })
+    .then(res => {
+      switch (res.data.status_code) {
+        case 200:
+          this.sum_collect = res.data.num_all;
+          this.day_collect = res.data.num_day;
+          this.week_collect = res.data.num_week;
+          break;
+        default:
+          this.$message.error("访问失败！");
+          setTimeout(() => {
+            this.$router.push('/index');
+          }, 1000);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
   }
 };
 

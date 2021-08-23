@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="box">
-      <statside ></statside>
+      <statside :pid="pid"></statside>
       <!-- style="position:fixed; z-index:1" -->
-      <router-view /> 
+      <router-view v-on:pid="getPidFromChild"/>
     </div>
   </div>
 </template>
@@ -11,8 +11,18 @@
 <script>
 import statside from './statside'
 export default {
+  data() {
+    return {
+      pid: '',
+    }
+  },
   components:{
     statside
+  },
+  methods: {
+    getPidFromChild(pid) {
+      this.pid = pid;
+    }
   }
 };
 </script>

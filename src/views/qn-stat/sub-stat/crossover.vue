@@ -137,6 +137,9 @@
       anlysis: function(){
         this.ans=true
       }
+    },
+    created() {
+      this.$emit('getPidFromChild', this.$route.query.pid);
     }
   }
 </script>
