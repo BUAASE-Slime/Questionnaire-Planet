@@ -228,16 +228,30 @@ export default {
       });
     },
     recovery: function (index) {
-      /*
-
-      恢复的相关后台操作
-
-       */
-      this.$message({
-        type: 'success',
-        message: '恢复成功'
-      });
-      this.binData.splice(index,1);
+      const formData = new FormData();
+      formData.append("qn_id", this.binData[index].survey_id);
+      this.$axios({
+        url: '/sm/delete/qn/recover',
+        method: 'post',
+        data: formData,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 1:
+            this.$message({
+              type: 'success',
+              message: '恢复成功'
+            });
+            this.binData.splice(index,1);
+            break;
+          default:
+            this.$message.error("操作失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     }
   },
   created() {

@@ -164,33 +164,34 @@ export default {
   created() {
     const formData = new FormData();
     formData.append("qn_id", this.$route.query.pid)
-    this.$axios({
-      method: 'post',
-      url: '/sm/get/qn_detail',
-      data: formData,
-    })
-    .then(res => {
-      switch (res.data.status_code) {
-        case 0:
-          this.$message.error("您无权访问！");
-          this.$router.push('/');
-          break;
-        case 1:
-          this.title = res.data.title;
-          this.description = res.data.description;
-          this.type = res.data.type;
-          this.questions = res.data.questions;
 
-          this.InitOutline();
-          break;
-        default:
-          this.$message.error("访问失败！");
-          break;
-      }
-    })
-        .catch(err => {
-          console.log(err);
-        })
+    if (this.mode === '0') {
+      this.$axios({
+        method: 'post',
+        url: '/sm/get/qn_detail',
+        data: formData,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 0:
+            this.$message.error("您无权访问！");
+            this.$router.push('/');
+            break;
+          case 1:
+            this.title = res.data.title;
+            this.description = res.data.description;
+            this.type = res.data.type;
+            this.questions = res.data.questions;
+            break;
+          default:
+            this.$message.error("访问失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    }
   },
 }
 </script>
