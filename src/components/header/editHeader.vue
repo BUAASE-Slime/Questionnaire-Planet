@@ -2,7 +2,7 @@
   <el-row class="edit-header">
     <el-col :span="2" class="lf-bt"><el-button icon="el-icon-edit" @click="open_1">编辑标题</el-button></el-col>
     <el-col :span="2" class="lf-bt"><el-button icon="el-icon-edit-outline" @click="open_2">编辑说明</el-button></el-col>
-    <el-col :span="2" class="lf-bt"><el-button icon="el-icon-setting">高级设置</el-button></el-col>
+    <el-col :span="2" class="lf-bt"><el-button icon="el-icon-setting" @click="setting">高级设置</el-button></el-col>
     <el-col :span="2" class="button"><el-button type="success" icon="el-icon-upload2" @click="publish">发布</el-button></el-col>
     <el-col :span="2" class="button"><el-button type="warning" icon="el-icon-receiving" @click="save">保存</el-button></el-col>
     <el-col :span="2" class="button"><el-button type="primary" icon="el-icon-view" @click="preview">预览</el-button></el-col>
@@ -57,6 +57,9 @@ export default {
           message: '取消输入'
         });
       });
+    },
+    setting: function () {
+      this.$emit("advancedSetting");
     },
     open_3:function (){
       this.$confirm('确认发布？', '提示', {

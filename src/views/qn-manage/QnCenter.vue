@@ -488,10 +488,28 @@ export default {
     },
 
     editUrl(index) {
-      return 'edit?pid=' + index.survey_id;
+      switch (index.type) {
+        case '普通问卷':
+          return 'edit?pid=' + index.survey_id;
+        case '考试问卷':
+          return 'test?pid=' + index.survey_id;
+        case '报名问卷':
+          return 'form?pid=' + index.survey_id;
+        default:
+          return ''
+      }
     },
     previewUrl(index) {
-      return 'preview?pid=' + index.survey_id + '&mode=0';
+      switch (index.type) {
+        case '普通问卷':
+          return 'preview?pid=' + index.survey_id + '&mode=0';
+        case '考试问卷':
+          return 'preview_test?pid=' + index.survey_id + '&mode=0';
+        case '报名问卷':
+          return 'preview_form?pid=' + index.survey_id + '&mode=0';
+        default:
+          return ''
+      }
     },
     statUrl(index) {
       return 'recyconcept?pid=' + index.survey_id;
