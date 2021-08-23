@@ -78,8 +78,8 @@
                   <el-dropdown split-button class="leftside" size="mini" id="download" @command="selectExportType">
                     导出
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item command="word">导出Word</el-dropdown-item>
-                      <el-dropdown-item command="pdf">导出PDF</el-dropdown-item>
+                      <el-dropdown-item :command="beforeHandleCommand(index,'word')">导出Word</el-dropdown-item>
+                      <el-dropdown-item :command="beforeHandleCommand(index,'pdf')">导出PDF</el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
                   <el-button type="text" class="rightside el-icon-delete" @click="deleteQn(index)"> 删除</el-button>
@@ -130,6 +130,8 @@
 
 <script>
 import user from "@/store/user";
+import * as Axios from "core-js";
+import { saveAs } from "file-saver";
 
 export default {
   created() {
@@ -177,6 +179,12 @@ export default {
     }
   },
   methods:{
+    beforeHandleCommand(index, format) {
+      return {
+        'index': index,
+        'format': format
+      }
+    },
     finish() {
       this.shareOpen = false;
     },
@@ -472,18 +480,191 @@ export default {
           break;
       }
     },
+    downloadPDF(url, fileName = '') {
+      return this.downloadFile(url, fileName, { responseType: 'arraybuffer' })
+    },
 
     selectExportType(command) {
-      console.log(command);
-      switch (command) {
+      var surveyId = this.QnList[command.index].survey_id;
+      const formData = new FormData();
+      formData.append("qn_id", surveyId);
+      switch (command.format) {
         case "word":
-          window.alert("导出word");
+          this.$axios({
+            method: 'post',
+            url: '/sm/export/docx',
+            data: formData,
+          })
+          .then(res => {
+            if (res.data.status_code === 1) {
+              var item = {
+                FILETYPE: 'docx',
+                CNAME: res.data.filename,
+                ANNEXCONTENT: res.data.b64data
+              };
+              this.shows(item);
+            } else {
+              this.$message.error("文件下载失败！");
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
           break;
         case "pdf":
-          window.alert("导出pdf");
+          this.$axios({
+            method: 'post',
+            url: '/sm/export/pdf',
+            data: formData,
+          })
+          .then(res => {
+            if (res.data.status_code === 1) {
+              // this.downloadPDF(res.data.pdf_url, res.data.filename);
+              this.fileSaverPDF(res.data.pdf_url, res.data.filename);
+            } else {
+              this.$message.error("文件下载失败！");
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
           break;
       }
     },
+    fileSaverPDF(url, name) {
+      var oReq = new XMLHttpRequest();
+      // The Endpoint of your server
+      var URLToPDF = url;
+      // Configure XMLHttpRequest
+      oReq.open("GET", URLToPDF, true);
+      // Important to use the blob response type
+      oReq.responseType = "blob";
+      // When the file request finishes
+      // Is up to you, the configuration for error events etc.
+      oReq.onload = function() {
+        // Once the file is downloaded, open a new window with the PDF
+        // Remember to allow the POP-UPS in your browser
+        var file = new Blob([oReq.response], {
+          type: 'application/pdf'
+        });
+
+        // Generate file download directly in the browser !
+        saveAs(file, name);
+      };
+      oReq.send();
+
+    },
+    downloadURL(url, name) {
+      const link = document.createElement('a')
+      link.download = name
+      link.href = url
+      if ('download' in document.createElement('a')) {
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      } else {
+        // 对不支持download进行兼容
+        this.click(link, (link.target = '_blank'))
+      }
+    },
+    click(node) {
+      try {
+        node.dispatchEvent(new MouseEvent('click'))
+      } catch (e) {
+        var evt = document.createEvent('MouseEvents')
+        evt.initMouseEvent(
+            'click',
+            true,
+            true,
+            window,
+            0,
+            0,
+            0,
+            80,
+            20,
+            false,
+            false,
+            false,
+            false,
+            0,
+            null
+        )
+        node.dispatchEvent(evt)
+      }
+    },
+    // 创建blob对象
+    downloadBlob(url) {
+      return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest()
+        xhr.open('GET', url)
+        xhr.responseType = 'blob'
+
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            resolve(xhr.response)
+          } else {
+            reject(new Error(xhr.statusText || 'Download failed.'))
+          }
+        }
+        xhr.onerror = function() {
+          reject(new Error('Download failed.'))
+        }
+        xhr.send()
+      })
+    },
+    // 主要用于下载导出的代码
+
+    downloadFile(url, fileName = '', requestConfig = {}) {
+      return Axios.get(url, requestConfig)
+      .then(resp => {
+        if (resp.status !== 200) {
+          throw new Error('Download fail.')
+        } else if (resp.blob) {
+          return resp.blob()
+        } else {
+          return new Blob([resp])
+        }
+      })
+      .then(blob => URL.createObjectURL(blob))
+      .then(url => {
+        this.downloadURL(url, fileName)
+        URL.revokeObjectURL(url)
+      })
+    },
+
+    shows(item) {
+      if (item.FILETYPE.substring(item.FILETYPE.lastIndexOf('.')+1,item.FILETYPE.length)=='docx') {
+        const dataURLtoBlob = function (dataurl) {
+          let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+              bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+          while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+          }
+          return new Blob([u8arr], { type: mime });
+        }
+
+        const  downloadFile = function downloadFile(url,name=item.CNAME){
+          let a = document.createElement("a")
+          a.setAttribute("href",url)
+          a.setAttribute("download",name)
+          a.setAttribute("target","_blank")
+          let clickEvent = document.createEvent("MouseEvents");
+          clickEvent.initEvent("click", true, true);
+          a.dispatchEvent(clickEvent);
+        }
+
+        const downloadFileByBase64 = function (base64,name){
+          let myBlob = dataURLtoBlob(base64)
+          let myUrl = URL.createObjectURL(myBlob)
+          downloadFile(myUrl,name)
+        }
+        downloadFileByBase64('data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,'+ item.ANNEXCONTENT)
+      }else{
+        this.imgsrc='data:image/jpeg;base64,'+ item.ANNEXCONTENT
+        this.modal3_show=true
+      }
+    },
+
 
     linkCreate() {
       this.$router.push('/create_ques');
