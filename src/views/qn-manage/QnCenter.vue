@@ -58,34 +58,34 @@
 
             </div>
 
-
             <div v-if="hasQn">
               <el-card v-for="(msg,index) in QnList" class="box-card" :key='index'>
                 <div slot="header" style="display:flex">
                   <el-row>
                     <el-col span=20>{{msg.title}}</el-col>
                   </el-row>
-                  <span class="headspan">id：{{msg.paper_id}}</span>
+                  <span class="headspan">id：{{msg.survey_id}}</span>
                   <span class="headspan">答卷：{{msg.recycling_num}}</span>
                   <span v-if="msg.is_released" class="headspan">已发布</span>
                   <span v-else class="headspan">未发布</span>
                   <span class="headspan">创建时间：{{msg.create_time}}</span>
                 </div>
                 <div slot="default" class="card-body">
-                  <el-link href="investigation" target="_blank" :underline="false" class="leftside el-icon-edit">编辑</el-link>
-                  <el-link href="PageNotFound" target="_blank" :underline="false" class="leftside el-icon-view">预览</el-link>
-                  <span class="leftside el-icon-share"> 分享</span>
-                  <span class="leftside el-icon-s-data"> 统计</span>
-                  <el-dropdown split-button class="leftside" size="mini" id="download">
+                  <el-link :href="editUrl(msg)" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
+                  <el-link :href="previewUrl(msg)" :underline="false" class="leftside el-icon-view">&nbsp;预览</el-link>
+                  <el-link @click="openShare(index)" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
+                  <el-link href="PageNotFound" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
+                  <el-dropdown split-button class="leftside" size="mini" id="download" @command="selectExportType">
                     导出
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item>导出Word</el-dropdown-item>
-                      <el-dropdown-item>导出PDF</el-dropdown-item>
+                      <el-dropdown-item command="word">导出Word</el-dropdown-item>
+                      <el-dropdown-item command="pdf">导出PDF</el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
-                  <el-button type="text" class="rightside el-icon-delete"> 删除</el-button>
-                  <el-button type="text" class="rightside el-icon-star-off"> 收藏</el-button>
-                  <el-button type="text" class="rightside el-icon-document"> 复制</el-button>
+                  <el-button type="text" class="rightside el-icon-delete" @click="deleteQn(index)"> 删除</el-button>
+                  <el-button type="text" class="rightside el-icon-star-on" @click="uncollectQn(index)" v-if="msg.is_collected"> 收藏</el-button>
+                  <el-button type="text" class="rightside el-icon-star-off" @click="collectQn(index)" v-else> 收藏</el-button>
+                  <el-button type="text" class="rightside el-icon-document" @click="copyQn(index)"> 复制</el-button>
                   <el-button type="text" v-if="msg.is_released" @click="recycle(index)" class="rightside el-icon-video-pause"> 暂停</el-button>
                   <el-button type="text" v-else @click="release(index)" class="rightside el-icon-video-play"> 发布</el-button>
                 </div>
@@ -98,6 +98,32 @@
             </el-empty>
           </div>
         </div>
+      <el-dialog :visible.sync="shareOpen" :title="shareOpenTitle" style="text-align: left" :show-close="false" width="800px" >
+        <el-row>
+          <el-col span="8" style="text-align: center">
+            <el-row>
+              <img src="../../assets/images/example.jpg" height="200px" width="200px">
+            </el-row>
+          </el-col>
+          <el-col span="16">
+            <el-row><h2>链接与二维码</h2></el-row>
+            <el-row style="margin-top:15px">
+              <el-col :span="16" style="margin-right: 5px">
+                <el-input :placeholder=linkShare v-model="linkShare" id="copyText" :disabled="true">
+                </el-input>
+              </el-col>
+              <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
+            <el-row style="margin-top: 25px">
+              <el-button type="primary" plain @click="download">下载二维码</el-button>
+            </el-row>
+          </el-col>
+        </el-row>
+        <span slot="footer" class="dialog-footer" style="text-align: center">
+                  <el-row>
+                    <el-button :span="6" type="success" style="width: 80px"  @click="finish">完 成</el-button>
+                  </el-row>
+      </span>
+      </el-dialog>
     </div>
 
 </template>
@@ -111,6 +137,12 @@ export default {
   },
   data() {
     return {
+      shareOpen: false,
+      shareOpenTitle: '分享',
+      share_surveyId: 0,
+
+      linkShare: 'https://zewan.cc/',
+
       activeIdx: "1",
 
       qnType: '问卷状态',
@@ -126,35 +158,282 @@ export default {
       QnList: [
         // {
         //     title:'易灿和他的问卷',
-        //     paper_id:19373000,
+        //     survey_id:19373000,
         //     recycling_num: 8,
         //     create_time:'2021/6/10 5:10',
         //     is_released: false,
-        //     is_deleted: false
+        //     is_deleted: false,
+        //     is_collected: false,
         // },
         // {
         //     title:'nn和他的问卷',
-        //     paper_id:19373000,
+        //     survey_id:19373000,
         //     recycling_num: 1118,
         //     create_time:'2021/6/10 23:10',
-        //     is_released: true
+        //     is_released: true,
+        //     is_collected: true,
         // },
       ],
     }
   },
   methods:{
-    recycle:function (index){
-      this.$alert('问卷已暂停', '', {
-        confirmButtonText: '确定',
-      });
-      this.QnList[index].is_released=false
+    finish() {
+      this.shareOpen = false;
+    },
+    copyToClip(message) {
+      var aux = document.createElement("input");
+      aux.setAttribute("value", this.linkShare);
+      document.body.appendChild(aux);
+      aux.select();
+      document.execCommand("copy");
+      document.body.removeChild(aux);
+      if (message !== null) {
+        this.$message.success("复制成功");
+      } else{
+        this.$message.error("复制失败");
+      }
+    },
 
+    recycle:function (index){
+      const formData = new FormData();
+      formData.append("qn_id", this.QnList[index].survey_id);
+      this.$axios({
+        url: '/sm/pause_qn',
+        method: 'post',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.$message.success("暂停发布成功");
+          this.QnList[index].is_released=false;
+        } else {
+          this.$message.error("执行操作失败");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     },
     release:function(index){
-      this.$alert('问卷已发布', '', {
+      const formData = new FormData();
+      formData.append("qn_id", this.QnList[index].survey_id);
+      this.$axios({
+        url: '/sm/deploy_qn',
+        method: 'post',
+        data: formData,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 7:
+            this.$message.error("问卷题目为空，不可发布");
+            break;
+          case 1:
+            this.$message.success("问卷发布成功！");
+            this.QnList[index].is_released=true;
+            break;
+          case 10:
+            this.$message.success("问卷发布成功！");
+            this.QnList[index].is_released=true;
+            this.shareOpen = true;
+            this.share_surveyId = this.QnList[index].survey_id;
+            this.linkShare = this.GLOBAL.baseUrl + "/fill?code=" + res.data.code;
+            break;
+          default:
+            this.$message.error("问卷发布失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+
+    openShare(index) {
+      if (this.QnList[index].is_released === true) {
+        this.shareOpen = true;
+        this.share_surveyId = this.QnList[index].survey_id;
+        const formData = new FormData();
+        formData.append("survey_id", this.share_surveyId);
+        this.$axios({
+          url: '/qn/get_code_existed',
+          method: 'post',
+          data: formData
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 0:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            case 1:
+              this.linkShare = this.GLOBAL.baseUrl + "/fill?code=" + res.data.code;
+              break;
+            default:
+              this.$message.error("操作失败！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      } else {
+        this.$alert('问卷未发布，请先发布', '问题提示', {
+          confirmButtonText: '确定',
+        });
+      }
+    },
+
+    deleteQn(index) {
+      this.$confirm('此操作将问卷移入回收站, 是否继续?', '提示', {
         confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const formData = new FormData();
+        formData.append("qn_id", this.QnList[index].survey_id);
+        this.$axios({
+          method: 'post',
+          url: '/sm/delete/qn/not_real',
+          data: formData
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 1:
+              this.QnList.splice(index, 1);
+              if (this.QnList.length === 0)
+                this.hasQn = false;
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              break;
+            default:
+              this.$message.error("操作失败！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
       });
-      this.QnList[index].is_released=true
+
+    },
+
+    uncollectQn(index) {
+      const formData = new FormData();
+      formData.append("survey_id", this.QnList[index].survey_id);
+      this.$axios({
+        method: 'post',
+        url: '/qn/not_collect',
+        data: formData
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 200:
+            this.QnList[index].is_collected = false;
+            if (this.activeIdx === "2") {
+              this.QnList.splice(index, 1);
+            }
+            if (this.QnList.length === 0) {
+              this.hasQn = false;
+            }
+            break;
+          case 401:
+            this.$message.error("您无权执行此操作！");
+            break;
+          case 403:
+            this.$message.error("您无权执行此操作！");
+            break;
+          default:
+            this.$message.warning("操作失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+    collectQn(index) {
+      const formData = new FormData();
+      formData.append("survey_id", this.QnList[index].survey_id);
+      this.$axios({
+        method: 'post',
+        url: '/qn/collect',
+        data: formData
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 200:
+            this.QnList[index].is_collected = true;
+            break;
+          case 401:
+            this.$message.error("您无权执行此操作！");
+            break;
+          case 403:
+            this.$message.error("您无权执行此操作！");
+            break;
+          default:
+            this.$message.warning("操作失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+
+    copyQn(index) {
+      const formData = new FormData();
+      formData.append("qn_id", this.QnList[index].survey_id);
+      console.log(this.QnList[index].survey_id);
+      this.$axios({
+        method: 'post',
+        url: '/sm/duplicate/qn',
+        data: formData,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 1:
+            var newForm = new FormData();
+            newForm.append("survey_id", res.data.qn_id);
+            newForm.append("username", user.getters.getUser(user.state()).user.username);
+            this.$axios({
+              method: 'post',
+              url: '/qn/get_list',
+              data: newForm,
+            })
+            .then(res => {
+              if (res.data.status_code === 402) {
+                this.$message.error("操作失败！");
+              } else {
+                this.$message.success("复制成功！");
+                this.QnList.unshift(res.data);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            })
+
+            break;
+          default:
+            this.$message.error("操作失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+
+    editUrl(index) {
+      return 'edit?pid=' + index.survey_id;
+    },
+    previewUrl(index) {
+      return 'preview?pid=' + index.survey_id + '&mode=0';
     },
 
     handleOpen(key, keyPath) {
@@ -189,7 +468,19 @@ export default {
           this.searchQns();
           break;
         case "3":
+          this.$router.push('/bin');
+          break;
+      }
+    },
 
+    selectExportType(command) {
+      console.log(command);
+      switch (command) {
+        case "word":
+          window.alert("导出word");
+          break;
+        case "pdf":
+          window.alert("导出pdf");
           break;
       }
     },
@@ -288,16 +579,18 @@ export default {
         switch (res.data.status_code) {
           case 401:
             this.$message.warning("您无权访问！");
+            location.reload();
             break;
           case 403:
             this.$message.warning("您无权访问！");
+            location.reload();
             break;
           case 404:
             this.hasQn = false;
             console.log('success! qn none!')
             break;
           default:
-            this.QnList = JSON.parse(res.data);
+            this.QnList = JSON.parse(res.data.data);
             console.log('success');
             break;
         }
@@ -361,7 +654,7 @@ export default {
     .el-icon-arrow-down {
         font-size: 6px;
     }
-    .el-input{
+    #title .el-input{
         width: 200px;
     }
     .right{
@@ -395,6 +688,7 @@ export default {
         float: right;
         padding: 10px;
         color: black;
+      font-size: 13px;
     }
     #download{
         padding: 3px 10px 12px 10px;
@@ -403,5 +697,17 @@ export default {
     #newButton {
       width: 240px;
       height: 56px;
+    }
+
+    .el-icon-my-star {
+        background: url("/src/assets/icon/star.png") center no-repeat;
+        background-size: cover;
+      font-family: element-icons;
+    }
+    .el-icon-my-star:before {
+      font-size: 13px;
+      content: "66ff";
+      visibility: hidden;
+      font-family: element-icons,serif!important;
     }
 </style>
