@@ -4,6 +4,20 @@
       <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
     </div>
     <div class="paper">
+      <div v-if="success">
+        <div class="tyn-icon">
+          <img src="../../assets/images/survey2.png" alt="">
+        </div>
+        <h1 v-if="success">提交成功，感谢您的参与！</h1>
+        <el-button type="primary" size="middle">继续查看问卷信息</el-button>
+      </div>
+      <div v-else-if="close">
+        <div class="tyn-icon">
+          <img src="../../assets/images/survey2.png" alt="">
+        </div>
+        <h1 v-if="close">问卷已结束，感谢您的参与！</h1>
+        <el-button type="primary" size="middle">返回</el-button>
+      </div>
       <div class="body">
 
         <div class="title">
@@ -70,7 +84,7 @@
       </div>
 
       <div class="tail">
-        <a href="http://localhost:8080/">星球问卷</a>&ensp;提供技术支持
+        <a :href="rootUrl">星球问卷</a>&ensp;提供技术支持
       </div>
     </div>
   </div>
@@ -81,6 +95,8 @@ export default {
   name: "FillQn",
   data() {
     return {
+      rootUrl: this.GLOBAL.baseUrl,
+
       success: false,
       close: false,
 
@@ -280,6 +296,10 @@ export default {
 </script>
 
 <style>
+.tyn-icon {
+  margin: 50px ;
+  padding-top: 100px;
+}
 .qn-fill {
   background-image: url("../../assets/images/preview_bk.png");
   background-repeat: repeat-y;
