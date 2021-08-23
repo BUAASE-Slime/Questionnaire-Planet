@@ -68,6 +68,16 @@ const routes = [
         component: () => import('../views/qn-create/qn-form/investigation'),
     },
     {
+        path: '/test',
+        name: 'Test',
+        component: () => import('../views/qn-create/qn-form/test'),
+    },
+    {
+        path: '/form',
+        name: 'SignUpForm',
+        component: () => import('../views/qn-create/qn-form/form'),
+    },
+    {
         path: '/fill',
         name: 'FillQn',
         component: () => import('../views/qn-fill/FillQn'),
@@ -76,12 +86,33 @@ const routes = [
         },
     },
     {
+        path: '/preview_form',
+        name: 'PreviewForm',
+        component: () => import('../views/qn-fill/FillQnForm'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
+        path: '/preview_test',
+        name: 'PreviewTest',
+        component: () => import('../views/qn-fill/FillQnTest'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
         path: '/preview',
         name: 'Preview',
         component: () => import('../views/qn-fill/FillQn'),
         meta: {
             noNav: true
         }
+    },
+    {
+        path: '/test_result',
+        name: 'TestResult',
+        component: () => import('../views/qn-fill/FinishTest'),
     },
     {
         path: '/stat',
