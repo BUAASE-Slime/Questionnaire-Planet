@@ -30,18 +30,18 @@
                 </div>
             </div>
             <div>
-                <!-- <el-table
+                <el-table
                     :data="tableData"
                     border
                     style="width: 100%">
 
                     <el-table-column
-                    v-for= "(item,index) in options[x].answer " :key="index" 
-                    :prop="item" + index
+                    v-for= "(item,index) in options[0].answer " :key="index"
+                    :prop="item"
                     :label=item.ans
                     >
                     </el-table-column>
-                </el-table> -->
+                </el-table>
             </div>
         </el-card>
     </div>

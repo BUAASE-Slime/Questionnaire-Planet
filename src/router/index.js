@@ -68,7 +68,7 @@ const routes = [
         component: () => import('../views/qn-create/qn-form/investigation'),
     },
     {
-        path: '/fill_qn',
+        path: '/fill',
         name: 'FillQn',
         component: () => import('../views/qn-fill/FillQn'),
         meta: {
