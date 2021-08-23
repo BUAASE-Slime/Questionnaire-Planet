@@ -1,12 +1,12 @@
 <template>
   <div class="verify">
     <div class="title">
-      <h1>邮件发送成功！</h1>
-      <p class="subtitle">邮件验证码将于3天后失效！</p>
-    </div>
-    <div class="btn">
-      <el-button @click="reload">刷新登录</el-button>
-      <el-button @click="send_email" type="primary">重新发送邮件</el-button>
+      <el-result icon="success" title="登录成功" subTitle="邮箱验证码已发送至您的邮箱，3天内有效，请及时确认！">
+        <template slot="extra">
+          <el-button size="medium" @click="toHome">返回首页</el-button>
+          <el-button @click="send_email" type="primary" size="medium">重新发送邮件</el-button>
+        </template>
+      </el-result>
     </div>
   </div>
 </template>
@@ -53,6 +53,9 @@ export default {
     },
     reload() {
       location.reload();
+    },
+    toHome() {
+      this.$router.push('/index');
     }
   },
 
@@ -60,6 +63,9 @@ export default {
 </script>
 
 <style scoped>
+.verify {
+  height: 100%
+}
 .title {
   margin: 20px;
 }

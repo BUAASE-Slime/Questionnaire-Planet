@@ -265,21 +265,22 @@ export default {
           case 10:
             this.$message.success("问卷发布成功！");
             this.QnList[index].is_released=true;
-            this.shareOpen = true;
+
             this.share_surveyId = this.QnList[index].survey_id;
             this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+            // this.shareOpen = true;
 
-            if (this.qrcode != null) {
-              this.qrcode.clear();
-            }
-            this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
-              text: this.linkShare,
-              width: 200, //生成的二维码的宽度
-              height: 200, //生成的二维码的高度
-              colorDark : "#000000", // 生成的二维码的深色部分
-              colorLight : "#ffffff", //生成二维码的浅色部分
-              correctLevel : QRCode.CorrectLevel.H
-            });
+            // if (this.qrcode == null) {
+            //   this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
+            //     width: 200, //生成的二维码的宽度
+            //     height: 200, //生成的二维码的高度
+            //     colorDark : "#000000", // 生成的二维码的深色部分
+            //     colorLight : "#ffffff", //生成二维码的浅色部分
+            //     correctLevel : QRCode.CorrectLevel.H
+            //   });
+            // }
+            // this.qrcode.clear();
+            // this.qrcode.makeCode(this.linkShare);
 
             break;
           default:
@@ -311,17 +312,18 @@ export default {
             case 1:
               this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
 
-              if (this.qrcode != null) {
-                this.qrcode.clear();
+              if (this.qrcode == null) {
+                this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
+                  width: 200, //生成的二维码的宽度
+                  height: 200, //生成的二维码的高度
+                  colorDark : "#000000", // 生成的二维码的深色部分
+                  colorLight : "#ffffff", //生成二维码的浅色部分
+                  correctLevel : QRCode.CorrectLevel.H
+                });
               }
-              this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
-                text: this.linkShare,
-                width: 200, //生成的二维码的宽度
-                height: 200, //生成的二维码的高度
-                colorDark : "#000000", // 生成的二维码的深色部分
-                colorLight : "#ffffff", //生成二维码的浅色部分
-                correctLevel : QRCode.CorrectLevel.H
-              });
+              this.qrcode.clear();
+              this.qrcode.makeCode(this.linkShare);
+
               break;
             default:
               this.$message.error("操作失败！");
@@ -808,10 +810,17 @@ export default {
         switch (res.data.status_code) {
           case 401:
             this.$message.warning("您无权访问！");
-            location.reload();
+            setTimeout(() => {
+              this.$store.dispatch('clear');
+              location.reload();
+            }, 500);
             break;
           case 403:
             this.$message.warning("您无权访问！");
+            setTimeout(() => {
+              this.$store.dispatch('clear');
+              location.reload();
+            }, 500);
             location.reload();
             break;
           case 404:

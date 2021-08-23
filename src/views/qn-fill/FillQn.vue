@@ -4,21 +4,21 @@
       <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
     </div>
     <div class="paper">
-      <div v-if="success">
+      <div v-if="success" style="padding-bottom: 50px">
         <div class="tyn-icon">
           <img src="../../assets/images/survey2.png" alt="">
         </div>
         <h1 v-if="success">提交成功，感谢您的参与！</h1>
-        <el-button type="primary" size="middle">继续查看问卷信息</el-button>
+        <el-button type="primary" size="middle" @click="backToSurvey">继续查看问卷信息</el-button>
       </div>
-      <div v-else-if="close">
+      <div v-else-if="close" style="padding-bottom: 50px">
         <div class="tyn-icon">
           <img src="../../assets/images/survey2.png" alt="">
         </div>
         <h1 v-if="close">问卷已结束，感谢您的参与！</h1>
         <el-button type="primary" size="middle">返回</el-button>
       </div>
-      <div class="body">
+      <div class="body" v-else>
 
         <div class="title">
           {{ title }}
@@ -110,6 +110,9 @@ export default {
     }
   },
   methods: {
+    backToSurvey() {
+      this.success = false;
+    },
     submit: function () {
       // 必选检查
       let answers = this.answers;
@@ -280,7 +283,7 @@ export default {
             }
             break;
           case 3:
-            this.open = 0;
+            this.close = true;
             break;
           default:
             this.$message.error("访问失败！");
