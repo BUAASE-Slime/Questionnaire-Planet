@@ -5,43 +5,36 @@
             <div slot="header" class="clearfix">
                 <div style="display: inline; float:left; margin-left:300px">
                     <span>定义行</span><br>
-                      <el-select v-model="value" placeholder="请选择">
+                      <el-select v-model="value1" placeholder="请选择">
                         <el-option
                         v-for="item in options"
-                        :key="item.value"
+                        :key="item.value1"
                         :label="item.label"
-                        :value="item.value">
+                        :value="item.value1">
                         </el-option>
                     </el-select>
                 </div>
                 <div style="display: inline; float:right; margin-right:300px" >
                     <span>定义列</span><br>
-                      <el-select v-model="value" placeholder="请选择">
+                      <el-select v-model="value2" placeholder="请选择">
                         <el-option
                         v-for="item in options"
-                        :key="item.value"
+                        :key="item.value2"
                         :label="item.label"
-                        :value="item.value">
+                        :value="item.value2">
                         </el-option>
                     </el-select>
                 </div>
                 <div style="clear:both;">
-                    <el-button type="primary">分析</el-button>
+                    <el-button type="primary" @click="anlysis">分析</el-button>
                 </div>
             </div>
-            <div>
-                <!-- <el-table
-                    :data="tableData"
-                    border
-                    style="width: 100%">
-
-                    <el-table-column
-                    v-for= "(item,index) in options[x].answer " :key="index" 
-                    :prop="item" + index
-                    :label=item.ans
-                    >
-                    </el-table-column>
-                </el-table> -->
+            <div v-if="ans">
+                <el-table style="width: 100%" border :data="tableData">
+                  <template v-for="(item,index) in tableHead">
+                    <el-table-column :prop="item.column_name" :label="item.column_comment" :key="index" v-if="item.column_name != 'id'"></el-table-column>
+                  </template>
+                </el-table>
             </div>
         </el-card>
     </div>
@@ -51,16 +44,48 @@
   export default {
     data() {
       return {
-        //   x: 1,
-        // tableData:[
-        //     {
-        //         item0:10,
-        //         item1:11,
-        //         item2:11
-        //     }
-        // ],
+        ans: false,
+        tableHead:[
+            {
+              column_name: "column_0",column_comment:"子问题"
+            },
+            {
+              column_name: "column_1",column_comment:"不错"
+            },
+            {
+              column_name: "column_2",column_comment:"非常不错"
+            },
+            {
+              column_name: "column_3",column_comment:"难吃"
+            }
+        ],
+        tableData: [{
+            column_1: '3(10.00%)',
+            column_0: '不错',
+            column_2: '4(20.00%)',
+            column_3: '1(3.33%)',
+          },
+          {
+            column_1: '3(10.00%)',
+            column_0: '非常不错',
+            column_2: '4(20.00%)',
+            column_3: '1(3.33%)',
+          },
+          {
+            column_1: '3(10.00%)',
+            column_0: '难吃',
+            column_2: '4(20.00%)',
+            column_3: '1(3.33%)',
+          },
+          {
+            column_1: '3(10.00%)',
+            column_0: '一般',
+            column_2: '4(20.00%)',
+            column_3: '1(3.33%)',
+          },],
         options: [{
-          value: 1,
+          value1: 1,
+          value2:1,
           label: '黄金糕如何',
           answers:[
               {ans:'不错',amount: 10},
@@ -68,6 +93,7 @@
               {ans:'不好吃',amount: 3},
           ]
         }, {
+          value1: 2,
           value: 2,
           label: '双皮奶如何',
             answers:[
@@ -76,7 +102,8 @@
               {ans:'不好吃',amount: 3},
           ]
         }, {
-          value: 3,
+          value1: 3,
+          value2: 3,
           label: '蚵仔煎如何',
             answers:[
               {ans:'不错',amount: 4},
@@ -84,7 +111,8 @@
               {ans:'不好吃',amount: 2},
           ]
         }, {
-          value: 4,
+          value1: 4,
+          value2: 4,
           label: '龙须面如何',
             answers:[
               {ans:'不错',amount: 3},
@@ -92,7 +120,8 @@
               {ans:'不好吃',amount: 9},
           ]
         }, {
-          value: 5,
+          value1: 5,
+          value2: 5,
           label: '北京烤鸭如何',
             answers:[
               {ans:'不错',amount: 1},
@@ -100,7 +129,13 @@
               {ans:'不好吃',amount: 6},
           ]
         }],
-        value: ''
+        value1: '',
+        value2: ''
+      }
+    },
+    methods:{
+      anlysis: function(){
+        this.ans=true
       }
     }
   }
