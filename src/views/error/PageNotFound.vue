@@ -4,7 +4,13 @@
 
 <script>
 export default {
-  name: "PageNotFound"
+  name: "PageNotFound",
+  created() {
+    this.$message.warning("您访问的页面不存在，3秒后将自动跳转首页！");
+    setTimeout(() => {
+      this.$router.push('/');
+    }, 3000);
+  }
 }
 </script>
 
