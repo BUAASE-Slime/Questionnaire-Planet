@@ -104,11 +104,11 @@ padding: 18px 0;
 }
 
 .box-card1 {
-width: 450px;
+width: 425px;
 margin: 10px;
 }
 .box-card2 {
-width: 1000px;
+width: 900px;
 margin: 10px 30px;
 }
   .el-row {
