@@ -23,18 +23,12 @@
               {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
             </div>
 
-            <div
-                class="q-description"
-                v-if="item.description!=='' && item.description!==null && item.description!==undefined"
-            >
-              {{ item.description }}
-            </div>
-
             <!--                  单选-->
             <div v-if="item.type==='radio'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
                 <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].ans" :label="opt.id">
                   {{ opt.title }}
+                  <span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="opt.hasNumLimit">剩余{{opt.supply-opt.consume}}</span>
                 </el-radio>
               </div>
             </div>
@@ -43,6 +37,7 @@
             <el-checkbox-group class="q-opt" v-if="item.type==='checkbox'" v-model="answers[item.id-1].ansList">
               <el-checkbox v-for="opt in item.options" :key="opt.id" :label="opt.id">
                 {{ opt.title }}
+                <span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="opt.hasNumLimit">剩余{{opt.supply-opt.consume}}</span>
               </el-checkbox>
             </el-checkbox-group>
 
@@ -84,7 +79,49 @@ export default {
       mode: this.$route.query.mode,
       title: '',
       description: '',
-      questions: [],
+      questions: [{
+        id: 1,
+        type:'radio',
+        title:'test',
+        must: true, // 是否必填
+        description: '', // 问题描述
+        options:[
+          {
+            hasNumLimit:true,
+            title:'11111', // 选项标题
+            id: 0 ,// 选项id
+            supply:11,
+            consume:0,
+          },
+          {
+            hasNumLimit:true,
+            title:'22222', // 选项标题
+            id: 0 ,// 选项id
+            supply:11,
+            consume:0,
+          }
+        ],
+        row:1, // 填空区域行数
+        score:10, // 最大评分
+      },
+        {
+          id: 2,
+          type:'text',
+          title:'',
+          must: false, // 是否必填
+          description: '', // 问题描述
+          options:[
+            {
+              hasNumLimit:false,
+              title:'', // 选项标题
+              id: 0 ,// 选项id
+              supply:1,
+              consume:0,
+            }
+          ],
+          row:1, // 填空区域行数
+          score:10, // 最大评分
+        }],
       answers: [
         {
           question_id: '1',
@@ -140,7 +177,7 @@ export default {
         return;
       }
       // 预览mode判断
-      if (this.mode==='0' || this.mode===0) {
+      if (this.mode==='0') {
         this.$message({
           type: 'warning',
           message: '预览模式下无法提交问卷'
@@ -255,21 +292,12 @@ export default {
   margin: 0;
 }
 
-.qn-fill .body .q-title {
+.qn-fill .body  .q-title {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
   padding: 40px 10px 10px;
   font-weight: bold;
-}
-
-.qn-fill .body .q-description {
-  text-align: left;
-  font-size: 14px;
-  padding-left: 10px;
-  padding-top: 5px;
-  padding-bottom: 10px;
-  color: #969696;
 }
 
 .qn-fill .body .must {

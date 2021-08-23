@@ -1,11 +1,12 @@
 <template>
-  <div class="investigation">
+  <div class="test">
     <el-header class="header">
       <edit-header
           :title="title"
           :description="description"
           v-on:titleChanged="changeTitle($event)"
           v-on:descriptionChanged="changeDescription($event)"
+          v-on:advancedSetting="openSetting($event)"
           v-on:publishClicked="publish($event)"
           v-on:saveClicked="save($event)"
           v-on:qnPreview="preview($event)"
@@ -20,37 +21,69 @@
       <el-aside class="side">
         <el-tabs v-model="activeName" @tab-click="initOutline">
 
+          <el-tab-pane label="题目类型" name="first">
+            <div class="edit">
 
-            <el-tab-pane label="题目类型" name="first">
-              <div class="edit">
-                <div class="ques-type">
+              <div class="info">
+                <div class="edit-title">
+                  个人信息
+                </div>
+                <div class="edit-ques">
+                  <i class="el-icon-user"></i>
+                  <span> 姓名&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='name';qsEditDialogVisible=true"></i>
+                </div>
+                <div class="edit-ques">
+                  <i class="el-icon-discount"></i>
+                  <span> 学号&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='stuId';qsEditDialogVisible=true"></i>
+                </div>
+                <div class="edit-ques">
+                  <i class="el-icon-school"></i>
+                  <span> 学校&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='class';qsEditDialogVisible=true"></i>
+                </div>
+                <div class="edit-ques">
+                  <i class="el-icon-date"></i>
+                  <span> 班级&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='school';qsEditDialogVisible=true"></i>
+                </div>
+              </div>
+
+              <div class="ques">
+                <div class="edit-title">
+                  试卷问题
+                </div>
+                <div class="edit-ques">
                   <i class="el-icon-check"></i>
                   <span> 单选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='radio';qsEditDialogVisible=true"></i>
                 </div>
-                <div class="ques-type">
+                <div class="edit-ques">
                   <i class="el-icon-finished"></i>
                   <span> 多选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='checkbox';qsEditDialogVisible=true"></i>
                 </div>
-                <div class="ques-type">
+                <div class="edit-ques">
                   <i class="el-icon-edit-outline"></i>
                   <span> 填空题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='text';qsEditDialogVisible=true"></i>
                 </div>
-                <div class="ques-type">
-                  <i class="el-icon-star-off"></i>
-                  <span> 评分题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='mark';qsEditDialogVisible=true"></i>
+                <div class="edit-ques">
+                  <i class="el-icon-circle-check"></i>
+                  <span> 判断题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='judge';qsEditDialogVisible=true"></i>
                 </div>
               </div>
-            </el-tab-pane>
 
-            <el-tab-pane label="问卷大纲" name="second">
-              <div class="outline">
-                <el-tree :data="outline" :props="defaultProps"></el-tree>
-              </div>
-            </el-tab-pane>
+            </div>
+          </el-tab-pane>
+
+          <el-tab-pane label="问卷大纲" name="second">
+            <div class="outline">
+              <el-tree :data="outline" :props="defaultProps"></el-tree>
+            </div>
+          </el-tab-pane>
 
         </el-tabs>
       </el-aside>
@@ -61,6 +94,7 @@
           <div class="title">
             {{ title }}
           </div>
+
           <div class="description" v-if="this.description!=='' && this.description!==null && this.description !== undefined">
             &emsp;&emsp;{{ description }}
           </div>
@@ -68,7 +102,10 @@
             <el-row class="ques-block" v-for="item in questions" :key="item.num" @mouseover.native="hoverItem=item.id">
 
               <el-col :span="17" class="block-content">
-                <div class="block-title">
+                <div class="block-title" v-if="item.type==='judge'">
+                  {{ item.id }}. 判断：{{ item.title }} <span class="must" v-if="item.must">(必填)</span>
+                </div>
+                <div v-else class="block-title">
                   {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
                 </div>
 
@@ -99,13 +136,31 @@
                       v-bind="ans.title">
                   </el-input>
 
-                  <!--                  评分-->
-                  <el-rate v-if="item.type==='mark'"
-                           v-bind="ans.id"
-                           :max="item.score">
-                  </el-rate>
+                  <!--                  判断-->
+                  <el-radio v-if="item.type==='judge'" value="0">
+                    {{ ans.title }}
+                  </el-radio>
+
+                  <!--               个人信息-->
+                  <el-input
+                      v-if="item.type==='name' || item.type==='stuId' || item.type==='class' || item.type==='school'"
+                      v-bind="ans.title">
+                  </el-input>
 
                 </div>
+
+                <div v-if="item.type!=='name' && item.type!=='stuId' && item.type!=='class' && item.type!=='school'">
+                  <div class="block-point" v-if="scoringMode !== false && item.point!==null && item.point!==undefined">
+                    <div v-if="item.point===''">分值：0</div>
+                    <div v-else>分值：{{ item.point }}</div>
+                  </div>
+
+                  <div class="block-refer" v-if="item.refer!==null && item.refer!==undefined">
+                    <div v-if="item.refer===''">答案：无</div>
+                    <div v-else>参考答案：{{ item.refer }}</div>
+                  </div>
+                </div>
+
               </el-col>
 
               <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
@@ -138,6 +193,7 @@
 
     <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible"  :before-close="cancel_pre" class="dialog" >
       <el-form ref="form" :model="willAddQuestion" label-width="100px">
+
         <el-form-item label="题目类型" >
           <el-select :disabled="selectDisAble" v-model="willAddQuestion.type" placeholder="请选择题目类型" @change="typeChange">
             <el-option
@@ -149,56 +205,126 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="题目标题" style="width: 100%;">
-          <el-input v-model="willAddQuestion.title" placeholder="请输入标题" ></el-input>
-        </el-form-item>
-
-        <el-form-item label="题目描述" style="width: 100%;">
-          <el-input v-model="willAddQuestion.description" placeholder="请输入题目描述"></el-input>
-        </el-form-item>
-
-        <el-form-item label="是否必填" >
-          <el-checkbox v-model="willAddQuestion.must">必填</el-checkbox>
-        </el-form-item>
-
-        <template v-if="willAddQuestion.type==='radio'||willAddQuestion.type==='checkbox'">
-          <el-form-item :label="'选项'+(index+1)" v-for="(item,index) in willAddQuestion.options" :key="index">
-            <el-row>
-              <el-col :span="16">
-                <el-input  v-model="item.title" placeholder="请输入选项名" ></el-input>
-              </el-col>
-              <el-col :span="8">
-                <el-button type="danger" plain class="deleteOptionButton" @click="deleteOption(index)" >删除选项</el-button>
-              </el-col>
-            </el-row>
-
+        <div
+            class="is-info"
+            v-if="willAddQuestion.type==='name'
+            || willAddQuestion.type==='stuId'
+            || willAddQuestion.type==='class'
+            || willAddQuestion.type==='school'"
+        >
+          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='name'">
+            <el-input value="姓名" disabled></el-input>
           </el-form-item>
-          <el-button type="primary" plain class="addOptionButton" @click="addOption">新增选项</el-button>
-        </template>
+          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='stuId'">
+            <el-input value="学号" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='class'">
+            <el-input value="班级" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='school'">
+            <el-input value="学校" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="是否必填" >
+            <el-checkbox v-model="willAddQuestion.must">必填</el-checkbox>
+          </el-form-item>
+        </div>
 
-        <template v-if="willAddQuestion.type==='text'" >
-          <el-form-item label="填空预览">
-            <el-input
-                type="textarea"
-                :rows="willAddQuestion.row"
-                resize="none">
-            </el-input>
+        <div v-else class="not-info">
+          <el-form-item label="题目标题" style="width: 100%;">
+            <el-input v-model="willAddQuestion.title" placeholder="请输入标题" ></el-input>
           </el-form-item>
-          <el-form-item label="行数">
-            <el-input-number v-model="willAddQuestion.row" :min="1" :max="10" ></el-input-number>
-          </el-form-item>
-        </template>
 
-        <template v-if="willAddQuestion.type==='mark'">
-          <el-form-item label="最大分数">
-            <el-input-number v-model="willAddQuestion.score" :min="1" :max="10" ></el-input-number>
+          <el-form-item label="题目描述" style="width: 100%;">
+            <el-input v-model="willAddQuestion.description" placeholder="请输入题目描述"></el-input>
           </el-form-item>
-        </template>
+
+          <el-form-item label="是否必填" >
+            <el-checkbox v-model="willAddQuestion.must">必填</el-checkbox>
+          </el-form-item>
+
+          <template v-if="willAddQuestion.type==='radio'|| willAddQuestion.type==='checkbox'">
+            <el-form-item :label="'选项'+(index+1)" v-for="(item,index) in willAddQuestion.options" :key="index">
+              <el-row>
+                <el-col :span="16">
+                  <el-input v-model="item.title" placeholder="请输入选项名" ></el-input>
+                </el-col>
+                <el-col :span="8">
+                  <el-button type="danger" plain class="deleteOptionButton" @click="deleteOption(index)" >删除选项</el-button>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-button type="primary" plain class="addOptionButton" @click="addOption">新增选项</el-button>
+          </template>
+
+          <template v-if="willAddQuestion.type==='text'" >
+            <el-form-item label="填空预览">
+              <el-input
+                  type="textarea"
+                  :rows="willAddQuestion.row"
+                  resize="none">
+              </el-input>
+            </el-form-item>
+            <el-form-item label="行数">
+              <el-input-number v-model="willAddQuestion.row" :min="1" :max="10" ></el-input-number>
+            </el-form-item>
+          </template>
+
+          <template v-if="willAddQuestion.type==='mark'">
+            <el-form-item label="最大分数">
+              <el-input-number v-model="willAddQuestion.score" :min="1" :max="10" ></el-input-number>
+            </el-form-item>
+          </template>
+
+          <template v-if="willAddQuestion.type==='judge'"></template>
+
+          <!--          填空答案设置-->
+          <el-form-item v-if="willAddQuestion.type==='text'" label="参考答案" style="width: 100%;">
+            <el-input v-model="willAddQuestion.refer" placeholder="请输入参考答案"></el-input>
+          </el-form-item>
+
+          <!--          多选答案设置-->
+          <el-form-item v-if="willAddQuestion.type==='checkbox'" label="参考答案" style="width: 100%;">
+            <el-select v-model="willAddQuestion.refer" multiple placeholder="请选择">
+              <el-option
+                  v-for="item in willAddQuestion.options"
+                  :key="item.id"
+                  :value="item.title">
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <!--          单选答案设置-->
+          <el-form-item v-if="willAddQuestion.type==='radio'" label="参考答案" style="width: 100%;">
+            <el-select v-model="willAddQuestion.refer" @change="radioChange">
+              <el-option
+                  v-for="item in willAddQuestion.options"
+                  :key="item.id"
+                  :value="item.title">
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <!--          判断答案设置-->
+          <el-form-item v-if="willAddQuestion.type==='judge'" label="参考答案" style="width: 100%;">
+            <el-select v-model="willAddQuestion.refer" @change="judgeChange">
+              <el-option
+                  v-for="item in [{title: '对', id: '1'}, {title: '错', id: '2'}]"
+                  :key="item.id"
+                  :value="item.title">
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item v-if="scoringMode" label="分值" style="width: 100%;">
+            <el-input-number v-model="willAddQuestion.point" :min="0" :max="1000"></el-input-number>
+          </el-form-item>
+        </div>
+
+
       </el-form>
       <span slot="footer" class="dialog-footer" style="text-align: center">
         <el-row>
-          <el-button :span="6" type="primary" @click="dialogConfirm">确定</el-button>
-          &emsp;
+          <el-button :span="6" type="primary" @click="dialogConfirm">确定</el-button>&emsp;
           <el-button :span="6" @click="cancel_pre" >取消</el-button>
         </el-row>
       </span>
@@ -237,6 +363,32 @@
                   </el-row>
       </span>
     </el-dialog>
+    <!--    高级设置弹框-->
+    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" >
+      <div class="timeBlock" style="margin-bottom: 30px">
+        <span class="demonstration" style="margin-right: 15px">起止时间</span>
+        <el-date-picker
+            v-model="timeFrame"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期">
+        </el-date-picker>
+      </div>
+      <div>
+        <span style="margin-right: 15px">是否为问卷评分&emsp;&emsp;&emsp;&emsp;</span>
+        <el-switch
+            v-model="scoringMode"
+            active-text="是"
+            inactive-text="否">
+        </el-switch>
+      </div>
+      <span slot="footer" class="dialog-footer" style="text-align: center">
+        <el-row>
+          <el-button type="primary" style="margin-right: 40px" @click="settingSuccess">完成</el-button>
+        </el-row>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -249,13 +401,18 @@ export default {
   data() {
     return {
       linkShare: 'https://zewan.cc/',
-      editWrongMsg:"",
-      editWrongMsgVisible:false,
-      qsLinkDialogVisible:false,
-      qsLinkDialogTitle:"发布成功！",
-      editIndex:0,
-      selectDisAble:false,
-      hoverItem:0,
+      scoringMode: true,    // 评分模式（高级设置中开启后可为题目设置得分）
+      timeFrame: [new Date(2000, 10, 10, 10, 10),
+        new Date(2000, 10, 11, 10, 10)],    // 考试问卷的时间范围
+      settingDialogTitle: "高级设置",
+      settingDialogVisible:false,
+      editWrongMsg: "",
+      editWrongMsgVisible: false,
+      qsLinkDialogVisible: false,
+      qsLinkDialogTitle: "发布成功！",
+      editIndex: 0,
+      selectDisAble: false,
+      hoverItem: 0,
       activeName: 'first',
       title: '',
       description: '',
@@ -272,18 +429,20 @@ export default {
       qsEditDialogTitle:"新建题目",
       willAddQuestion: {
         id: 0,
-        type:'',
-        title:'',
+        type: '',
+        title: '',
         must: false, // 是否必填
         description: '', // 问题描述
         options:[
           {
-            title:'', // 选项标题
+            title: '', // 选项标题
             id: 0 // 选项id
           }
         ],
-        row:1, // 填空区域行数
-        score:10, // 最大评分
+        row: 1, // 填空区域行数
+        score: 10, // 最大评分
+        refer: '', // 参考答案
+        point: 0,  // 分值
       },
       allType:[
         {
@@ -297,10 +456,27 @@ export default {
         {
           value:'text',
           label:'填空题',
-        },{
-          value: 'mark',
-          label: '评分题',
-        }
+        },
+        {
+          value: 'judge',
+          label: '判断题',
+        },
+        {
+          value: 'name',
+          label: '姓名'
+        },
+        {
+          value: 'stuId',
+          label: '学号'
+        },
+        {
+          value: 'class',
+          label: '班级'
+        },
+        {
+          value: 'school',
+          label: '学校'
+        },
       ],
 
       xiaoxueqi_questions: [
@@ -386,27 +562,27 @@ export default {
         },
       ],
       xiaoxueqi_outline: [
-      {
-        id: 1,
-        label: '1. 这是一个什么网站？',
-      },
-      {
-        id: 2,
-        label: '2. 软工小学期助教都有谁？',
-      },
-      {
-        id: 3,
-        label: '3. 软工小学期累不累',
-      },
-      {
-        id: 4,
-        label: '4. 您对小学期的评价如何？',
-      },
-      {
-        id: 5,
-        label: '5. 给小学期打个分吧~',
-      },
-    ],
+        {
+          id: 1,
+          label: '1. 这是一个什么网站？',
+        },
+        {
+          id: 2,
+          label: '2. 软工小学期助教都有谁？',
+        },
+        {
+          id: 3,
+          label: '3. 软工小学期累不累',
+        },
+        {
+          id: 4,
+          label: '4. 您对小学期的评价如何？',
+        },
+        {
+          id: 5,
+          label: '5. 给小学期打个分吧~',
+        },
+      ],
     }
   },
   components: {
@@ -414,28 +590,30 @@ export default {
   },
   methods: {
     finish(){
-      this.qsLinkDialogVisible=false;
-      this.$router.push('/index')// 跳转到问卷中心？
+      this.qsLinkDialogVisible = false;
+      this.$router.push('/index') // 跳转到问卷中心？
     },
     publishSuccess:function (){
       this.qsLinkDialogVisible=true;
     },
     edit:function (index){
       index--;
-      this.willAddQuestion={
-        id:this.questions[index].id,
-        type:this.questions[index].type,
-        title:this.questions[index].title,
-        must:this.questions[index].must,
+      this.willAddQuestion = {
+        id: this.questions[index].id,
+        type: this.questions[index].type,
+        title: this.questions[index].title,
+        must: this.questions[index].must,
         description: this.questions[index].description,
-        options:this.questions[index].options,
-        row:this.questions[index].row,
-        score:this.questions[index].score,
+        options: this.questions[index].options,
+        row: this.questions[index].row,
+        score: this.questions[index].score,
+        refer: this.questions[index].refer,
+        point: this.questions[index].point,
       };
-      this.editIndex=index;
-      this.selectDisAble=true;
-      this.qsEditDialogTitle="编辑题目";
-      this.qsEditDialogVisible=true;
+      this.editIndex = index;
+      this.selectDisAble = true;
+      this.qsEditDialogTitle = "编辑题目";
+      this.qsEditDialogVisible = true;
     },
     dialogConfirm(){
       let index = this.editIndex;
@@ -452,6 +630,8 @@ export default {
           this.questions[index].title = this.willAddQuestion.title;
           this.questions[index].options = this.willAddQuestion.options;
           this.questions[index].score = this.willAddQuestion.score;
+          this.questions[index].refer = this.willAddQuestion.refer;
+          this.questions[index].point = this.willAddQuestion.point;
           // 大纲更新
           this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
           this.qsEditDialogTitle = "";
@@ -474,11 +654,19 @@ export default {
               }],
             row: 1,
             score: 10,
+            refer: '',
+            point: 0,  // 分值
           };
           this.selectDisAble = false;
         }
       }
       else{
+        // 个人信息标题预设
+        if (this.willAddQuestion.type==='name') { this.willAddQuestion.title = '姓名'; }
+        if (this.willAddQuestion.type==='stuId') { this.willAddQuestion.title = '学号'; }
+        if (this.willAddQuestion.type==='class') { this.willAddQuestion.title = '班级'; }
+        if (this.willAddQuestion.type==='school') { this.willAddQuestion.title = '学校'; }
+        // 标题为空检测
         if (this.willAddQuestion.title === '') {
           this.editWrongMsg = "标题不能为空！！！";
           this.editWrongMsgVisible = true;
@@ -488,6 +676,10 @@ export default {
           this.willAddQuestion.id = this.questions.length + 1;
           // 大纲更新
           this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+          // 判断答案种类预设
+          if (this.willAddQuestion.type==='judge') {
+            this.willAddQuestion.options = [{title: '对', id: 1}, {title: '错', id: 2}];
+          }
           this.questions.push(this.willAddQuestion);
           this.$message({
             type: 'success',
@@ -495,38 +687,42 @@ export default {
           });
           // 重置
           this.willAddQuestion={
-            id:0,
-            type:'',
-            title:'',
-            must:false,
+            id: 0,
+            type: '',
+            title: '',
+            must: false,
             description: '',
             options:[
               {
-                title:'', //选项标题
+                title: '', //选项标题
                 id: 0 //选项id
               }],
-            row:1,
-            score:10,
+            row: 1,
+            score: 10,
+            refer: '',
+            point: 0,  // 分值
           };
         }
       }
     },
-    dialogCancel: function(){
+    dialogCancel: function() {
       this.qsEditDialogTitle="";
       this.willAddQuestion={
-        id:0,
-        type:'',
-        title:'',
-        must:false,
+        id: 0,
+        type: '',
+        title: '',
+        must: false,
         description: '',
         options:[
           {
-            title:'', // 选项标题
+            title: '', // 选项标题
             id: 0 // 选项id
           }],
-        row:1,
-        score:10,
-        };
+        row: 1,
+        score: 10,
+        refer: '',
+        point: 0,  // 分值
+      };
       this.qsEditDialogVisible=false;
       this.selectDisAble=false;
     },
@@ -540,13 +736,19 @@ export default {
       }).catch(() => {
       });
     },
-    typeChange(value){
-      this.willAddQuestion.type=value;
+    typeChange(value) {
+      this.willAddQuestion.type = value;
+    },
+    radioChange(value) {
+      this.willAddQuestion.refer = value;
+    },
+    judgeChange(value) {
+      this.willAddQuestion.refer = value;
     },
     addOption(){
       this.willAddQuestion.options.push({
-        title:'',
-        id:0,
+        title: '',
+        id: 0,
       });
     },
     deleteOption(index){
@@ -557,6 +759,16 @@ export default {
     },
     changeDescription: function (value) {
       this.description = value;
+    },
+    openSetting: function () {
+      this.settingDialogVisible = true;
+    },
+    settingSuccess: function () {
+      this.settingDialogVisible = false;
+      this.$message({
+        type: 'success',
+        message: '设置已生效'
+      });
     },
     publish() {
 
@@ -577,37 +789,34 @@ export default {
         url: '/sm/save/qn',
         data: paramer,
       })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 0:
-            this.$message.warning("登录信息失效，请重新登录！");
-            setTimeout(() => {
-              this.$store.dispatch('clear');
-              location.reload();
-            }, 500);
-            break;
-          case 1:
-            this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
-              distinguishCancelAndClose: true,
-              confirmButtonText: '返回问卷中心',
-              cancelButtonText: '继续编辑'
-            })
-            .then(() => {
-              this.$router.push('/index');
-            });
-            break;
-          default:
-            this.$message.error("保存失败！");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+          .then(res => {
+            switch (res.data.status_code) {
+              case 0:
+                this.$message.warning("登录信息失效，请重新登录！");
+                setTimeout(() => {
+                  this.$store.dispatch('clear');
+                  location.reload();
+                }, 500);
+                break;
+              case 1:
+                this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+                  distinguishCancelAndClose: true,
+                  confirmButtonText: '返回问卷中心',
+                  cancelButtonText: '继续编辑'
+                }).then(() => {this.$router.push('/index');});
+                break;
+              default:
+                this.$message.error("保存失败！");
+                break;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
     },
     preview() {
       this.$router.push({
-        name: 'Preview',
+        name: 'PreviewTest',
         query: {
           mode: 0,
           pid: this.$route.query.pid
@@ -748,95 +957,102 @@ export default {
       url: '/sm/get/qn_detail',
       data: formData,
     })
-    .then(res => {
-      switch (res.data.status_code) {
-        case 0:
-          this.$message.error("您无权访问！");
-          this.$router.push('/');
-          break;
-        case 1:
-          this.title = res.data.title;
-          this.description = res.data.description;
-          this.type = res.data.type;
-          this.questions = res.data.questions;
+        .then(res => {
+          switch (res.data.status_code) {
+            case 0:
+              this.$message.error("您无权访问！");
+              this.$router.push('/');
+              break;
+            case 1:
+              this.title = res.data.title;
+              this.description = res.data.description;
+              this.type = res.data.type;
+              this.questions = res.data.questions;
 
-          this.InitOutline();
-          break;
-        default:
-          this.$message.error("访问失败！");
-          break;
-      }
-    })
-    .catch(err => {
-      console.log(err);
-    })
+              this.InitOutline();
+              break;
+            default:
+              this.$message.error("访问失败！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
   },
 }
 </script>
 
 <style>
-.investigation .linkDialog{
+.test .linkDialog{
   text-align: left;
 }
-.investigation .container {
+.test .container {
   padding: 0;
   height: auto;
   min-height: 610px;
 }
 
-.investigation header {
+.test header {
   padding: 0 100px;
 }
 
-.investigation .el-container {
+.test .el-container {
   padding: 0 100px;
 }
 
-.investigation .side {
+.test .side {
   border-top: solid 1px #e3e3e3;
   border-right: solid 1px #e3e3e3;
   background: #FFFFFF;
 }
 
-.investigation .main {
+.test .main {
   border-top: solid 1px #e3e3e3;
   background: #FFFFFF;
 }
 
-.investigation .edit {
+.test .edit {
   margin-top: 0;
   overflow: auto;
   height: 550px;
 }
 
-.investigation .outline {
+.test .outline {
   overflow: auto;
   height: 550px;
 }
 
-.investigation .ques-type {
+.test .edit-title {
+  color: black;
+  padding: 15px 0;
+  font-size: 16px;
+  border-bottom: solid #e3e3e3 2px;
+}
+
+.test .edit-ques {
   padding: 15px 0;
   font-size: 16px;
   border-bottom: dashed #e3e3e3 1px;
 }
 
-.investigation .type-icon {
+.test .type-icon {
   color: #1687fd;
   display: inline-block;
 }
 
-.investigation .type-icon:hover {
+.test .type-icon:hover {
   color: #409EFF;
   cursor: pointer;
 }
 
-.investigation .el-tabs__nav-scroll {
+.test .el-tabs__nav-scroll {
   text-align: center;
   height: 60px;
   margin: 0 60px;
 }
 
-.investigation .el-tabs__item {
+.test .el-tabs__item {
   font-weight: bold;
   padding: 0 20px;
   height: 60px;
@@ -849,27 +1065,27 @@ export default {
   position: relative;
 }
 
-.investigation .el-tabs__header {
+.test .el-tabs__header {
   margin: 0;
 }
 
-.investigation .el-tree-node__content {
+.test .el-tree-node__content {
   padding-left: 10px !important;
   height: 40px;
 }
 
-.investigation .main {
+.test .main {
   max-height: 610px;
 }
 
-.investigation .ques .title {
+.test .ques .title {
   font-size: 28px;
   font-weight: bold;
   padding-top: 10px;
   padding-bottom: 26px;
 }
 
-.investigation .ques .description {
+.test .ques .description {
   text-align: left;
   font-size: 18px;
   padding-bottom: 30px;
@@ -877,22 +1093,22 @@ export default {
   line-height: 30px;
 }
 
-.investigation .ques-block {
+.test .ques-block {
   padding-bottom: 15px;
   border-top: solid #e3e3e3 1px;
 }
 
-.investigation .ques-block:hover {
+.test .ques-block:hover {
   background: #f5f5f5;
   transition: .3s;
 }
 
-.investigation .ques-block .must {
+.test .ques-block .must {
   font-weight: normal;
   color: crimson;
 }
 
-.investigation .block-title {
+.test .block-title {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
@@ -900,59 +1116,89 @@ export default {
   font-weight: bold;
 }
 
-.investigation .block-description {
+.test .block-description {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 14px;
   padding-top: 5px;
-  padding-bottom: 15px;
+  padding-bottom: 10px;
   padding-left: 10px;
   color: #969696;
 }
 
-.investigation .block-choice {
+.test .block-refer {
+  text-align: right;
+  /*border: solid 1px black;*/
+  font-size: 14px;
+  padding-top: 8px;
+  padding-left: 10px;
+  color: #51c215;
+}
+
+.test .block-point {
+  text-align: right;
+  /*border: solid 1px black;*/
+  font-size: 14px;
+  padding-top: 8px;
+  padding-left: 10px;
+  color: #e59824;
+}
+
+.test .block-choice {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
   padding: 5px 10px 10px;
 }
 
-.investigation .el-button-group>.el-button:first-child {
+.test .el-button-group>.el-button:first-child {
   border-radius: 0 0 0 8px;
 }
 
-.investigation .el-button-group>.el-button:last-child {
+.test .el-button-group>.el-button:last-child {
   border-radius: 0 0 8px 0;
 }
 
-.investigation .block-button .el-button {
+.test .block-button .el-button {
   background: #b9b9b9;
   border: transparent;
 }
 
-.investigation .block-button .el-button:hover {
+.test .block-button .el-button:hover {
   background: #989898;
   border: transparent;
 }
 
-.investigation .bt {
+.test .bt {
   color: white;
   font-size: 14px;
   font-weight: bold;
 }
 
-.investigation .block-choice .el-textarea__inner {
+.test .block-choice .el-textarea__inner {
   max-height: 100px;
 }
-.investigation .dialog{
+
+.test .dialog{
   text-align: left;
   font-size: large;
 }
-.investigation .addOptionButton{
+
+.test .addOptionButton{
   display: inline-block;
   margin-left: 100px;
+  margin-bottom: 22px;
 }
-.investigation .deleteOptionButton{
+
+.test .deleteOptionButton{
   margin-left: 20px;
+}
+
+.test .settingDialog {
+  text-align: left;
+}
+
+.test .settingDialog .el-dialog__body {
+  padding-left: 140px;
 }
 </style>
