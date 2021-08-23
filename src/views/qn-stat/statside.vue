@@ -29,11 +29,11 @@
             <br>
             <span slot="title">交叉分析</span>
           </el-menu-item>
-          <el-menu-item index="/download">
+          <!-- <el-menu-item index="/download">
             <i class="el-icon-download nav-icon"></i>
             <br>
             <span slot="title">下载答卷</span>
-          </el-menu-item>
+          </el-menu-item> -->
         </el-menu>
       </el-aside>
     </el-container>
