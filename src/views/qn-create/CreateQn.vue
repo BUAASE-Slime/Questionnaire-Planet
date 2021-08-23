@@ -67,7 +67,7 @@
       </el-col>
 
       <el-dialog title=请输入问卷标题 :visible.sync="dialogVisible" width="30%" style="margin-top: 100px">
-        <el-input  v-model="quesTitle" ></el-input>
+        <el-input  v-model="surveyTitle" ></el-input>
         <span slot="footer" class="dialog-footer" style="text-align: center">
             <el-row>
               <el-button :span="6" type="primary" @click="createConfirm">确 定</el-button>
@@ -80,6 +80,8 @@
 </template>
 
 <script>
+import user from "@/store/user";
+
 export default {
   name: "createQue",
   data() {
@@ -90,19 +92,51 @@ export default {
       isHoverVote: false,
       dialogVisible :false,
       quesType: "",
-      quesTitle: "",
+      surveyTitle: "",
     }
   },
   methods: {
     createConfirm(){
       this.dialogVisible=false;
       if (this.quesType===1){
-        this.$router.push({
-          name: 'Investigation',
-          query: {
-            title: this.quesTitle
+        const formData = new FormData();
+        const userInfo = user.getters.getUser(user.state())
+        formData.append("username", userInfo.user.username);
+        formData.append("title", this.surveyTitle);
+        // formData.append("type", 0);
+        formData.append("type", "普通问卷");
+
+        this.$axios({
+          method: 'post',
+          url: '/sm/create/qn',
+          data: formData,
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 1:
+              var surveyId = res.data.qn_id;
+              this.$router.push({
+                name: 'Edit',
+                query: {
+                  pid: surveyId
+                }
+              });
+              break;
+            case 2:
+              this.$message.warning("登录信息失效，请重新登录！");
+              setTimeout(() => {
+                this.$store.dispatch('clear');
+                location.reload();
+              }, 500);
+              break;
+            default:
+              this.$message.error("操作失败！");
+              break;
           }
-        });
+        })
+        .catch(err => {
+          console.log(err);
+        })
       }
       else if(this.quesType===2){
         this.$message('创建了一个新的考试问卷');

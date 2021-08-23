@@ -6,6 +6,10 @@
           :description="description"
           v-on:titleChanged="changeTitle($event)"
           v-on:descriptionChanged="changeDescription($event)"
+          v-on:publishClicked="publish($event)"
+          v-on:saveClicked="save($event)"
+          v-on:qnPreview="preview($event)"
+          v-on:onConfirm="dialogCancel($event)"
       >
       </edit-header>
     </el-header>
@@ -13,36 +17,39 @@
     <el-container class="container">
 
       <el-aside class="side">
-        <el-tabs v-model="activeName">
+        <el-tabs v-model="activeName" @tab-click="initOutline">
 
-          <el-tab-pane label="题目类型" name="first">
-            <div class="edit">
-              <div class="ques-type">
-                <i class="el-icon-check"></i>
-                <span> 单选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='radio';qsEditDialogVisible=true"></i>
-              </div>
-              <div class="ques-type">
-                <i class="el-icon-finished"></i>
-                <span> 多选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='checkbox';qsEditDialogVisible=true"></i>
-              </div>
-              <div class="ques-type">
-                <i class="el-icon-edit-outline"></i>
-                <span> 填空题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='text';qsEditDialogVisible=true"></i>
-              </div>
-              <div class="ques-type">
-                <i class="el-icon-star-off"></i>
-                <span> 评分题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='mark';qsEditDialogVisible=true"></i>
-              </div>
-            </div>
-          </el-tab-pane>
 
-          <el-tab-pane label="问卷大纲" name="second">
-            <el-tree :data="outline" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-          </el-tab-pane>
+            <el-tab-pane label="题目类型" name="first">
+              <div class="edit">
+                <div class="ques-type">
+                  <i class="el-icon-check"></i>
+                  <span> 单选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='radio';qsEditDialogVisible=true"></i>
+                </div>
+                <div class="ques-type">
+                  <i class="el-icon-finished"></i>
+                  <span> 多选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='checkbox';qsEditDialogVisible=true"></i>
+                </div>
+                <div class="ques-type">
+                  <i class="el-icon-edit-outline"></i>
+                  <span> 填空题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='text';qsEditDialogVisible=true"></i>
+                </div>
+                <div class="ques-type">
+                  <i class="el-icon-star-off"></i>
+                  <span> 评分题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='mark';qsEditDialogVisible=true"></i>
+                </div>
+              </div>
+            </el-tab-pane>
+
+            <el-tab-pane label="问卷大纲" name="second">
+              <div class="outline">
+                <el-tree :data="outline" :props="defaultProps"></el-tree>
+              </div>
+            </el-tab-pane>
 
         </el-tabs>
       </el-aside>
@@ -95,11 +102,21 @@
 
               <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
                 <el-button-group>
-                  <el-button class="bt" type="primary" icon="el-icon-edit" @click="edit(item.id)"></el-button>
-                  <el-button class="bt" type="primary" icon="el-icon-document-copy" @click="copy(item.id)"></el-button>
-                  <el-button class="bt" type="primary" icon="el-icon-delete" @click="del_pre(item.id)"></el-button>
-                  <el-button class="bt" type="primary" icon="el-icon-caret-top" @click="up(item.id)"></el-button>
-                  <el-button class="bt" type="primary" icon="el-icon-caret-bottom" @click="down(item.id)"></el-button>
+                  <el-tooltip class="item" effect="light" content="编辑" placement="bottom" open-delay="400">
+                    <el-button class="bt" type="primary" icon="el-icon-edit" @click="edit(item.id)"></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="light" content="复制" placement="bottom" open-delay="400">
+                    <el-button class="bt" type="primary" icon="el-icon-document-copy" @click="copy(item.id)"></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="light" content="删除" placement="bottom" open-delay="400">
+                    <el-button class="bt" type="primary" icon="el-icon-delete" @click="del_pre(item.id)"></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="light" content="上移" placement="bottom" open-delay="400">
+                    <el-button class="bt" type="primary" icon="el-icon-caret-top" @click="up(item.id)"></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="light" content="下移" placement="bottom" open-delay="400">
+                    <el-button class="bt" type="primary" icon="el-icon-caret-bottom" @click="down(item.id)"></el-button>
+                  </el-tooltip>
                 </el-button-group>
               </el-col>
 
@@ -110,7 +127,7 @@
       </el-main>
 
     </el-container>
-    <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false" class="dialog" >
+    <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible"  :before-close="cancel_pre" class="dialog" >
       <el-form ref="form" :model="willAddQuestion" label-width="100px">
         <el-form-item label="题目类型" >
           <el-select :disabled="selectDisAble" v-model="willAddQuestion.type" placeholder="请选择题目类型" @change="typeChange">
@@ -147,7 +164,7 @@
         </template>
 
 
-        <template v-if="willAddQuestion.type==='text'">
+        <template v-if="willAddQuestion.type==='text'" >
           <el-form-item label="填空">
             <el-input type="textarea"
                       :rows="willAddQuestion.row"  resize="none"></el-input>
@@ -166,134 +183,86 @@
       <span slot="footer" class="dialog-footer" style="text-align: center">
                   <el-row>
                     <el-button :span="6" type="primary" @click="dialogConfirm">确 定</el-button>
-                    <el-button :span="6" @click="dialogCancel">取 消</el-button>
+                    <el-button :span="6" @click="cancel_pre" >取 消</el-button>
                   </el-row>
             </span>
+    </el-dialog>
+    <el-dialog :visible.sync="qsLinkDialogVisible" :title="qsLinkDialogTitle" class="linkDialog" :show-close="false" width="800px" >
+      <el-row>
+        <el-col span="8" style="text-align: center">
+          <el-row>
+            <img src="../../../assets/images/example.jpg" height="200px" width="200px">
+          </el-row>
+        </el-col>
+        <el-col span="16">
+          <el-row><h2>链接与二维码</h2></el-row>
+          <el-row style="margin-top:15px">
+            <el-col :span="16" style="margin-right: 5px">
+              <el-input :placeholder=linkShare v-model="linkShare" id="copyText" :disabled="true">
+              </el-input>
+            </el-col>
+            <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
+          <el-row style="margin-top: 25px">
+            <el-button type="primary" plain @click="download">下载二维码</el-button>
+          </el-row>
+        </el-col>
+      </el-row>
+      <span slot="footer" class="dialog-footer" style="text-align: center">
+                  <el-row>
+                    <el-button :span="6" type="success" style="width: 80px"  @click="finish">完 成</el-button>
+                  </el-row>
+      </span>
+    </el-dialog>
+    <el-dialog :visible.sync="editWrongMsgVisible"  class="linkDialog" :show-close="false" :close-on-click-modal="false" width="300px" >
+      <span>{{editWrongMsg}}</span>
+      <span slot="footer" class="dialog-footer" style="text-align: center">
+                  <el-row>
+                    <el-button :span="6" type="danger" style="width: 80px"  @click="editWrongMsgVisible=false">知道了</el-button>
+                  </el-row>
+      </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import editHeader from "../../../components/header/editHeader";
+import user from "@/store/user";
 
 export default {
   name: "investigation",
   data() {
     return {
+      linkShare: 'https://zewan.cc/',
+      editWrongMsg:"",
+      editWrongMsgVisible:false,
+      qsLinkDialogVisible:false,
+      qsLinkDialogTitle:"发布成功！",
       editIndex:0,
       selectDisAble:false,
       hoverItem:0,
       activeName: 'first',
-      title: this.$route.query.title,
-      description: '这是一张测试基本功能的问卷。现阶段完成功能有：问卷题目和说明的修改，不同种问题类型的添加，以及单个问题的五个快捷操作的功能实现。',
-      outline: [
-        {
-          label: '第一页',
-          children: [{
-            label: '问题 1',
-          }, {
-            label: '问题 2',
-          }]
-        },
-        {
-          label: '第二页',
-          children: [{
-            label: '问题 3',
-          }]
-        }
-      ],
+      title: '',
+      description: '',
+      outline: [],
       defaultProps: {
         children: 'children',
         label: 'label'
       },
-      questions: [
-        {
-          id: '1',
-          type: 'radio',
-          title: '这是一个什么网站？',
-          must: true,
-          options: [{
-            id: '1',
-            title: '问卷系统',
-          }, {
-            id: '2',
-            title: '出版系统',
-          }],
-          row: '',
-          score: '',
-        },
-        {
-          id: '2',
-          type: 'checkbox',
-          title: '软工小学期助教都有谁？',
-          must: false,
-          options: [{
-            id: '1',
-            title: 'ZYH',
-          }, {
-            id: '2',
-            title: 'LKW',
-          },{
-            id: '3',
-            title: 'ZXH',
-          }, {
-            id: '4',
-            title: 'HZH',
-          }],
-          row: '',
-          score: '',
-        },
-        {
-          id: '3',
-          type: 'radio',
-          title: '软工小学期累不累',
-          must: false,
-          options: [{
-            id: '1',
-            title: '累',
-          }, {
-            id: '2',
-            title: '非常累',
-          }],
-          row: '',
-          score: '',
-        },
-        {
-          id: '4',
-          type: 'text',
-          title: '您对小学期的评价如何？',
-          must: false,
-          options: [{
-            id: '',
-            title: '',
-          }],
-          row: 3,
-          score: '',
-        },
-        {
-          id: '5',
-          type: 'mark',
-          title: '给小学期打个分吧~',
-          must: true,
-          options: [{
-            id: '',
-            title: '',
-          }],
-          row: 1,
-          score: 10,
-        },
-      ],
+      type: 1,
+      questions: [],
+      pid: this.$route.query.pid,
+
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
       willAddQuestion:{
-        id: '0',
+        id: 0,
         type:'',
         title:'',
         must:false, //是否必填
         options:[
           {
             title:'', //选项标题
-            id: '0' //选项id
+            id: 0 //选项id
           }
         ],
         row:1, //填空区域行数
@@ -316,12 +285,119 @@ export default {
           label: '评分题',
         }
       ],
+
+      xiaoxueqi_questions: [
+        {
+          id: 1,
+          type: 'radio',
+          title: '这是一个什么网站？',
+          must: true,
+          options: [{
+            id: 1,
+            title: '问卷系统',
+          }, {
+            id: 2,
+            title: '出版系统',
+          }],
+          row: 0,
+          score: 0,
+        },
+        {
+          id: 2,
+          type: 'checkbox',
+          title: '软工小学期助教都有谁？',
+          must: false,
+          options: [{
+            id: 1,
+            title: 'ZYH',
+          }, {
+            id: 2,
+            title: 'LKW',
+          },{
+            id: 3,
+            title: 'ZXH',
+          }, {
+            id: 4,
+            title: 'HZH',
+          }],
+          row: 0,
+          score: 0,
+        },
+        {
+          id: 3,
+          type: 'radio',
+          title: '软工小学期累不累',
+          must: false,
+          options: [{
+            id: 1,
+            title: '累',
+          }, {
+            id: 2,
+            title: '非常累',
+          }],
+          row: 0,
+          score: 0,
+        },
+        {
+          id: 4,
+          type: 'text',
+          title: '您对小学期的评价如何？',
+          must: false,
+          options: [{
+            id: 0,
+            title: '',
+          }],
+          row: 3,
+          score: 0,
+        },
+        {
+          id: 5,
+          type: 'mark',
+          title: '给小学期打个分吧~',
+          must: true,
+          options: [{
+            id: 0,
+            title: '',
+          }],
+          row: 0,
+          score: 10,
+        },
+      ],
+      xiaoxueqi_outline: [
+      {
+        id: 1,
+        label: '1. 这是一个什么网站？',
+      },
+      {
+        id: 2,
+        label: '2. 软工小学期助教都有谁？',
+      },
+      {
+        id: 3,
+        label: '3. 软工小学期累不累',
+      },
+      {
+        id: 4,
+        label: '4. 您对小学期的评价如何？',
+      },
+      {
+        id: 5,
+        label: '5. 给小学期打个分吧~',
+      },
+    ],
     }
   },
   components: {
     editHeader,
   },
   methods: {
+    finish(){
+      this.qsLinkDialogVisible=false;
+      this.$router.push('/index')// 跳转到问卷中心？
+    },
+    publishSuccess:function (){
+      this.qsLinkDialogVisible=true;
+    },
     edit:function (index){
       index--;
       this.willAddQuestion={
@@ -341,40 +417,51 @@ export default {
     dialogConfirm(){
       let index=this.editIndex;
       this.qsEditDialogVisible=false;
-      if(this.qsEditDialogTitle==="编辑题目"){
-        this.questions[index].id=this.willAddQuestion.id;
-        this.questions[index].row=this.willAddQuestion.row;
-        this.questions[index].must=this.willAddQuestion.must;
-        this.questions[index].title=this.willAddQuestion.title;
-        this.questions[index].options=this.willAddQuestion.options;
-        this.questions[index].score=this.willAddQuestion.score;
-        this.qsEditDialogTitle="";
-        this.willAddQuestion={
-          id:0,
-          type:'',
-          title:'',
-          must:false,
-          options:[
+      if(this.qsEditDialogTitle==="编辑题目") {
+        this.questions[index].id = this.willAddQuestion.id;
+        this.questions[index].row = this.willAddQuestion.row;
+        this.questions[index].must = this.willAddQuestion.must;
+        this.questions[index].title = this.willAddQuestion.title;
+        this.questions[index].options = this.willAddQuestion.options;
+        this.questions[index].score = this.willAddQuestion.score;
+        this.qsEditDialogTitle = "";
+        // 大纲更新
+        this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+        if (this.willAddQuestion.title === '') {
+          this.editWrongMsg = "标题不能为空！！！";
+          this.editWrongMsgVisible = true;
+        } else {
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          });
+        }
+        // 重置
+        this.willAddQuestion = {
+          id: 0,
+          type: '',
+          title: '',
+          must: false,
+          options: [
             {
-              title:'', //选项标题
-              id: '0' //选项id
+              title: '', //选项标题
+              id: 0 //选项id
             }],
-          row:1,
-          score:10,
+          row: 1,
+          score: 10,
         };
-        this.selectDisAble=false;
-        this.$message({
-          type: 'success',
-          message: '修改成功!'
-        });
+        this.selectDisAble = false;
       }
       else{
-        this.willAddQuestion.id=this.questions.length+1;
+        this.willAddQuestion.id = this.questions.length + 1;
+        // 大纲更新
+        this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
         this.questions.push(this.willAddQuestion);
         this.$message({
           type: 'success',
           message: '添加成功!'
         });
+        // 重置
         this.willAddQuestion={
           id:0,
           type:'',
@@ -383,17 +470,16 @@ export default {
           options:[
             {
               title:'', //选项标题
-              id: '0' //选项id
+              id: 0 //选项id
             }],
           row:1,
           score:10,
         };
       }
     },
-    dialogCancel(){
-      if(this.qsEditDialogTitle==="编辑题目"){
-        this.qsEditDialogTitle="";
-        this.willAddQuestion={
+    dialogCancel: function(){
+      this.qsEditDialogTitle="";
+      this.willAddQuestion={
           id:0,
           type:'',
           title:'',
@@ -401,14 +487,23 @@ export default {
           options:[
             {
               title:'', //选项标题
-              id: '0' //选项id
+              id: 0 //选项id
             }],
           row:1,
           score:10,
         };
-      }
       this.qsEditDialogVisible=false;
       this.selectDisAble=false;
+    },
+    cancel_pre: function () {
+      this.$confirm('已编辑的题目信息将不会保存,确认关闭？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.dialogCancel();
+      }).catch(() => {
+      });
     },
     typeChange(value){
       this.willAddQuestion.type=value;
@@ -428,26 +523,120 @@ export default {
     changeDescription: function (value) {
       this.description = value;
     },
+    publish() {
+      this.$confirm('确认发布？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        const formData = new FormData();
+        formData.append("survey_id", this.pid);
+        this.$axios({
+          url: '/qn/get_code',
+          method: 'post',
+          data: formData,
+        })
+        .then(res => {
+          console.log(res.data.status_code);
+          switch (res.data.status_code) {
+            case 200:
+              this.linkShare = this.GLOBAL.baseUrl + '/fill?code=' + res.data.code;
+              this.publishSuccess();
+              break;
+            case 403:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            default:
+              this.$message.error("发布失败，请检查登录信息！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消发布'
+        });
+      });
+    },
+    save() {
+      const userInfo = user.getters.getUser(user.state());
+      var param = {
+        username: userInfo.user.username,
+        title: this.title,
+        description: this.description,
+        type: this.type,
+        qn_id: this.$route.query.pid,
+        questions: this.questions
+      }
+      var paramer = JSON.stringify(param, {questions: 'brackets'})
+      this.$axios({
+        method: 'post',
+        url: '/sm/save/qn',
+        data: paramer,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 0:
+            this.$message.warning("登录信息失效，请重新登录！");
+            setTimeout(() => {
+              this.$store.dispatch('clear');
+              location.reload();
+            }, 500);
+            break;
+          case 1:
+            this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+              distinguishCancelAndClose: true,
+              confirmButtonText: '返回问卷中心',
+              cancelButtonText: '继续编辑'
+            })
+            .then(() => {
+              this.$router.push('/index');
+            });
+            break;
+          default:
+            this.$message.error("保存失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+    preview() {
+      location.href = 'preview?mode=0&pid=' + this.$route.query.pid;
+    },
     up: function (index) {
       index--;
       let questions = this.questions;
       if (index!==0) {
+        // 问卷更新
         questions[index].id--;
         questions[index-1].id++;
         let temp = questions[index];
         questions[index] = questions[index-1];
         questions[index-1] = temp;
+        // 大纲更新
+        this.updateOutline(index, questions[index-1].title);
+        this.updateOutline(index+1, questions[index].title);
       }
     },
     down: function (index) {
       index--;
       let questions = this.questions;
       if (index!==questions.length-1) {
+        // 问卷更新
         questions[index].id++;
         questions[index+1].id--;
         let temp = questions[index];
         questions[index] = questions[index+1];
         questions[index+1] = temp;
+        // 大纲更新
+        this.updateOutline(index+1, questions[index].title);
+        this.updateOutline(index+2, questions[index+1].title);
       }
     },
     del_pre: function (index) {
@@ -471,19 +660,27 @@ export default {
     del: function (index) {
       index--;
       let questions = this.questions;
+      let outline = this.outline;
       for (let num=index+1; num<questions.length; num++) {
         questions[num].id--;
       }
+      outline.splice(index,1);
       questions.splice(index,1);
+      for (let num=index; num<outline.length; num++) {
+        this.updateOutline(num+1, questions[num].title);
+      }
     },
     copy: function (index) {
       index--;
       let questions = this.questions;
+      // 大纲更新
+      this.updateOutline(this.outline.length + 1, questions[index].title);
+      // 问卷更新
       let temp = this.deepClone(questions[index]);
       temp.id = questions.length+1;
       questions.push(temp);
+
     },
-    /* ================ 深拷贝 ================ */
     deepClone :function(initialObj) {
       let obj = {};
       try {
@@ -491,12 +688,92 @@ export default {
         // eslint-disable-next-line no-empty
       } finally {}
       return obj;
+    },    // 深拷贝
+    updateOutline: function (id, label) {
+      if (label.length > 12) {
+        label = id + '. ' + label.substring(0, 11) + '...';
+      } else {
+        label = id + '. ' + label;
+      }
+      if (id <= this.questions.length) {
+        this.outline[id-1].id = id;
+        this.outline[id-1].label = label;
+      } else {
+        this.outline.push({
+          id: id,
+          label: label,
+        })
+      }
+    },
+    toFillQn: function (value) {
+      this.$router.push({
+        name: 'FillQn',
+        query: {
+          mode: value,
+          title: this.title,
+        }
+      });
+    },
+    InitOutline() {
+      for (var i = 0; i < this.questions.length; i++) {
+        this.outline.push({
+          id: this.questions[i].id,
+          label: (i+1) + ". " + this.questions[i].title
+        })
+      }
+    },
+    copyToClip(message) {
+      var aux = document.createElement("input");
+      aux.setAttribute("value", this.linkShare);
+      document.body.appendChild(aux);
+      aux.select();
+      document.execCommand("copy");
+      document.body.removeChild(aux);
+      if (message !== null) {
+        this.$message.success("复制成功");
+      } else{
+        this.$message.error("复制失败");
+      }
     }
-  }
+  },
+  created() {
+    const formData = new FormData();
+    formData.append("qn_id", this.$route.query.pid)
+    this.$axios({
+      method: 'post',
+      url: '/sm/get/qn_detail',
+      data: formData,
+    })
+    .then(res => {
+      switch (res.data.status_code) {
+        case 0:
+          this.$message.error("您无权访问！");
+          this.$router.push('/');
+          break;
+        case 1:
+          this.title = res.data.title;
+          this.description = res.data.description;
+          this.type = res.data.type;
+          this.questions = res.data.questions;
+
+          this.InitOutline();
+          break;
+        default:
+          this.$message.error("访问失败！");
+          break;
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  },
 }
 </script>
 
 <style>
+.investigation .linkDialog{
+  text-align: left;
+}
 .investigation .container {
   padding: 0;
   height: auto;
@@ -524,6 +801,13 @@ export default {
 
 .investigation .edit {
   margin-top: 0;
+  overflow: auto;
+  height: 550px;
+}
+
+.investigation .outline {
+  overflow: auto;
+  height: 550px;
 }
 
 .investigation .ques-type {

@@ -53,14 +53,35 @@ const routes = [
         }
     },
     {
+        path: '/bin',
+        name: 'QnBin',
+        component: () => import( '../views/qn-manage/QnBin.vue'),
+    },
+    {
         path: '/create_ques',
         name: 'CreateQues',
         component: () => import('../views/qn-create/CreateQn.vue'),
     },
     {
-        path: '/investigation',
-        name: 'Investigation',
+        path: '/edit',
+        name: 'Edit',
         component: () => import('../views/qn-create/qn-form/investigation'),
+    },
+    {
+        path: '/fill',
+        name: 'FillQn',
+        component: () => import('../views/qn-fill/FillQn'),
+        meta: {
+            noNav: true
+        },
+    },
+    {
+        path: '/preview',
+        name: 'Preview',
+        component: () => import('../views/qn-fill/FillQn'),
+        meta: {
+            noNav: true
+        }
     },
     {
         path: '/stat',
