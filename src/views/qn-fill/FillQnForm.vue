@@ -96,7 +96,7 @@ export default {
           {
             hasNumLimit:true,
             title:'22222', // 选项标题
-            id: 0 ,// 选项id
+            id: 1 ,// 选项id
             supply:11,
             consume:0,
           }
@@ -135,24 +135,6 @@ export default {
           ans: null,
           ansList: [],
         },
-        {
-          question_id: '3',
-          type: '1',
-          ans: null,
-          ansList: [],
-        },
-        {
-          question_id: '4',
-          type: '3',
-          ans: null,
-          ansList: [],
-        },
-        {
-          question_id: '5',
-          type: '4',
-          ans: null,
-          ansList: [],
-        },
       ],
       type: ''
     }
@@ -177,7 +159,7 @@ export default {
         return;
       }
       // 预览mode判断
-      if (this.mode==='0') {
+      if (this.mode==='0' || this.mode===0) {
         this.$message({
           type: 'warning',
           message: '预览模式下无法提交问卷'
