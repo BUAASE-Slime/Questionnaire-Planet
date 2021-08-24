@@ -1,5 +1,6 @@
 <template>
   <div class="all-body">
+
     <el-container>
       <el-aside class="left-nav">
         <el-menu
@@ -9,26 +10,37 @@
             @close="handleClose"
             unique-opened
             router>
-          <el-menu-item index="/recyconcept">
+          <router-link :to="{name: 'recyconcept', query: {pid: pid }}">
+          <el-menu-item >
             <i class="el-icon-time nav-icon"></i>
             <br>
             <span slot="title">回收概况</span>
           </el-menu-item>
-          <el-menu-item index="/answerdata">
+          </router-link>
+
+          <router-link :to="{name: 'answerdata', query: {pid: pid }}">
+          <el-menu-item>
             <i class="el-icon-document nav-icon"></i>
             <br>
             <span slot="title">回收数据</span>
           </el-menu-item>
-          <el-menu-item index="/chartreport">
+          </router-link>
+
+          <router-link :to="{name: 'chartreport', query: {pid: pid }}">
+          <el-menu-item>
             <i class="el-icon-s-data nav-icon"></i>
             <br>
             <span slot="title">图表报告</span>
           </el-menu-item>
-          <el-menu-item index="/crossover">
+          </router-link>
+
+          <router-link :to="{name: 'crossover', query: {pid: pid }}">
+          <el-menu-item>
             <i class="el-icon-data-analysis nav-icon"></i>
             <br>
             <span slot="title">交叉分析</span>
           </el-menu-item>
+          </router-link>
           <!-- <el-menu-item index="/download">
             <i class="el-icon-download nav-icon"></i>
             <br>
@@ -47,6 +59,7 @@ export default {
     return {
       qnId: '',
       qnTitle: '问卷标题',
+      pid: 17
     };
   },
   methods: {

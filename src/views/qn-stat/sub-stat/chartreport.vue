@@ -59,7 +59,7 @@
         <el-row :gutter="20" style="clear:both" v-if="item.type!='text'">
         
         <el-col :span="6">
-        <h3 style="float:left; margin: 30px 0">数据统计</h3>
+        <h3 style="float:left; margin: 30px 0; margin-bottom:60px;">数据统计</h3>
         <div id="staticdata" style="">
           <el-table
             :data="item.options"
