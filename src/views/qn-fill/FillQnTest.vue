@@ -42,10 +42,10 @@
 
             <!--     姓名/学号/班级/学校-->
             <div class="q-opt"
-                 v-if="item.type==='name'
-                   || item.type==='stuId'
-                   || item.type==='class'
-                   || item.type==='school'">
+                 v-if="item.type === 'name'
+                   || item.type === 'stuId'
+                   || item.type === 'class'
+                   || item.type === 'school'">
               <el-input
                   placeholder="请输入内容"
                   v-model="answers[item.id-1].ans">
@@ -55,7 +55,7 @@
             <!--              判断/单选-->
             <div v-if="item.type==='radio' || item.type === 'judge'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
-                <el-radio v-model="answers[item.id-1].ans" :label="opt.id">
+                <el-radio v-model="answers[item.id-1].ans" :label="opt.title">
                   {{ opt.title }}
                 </el-radio>
               </div>
@@ -63,7 +63,7 @@
 
             <!--                  多选-->
             <el-checkbox-group class="q-opt" v-if="item.type==='checkbox'" v-model="answers[item.id-1].ansList">
-              <el-checkbox v-for="opt in item.options" :key="opt.id" :label="opt.id">
+              <el-checkbox v-for="opt in item.options" :key="opt.id" :label="opt.title">
                 {{ opt.title }}
               </el-checkbox>
             </el-checkbox-group>
@@ -324,6 +324,8 @@ export default {
         this.$message.warning('必填问题 ' + num + ' 尚未作答完毕，无法提交');
         return;
       }
+      // 答案调试
+      console.log(answers)
       // 预览mode判断
       if (this.mode==='0' || this.mode===0) {
         this.$message({
