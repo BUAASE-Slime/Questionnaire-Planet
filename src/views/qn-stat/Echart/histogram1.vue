@@ -9,53 +9,20 @@
 export default {
   name: 'echart',
   props: {
-    chart1_name:null,
-    chart1_data:null,
+    chart1_name:[],
+    chart1_data:[],
   },
   data () {
     return {
       chart1_title: '',
       chart1_dataName:'填写人数',
-
     }
   },
-  // created: function () {
-  //   // `this` 指向 vm 实例
-  //   // that = this
-  //
-  //   // this.chart1_name =  ["8.15","8.16","8.17","8.18","8.19","8.20","8.21"];
-  //   // this.chart1_data =  [5, 20, 36, 10, 10, 20, 3];
-  //
-  //   console.log(this.chart1_data);
-  //
-  //   const formData = new FormData();
-  //   formData.append("qn_id", this.$route.query.pid);
-  //   this.$axios({
-  //     method: 'post',
-  //     url: '/sm/get/recycling_num',
-  //     data: formData,
-  //   })
-  //   .then(res => {
-  //     if (res.data.status_code === 1) {
-  //       this.chart1_data = res.data.nums;
-  //       this.chart1_name = res.data.dates;
-  //
-  //       console.log(this.chart1_data);
-  //
-  //     } else {
-  //       this.$message.error("请求失败！");
-  //       setTimeout(() => {
-  //         this.$router.push('/index');
-  //       }, 1000);
-  //     }
-  //   })
-  // },
   mounted(){
-
     //页面加载完成后,才执行
     setTimeout(() => {
       this.showChart1();
-    }, 500);
+    }, 1000);
   },
   methods: {
     showChart1()
