@@ -1,121 +1,126 @@
 <template>
 <div id='sum'>
-    <div >
-        <h1 >图表报告</h1>
+    <div>
+        <h1>图表报告</h1>
     </div>
     <div >
         <el-card class="box-card investigation">
-        <div slot="header" class="clearfix" style="display:inline">
-            <h3 style="display:inline">问题{{nowid}}</h3>
-            <div v-if="nowid!=1" style="display:inline">
-            <el-button style="float: left; padding: 3px 0" type="text" @click="frontpage">上一页</el-button>
-            </div>
-            <div v-else style="display:inline">
-            <el-button disabled style="float: left; padding: 3px 0" type="text">上一页</el-button>
-            </div>
-            <div v-if="nowid!=questions.length" style="display:inline">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="nextpage">下一页</el-button>
-            </div>
-            <div v-else style="display:inline">
-            <el-button disabled style="float: right; padding: 3px 0" type="text">下一页</el-button>
-            </div>
-        </div>
-        <div id="que">
+          <div slot="header" class="clearfix" style="display:inline">
+              <h3 style="display:inline">问题{{nowid}}</h3>
+              <div v-if="nowid!=1" style="display:inline">
+                <el-button style="float: left; padding: 3px 0" type="text" @click="frontpage">上一页</el-button>
+              </div>
+              <div v-else style="display:inline">
+                <el-button disabled style="float: left; padding: 3px 0" type="text">上一页</el-button>
+              </div>
+              <div v-if="nowid!=questions.length" style="display:inline">
+                <el-button style="float: right; padding: 3px 0" type="text" @click="nextpage">下一页</el-button>
+              </div>
+              <div v-else style="display:inline">
+                <el-button disabled style="float: right; padding: 3px 0" type="text">下一页</el-button>
+              </div>
+          </div>
+          <div id="que">
             <el-col :span="17" class="block-content">
-            <div class="block-title">
-                {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
-            </div>
-
-            <div class="block-choice" v-for="ans in item.options" :key="ans.id">
-
-                <!--                  单选-->
-                <el-radio v-if="item.type==='radio'" value="0">
-                {{ ans.title }}
-                </el-radio>
-
-                <!--                  多选-->
-                <el-checkbox v-if="item.type==='checkbox'" value="0">
-                {{ ans.title }}
-                </el-checkbox>
-
-                <!--                  填空-->
-                <el-input
-                    v-if="item.type==='text'"
-                    type="textarea"
-                    placeholder="请输入内容"
-                    v-bind="ans.title">
-                </el-input>
-
+              <div class="block-title">
+                  {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
+              </div>
+              <div v-if="item.type!=='mark'" >
+                <div class="block-choice" v-for="ans in item.options" :key="ans.id">
+                  <!--                  单选-->
+                  <el-radio v-if="item.type==='radio'" value="0">
+                    {{ ans.title }}
+                  </el-radio>
+                  <!--                  多选-->
+                  <el-checkbox v-if="item.type==='checkbox'" value="0">
+                    {{ ans.title }}
+                  </el-checkbox>
+                  <!--                  填空-->
+                  <el-input
+                      v-if="item.type==='text'"
+                      type="textarea"
+                      placeholder="请输入内容"
+                      v-bind="ans.title">
+                  </el-input>
+                </div>
+              </div>
+              <div v-else class="block-choice">
                 <!--                  评分-->
                 <el-rate v-if="item.type==='mark'"
-                        v-bind="ans.id"
-                        :max="item.score">
+                         :max="item.score">
                 </el-rate>
-
-            </div>
+              </div>
             </el-col>
-        </div>
+          </div>
 
-        <el-row :gutter="20" style="clear:both" v-if="item.type!='text'">
-        
-        <el-col :span="6">
-        <h3 style="float:left; margin: 30px 0">数据统计</h3>
-        <div id="staticdata" style="">
-          <el-table
-            :data="item.options"
-            border
-            style="width: 100%">
-            <el-table-column
-              prop=title
-              label="选项"
-              >
-            </el-table-column>
-            <el-table-column
-              prop=choosed
-              label="选择人数"
-              >
-            </el-table-column>
-          </el-table>
-        </div>
-        <div class="grid-content bg-purple"></div></el-col>
+          <el-row :gutter="20" style="clear:both" v-if="item.type!='text'">
 
-        <el-col :span="6">
-        <div id="staticgram">
-        <div >
-        <div style="margin: 20px; float: left; clear:both" >
-        <el-radio-group v-model="radio2" size="medium">
-            <el-radio-button label="饼图" @click.native="pieswi"></el-radio-button>
-            <el-radio-button label="柱状图" @click.native="histoswi"></el-radio-button>
-            <el-radio-button label="折线图" @click.native="lineswi"></el-radio-button>
-        </el-radio-group>
-        </div>
-        <div style="clear:both;">
-            <histogram3 v-if="choose==2"></histogram3>
-            <linechart3 v-else-if="choose==3"></linechart3>
-            <piechart3 v-else></piechart3>
-        </div>        
-        </div>
-        </div>
-        <div class="grid-content bg-purple"></div></el-col>
+            <el-col :span="6">
+              <h3 style="float:left; margin: 30px 0 60px;">数据统计</h3>
+              <div id="staticdata" style="">
+                <el-table
+                  :data="item.options"
+                  border
+                  style="width: 100%">
+                  <el-table-column
+                    prop=title
+                    label="评分"
+                    v-if="item.type==='mark'"
+                    >
+                  </el-table-column>
+                  <el-table-column
+                      prop=title
+                      label="选项"
+                      v-else
+                  >
+                  </el-table-column>
+                  <el-table-column
+                    prop=choosed
+                    label="选择人数"
+                    >
+                  </el-table-column>
+                </el-table>
+              </div>
+              <div class="grid-content bg-purple"></div>
+            </el-col>
+            <el-col :span="6">
+              <div id="staticgram">
+                <div>
+                  <div style="margin: 20px; float: left; clear:both" >
+                    <el-radio-group v-model="radio2" size="medium">
+                      <el-radio-button label="饼图" @click.native="pieswi"></el-radio-button>
+                      <el-radio-button label="柱状图" @click.native="histoswi"></el-radio-button>
+                      <el-radio-button label="折线图" @click.native="lineswi"></el-radio-button>
+                    </el-radio-group>
+                  </div>
+                  <div style="clear:both;">
+                      <histogram3 v-if="choose===2" :data="item.options" :type="item.type"></histogram3>
+                      <linechart3 v-else-if="choose===3" :data="item.options" :type="item.type"></linechart3>
+                      <piechart3 v-else :data="item.options" :type="item.type"></piechart3>
+                  </div>
+                </div>
+              </div>
+              <div class="grid-content bg-purple"></div>
+            </el-col>
 
-        </el-row>
+          </el-row>
 
-        <div v-else>
-            <el-table
-                :data="tableData"
-                border
-                style="width: 100%">
-                <el-table-column
-                prop="num"
-                label="编号"
-                width="180">
-                </el-table-column>
-                <el-table-column
-                prop="answer"
-                label="文本答案">
-                </el-table-column>
-            </el-table>
-        </div>
+          <div v-else>
+              <el-table
+                  :data="item.tableData"
+                  border
+                  style="width: 100%">
+                  <el-table-column
+                  prop="num"
+                  label="编号"
+                  width="180">
+                  </el-table-column>
+                  <el-table-column
+                  prop="answer"
+                  label="文本答案">
+                  </el-table-column>
+              </el-table>
+          </div>
 
 
         </el-card>
@@ -236,9 +241,27 @@ export default{
         ]
         }
     },
-    created: function () {
+    created() {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
+
+      this.$axios({
+        method: 'post',
+        url: '/sm/get/qn/stat_analysis',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.questions = res.data.questions;
+        } else {
+          this.$message.error("请求失败！");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
       this.item=this.questions[this.nowid-1];
-      this.$emit('getPidFromChild', this.$route.query.pid);
     },
     methods:{
         frontpage: function(){

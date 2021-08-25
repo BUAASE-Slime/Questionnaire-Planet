@@ -6,33 +6,29 @@
 
 <script>
 
-var that;
-
 export default {
   name: 'echart',
+  props: {
+    chart4_name:null,
+    chart4_data:null,
+  },
   data () {
     return {
       chart4_title: '周视图',
-      chart1_dataName:'填写人数',
-      chart1_name:null,
-      chart1_data:null,
+      chart4_dataName:'填写人数',
     }
-  },
-  created: function () {
-    // `this` 指向 vm 实例
-    that = this
-    that.chart4_name =  ["8.15","8.16","8.17","8.18","8.19","8.20","8.21"];
-    that.chart4_data =  [5, 20, 36, 10, 10, 20, 3];
   },
   mounted(){
     //页面加载完成后,才执行
-    that.showChart4();
+    setTimeout(() => {
+      this.showChart4();
+    }, 500);
   },
   methods: {
  
     showChart4()
     {
-      var myChart4= that.$echarts.init(document.getElementById('myChart4'));
+      var myChart4= this.$echarts.init(document.getElementById('myChart4'));
       let option4 = {
             tooltip: {
                 trigger: 'axis',
@@ -50,7 +46,7 @@ export default {
                 {
                     type: 'category',
                     name:'日期',
-                    data:that.chart4_name,
+                    data:this.chart4_name,
                     axisPointer: {
                         type: 'shadow'
                     }
@@ -67,9 +63,9 @@ export default {
             ],
             series: [
                 {
-                    name: that.chart4_dataName,
+                    name: this.chart4_dataName,
                     type:'line',
-                    data:that.chart4_data,
+                    data:this.chart4_data,
                 }
             ]
         };

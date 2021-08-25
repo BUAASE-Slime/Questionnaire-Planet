@@ -22,8 +22,10 @@ export default {
   mounted() {
     const userInfo = user.getters.getUser(user.state())
     if (userInfo)
-      this.isLogin = true
-  }
+      this.isLogin = true;
+    else
+      this.isLogin = false;
+  },
 }
 </script>
 

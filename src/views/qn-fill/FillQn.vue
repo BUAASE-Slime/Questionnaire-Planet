@@ -84,7 +84,7 @@
       </div>
 
       <div class="tail">
-        <a :href="rootUrl">星球问卷</a>&ensp;提供技术支持
+        <a :href="rootUrl">问卷星球</a>&ensp;提供技术支持
       </div>
     </div>
   </div>
@@ -180,32 +180,45 @@ export default {
           url: '/qn/save_ans',
           data: paramer,
         })
-        .then(res => {
-          switch (res.data.status_code) {
-            case 1:
-              this.$message({
-                type: 'success',
-                message: '问卷提交成功'
-              });
-              this.success = true;
-              break;
-            case 2:
-              this.$message.success("问卷已结束，感谢您的参与！");
-              break;
-            default:
-              this.$message.error("操作失败！");
-              break;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        })
+            .then(res => {
+              switch (res.data.status_code) {
+                case 1:
+                  this.$message({
+                    type: 'success',
+                    message: '问卷提交成功'
+                  });
+                  this.success = true;
+                  break;
+                case 2:
+                  this.$message.success("问卷已结束，感谢您的参与！");
+                  break;
+                default:
+                  this.$message.error("操作失败！");
+                  break;
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            })
       }).catch(() => {
 
       });
     },
     quit: function () {
-      this.$router.push('/index');
+      this.$confirm('请选择返回问卷编辑页面或问卷中心？', '确认信息', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '编辑页面',
+        cancelButtonText: '问卷中心'
+      })
+          .then(() => {
+            location.href = this.GLOBAL.baseUrl + "/edit?pid=" + this.$route.query.pid;
+          })
+          .catch(action => {
+            if (action === 'cancel') {
+              this.$router.push('/index');
+            }
+          });
+
     },
   },
   mounted() {
@@ -219,38 +232,38 @@ export default {
         url: '/sm/get/qn_detail',
         data: formData,
       })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 0:
-            this.$message.error("您无权访问！");
-            this.$router.push('/');
-            break;
-          case 1:
-            this.title = res.data.title;
-            this.description = res.data.description;
-            this.type = res.data.type;
-            this.questions = res.data.questions;
+          .then(res => {
+            switch (res.data.status_code) {
+              case 0:
+                this.$message.error("您无权访问！");
+                this.$router.push('/');
+                break;
+              case 1:
+                this.title = res.data.title;
+                this.description = res.data.description;
+                this.type = res.data.type;
+                this.questions = res.data.questions;
 
-            //建立答案框架
-            for (var i=0; i<this.questions.length; i++) {
-              this.answers.push({
-                  question_id: this.questions[i].question_id,
-                  type: this.questions[i].type,
-                  ans: null,
-                  ansList: [],
-                  answer: ''
-              })
+                //建立答案框架
+                for (var i=0; i<this.questions.length; i++) {
+                  this.answers.push({
+                    question_id: this.questions[i].question_id,
+                    type: this.questions[i].type,
+                    ans: null,
+                    ansList: [],
+                    answer: ''
+                  })
+                }
+
+                break;
+              default:
+                this.$message.error("访问失败！");
+                break;
             }
-
-            break;
-          default:
-            this.$message.error("访问失败！");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+          })
+          .catch(err => {
+            console.log(err);
+          })
     }
     else if (this.mode === '1') {
       const formData = new FormData();
@@ -260,39 +273,39 @@ export default {
         url: '/sm/get/qn_for_fill',
         data: formData,
       })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 2:
-            this.$router.push('PageNotFound');
-            break;
-          case 1:
-            this.title = res.data.title;
-            this.description = res.data.description;
-            this.type = res.data.type;
-            this.questions = res.data.questions;
+          .then(res => {
+            switch (res.data.status_code) {
+              case 2:
+                this.$router.push('PageNotFound');
+                break;
+              case 1:
+                this.title = res.data.title;
+                this.description = res.data.description;
+                this.type = res.data.type;
+                this.questions = res.data.questions;
 
-            //建立答案框架
-            for (var i=0; i<this.questions.length; i++) {
-              this.answers.push({
-                question_id: this.questions[i].question_id,
-                type: this.questions[i].type,
-                ans: null,
-                ansList: [],
-                answer: ''
-              })
+                //建立答案框架
+                for (var i=0; i<this.questions.length; i++) {
+                  this.answers.push({
+                    question_id: this.questions[i].question_id,
+                    type: this.questions[i].type,
+                    ans: null,
+                    ansList: [],
+                    answer: ''
+                  })
+                }
+                break;
+              case 3:
+                this.close = true;
+                break;
+              default:
+                this.$message.error("访问失败！");
+                break;
             }
-            break;
-          case 3:
-            this.close = true;
-            break;
-          default:
-            this.$message.error("访问失败！");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+          })
+          .catch(err => {
+            console.log(err);
+          })
     }
   },
 }

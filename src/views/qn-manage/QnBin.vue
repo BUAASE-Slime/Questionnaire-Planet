@@ -1,7 +1,7 @@
 <template>
   <div class="bin">
       <el-row style="margin: 20px;color: #00aeff">
-        如果您想释放上传文件题的空间，请点击“清空数据”，数据清空后将无法恢复，请谨慎操作！
+        如果您想恢复或清空回收站内的问卷数据，请点击相应按钮，注意数据清空后将无法恢复，请谨慎操作！
       </el-row>
       <el-row style="text-align: center">
         <el-table
