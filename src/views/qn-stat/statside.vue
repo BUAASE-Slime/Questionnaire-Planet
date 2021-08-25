@@ -9,35 +9,37 @@
             @close="handleClose"
             unique-opened
             router>
-          <el-menu-item :index="recyconcept"
-                        :route={path:recyconcept,query:{qnId}}
-          >
-            <i class="el-icon-time nav-icon"></i>
-            <br>
-            <span slot="title">回收概况</span>
-          </el-menu-item>
-          <el-menu-item :index="answerdata"
-                        :route={path:answerdata,query:{qnId}}
-          >
-            <i class="el-icon-document nav-icon"></i>
-            <br>
-            <span slot="title">回收数据</span>
-          </el-menu-item>
-          <el-menu-item :index="chartreport">
-            <i class="el-icon-s-data nav-icon"></i>
-            <br>
-            <span slot="title">图表报告</span>
-          </el-menu-item>
-          <el-menu-item :index="crossover">
-            <i class="el-icon-data-analysis nav-icon"></i>
-            <br>
-            <span slot="title">交叉分析</span>
-          </el-menu-item>
-          <!-- <el-menu-item index="/download">
-            <i class="el-icon-download nav-icon"></i>
-            <br>
-            <span slot="title">下载答卷</span>
-          </el-menu-item> -->
+          <router-link :to="{name: 'recyconcept', query: {pid: this.pid}}">
+            <el-menu-item>
+              <i class="el-icon-time nav-icon"></i>
+              <br>
+              <span slot="title">回收概况</span>
+            </el-menu-item>
+          </router-link>
+
+          <router-link :to="{name: 'chartreport', query: {pid: this.pid}}">
+            <el-menu-item>
+              <i class="el-icon-s-data nav-icon"></i>
+              <br>
+              <span slot="title">图表报告</span>
+            </el-menu-item>
+          </router-link>
+
+          <router-link :to="{name: 'answerdata', query: {pid: this.pid}}">
+            <el-menu-item>
+              <i class="el-icon-document nav-icon"></i>
+              <br>
+              <span slot="title">回收数据</span>
+            </el-menu-item>
+          </router-link>
+
+          <router-link :to="{name: 'crossover', query: {pid: this.pid}}">
+            <el-menu-item>
+              <i class="el-icon-data-analysis nav-icon"></i>
+              <br>
+              <span slot="title">交叉分析</span>
+            </el-menu-item>
+          </router-link>
         </el-menu>
       </el-aside>
     </el-container>
@@ -47,17 +49,9 @@
 <script>
 export default {
   name: "QnStat",
-  props: {
-    pid: String,
-  },
   data() {
     return {
-      qnId: '',
-      qnTitle: '问卷标题',
-      recyconcept: '/recyconcept?pid=' + this.pid,
-      answerdata: '/answerdata?pid=' + this.pid,
-      chartreport: '/chartreport?pid=' + this.pid,
-      crossover: '/crossover?pid=' + this.pid,
+      pid: this.$route.query.pid
     };
   },
   methods: {

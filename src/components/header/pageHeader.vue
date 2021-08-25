@@ -9,10 +9,11 @@
 <!--      <el-menu-item index="3">导航二</el-menu-item>-->
       <el-submenu index="4" style="float: right" v-if="isLogin">
         <template slot="title">{{ userName }}</template>
-        <el-menu-item index="4-1" class="big-item">账户设置</el-menu-item>
+        <el-menu-item index="4-1" class="big-item" @click="settings">账户设置</el-menu-item>
         <el-menu-item index="4-2" class="big-item" @click="logout">退出</el-menu-item>
       </el-submenu>
-      <i class="el-icon-bell news-link" v-if="isLogin" style="padding-top: 28px; font-size: 24px; float: right;" @click="openNews"></i>
+<!--      <i class="el-icon-bell news-link" v-if="isLogin" style="padding-top: 28px; font-size: 24px; float: right;" @click="openNews"></i>-->
+      <i v-if="isLogin" class="el-icon-user" style="padding-top: 28px; font-size: 24px; float: right; cursor: pointer" @click="settings"></i>
       <div class="login-button">
         <el-button index="4" style="float: right" v-if="!isLogin" type="primary" @click="gotoLogin">登录</el-button>
       </div>
@@ -44,9 +45,6 @@
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
       },
-      openNews: function () {
-        alert('Wow');
-      },
       gotoHome: function () {
         this.$router.push('/');
       },
@@ -59,6 +57,9 @@
       },
       gotoLogin() {
         this.$router.push('/login');
+      },
+      settings() {
+        this.$router.push('/account');
       },
       logout() {
         this.$axios({
@@ -86,8 +87,6 @@
 
 
 <style>
-
-
 .header .el-menu{
   height: 80px;
   padding-left: 50px;

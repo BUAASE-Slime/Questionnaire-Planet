@@ -14,7 +14,6 @@
             </div>
           </el-card>
         </el-col>
-
         <el-col :span="6">
           <el-card class="box-card"  @mouseover.native="isHoverTest=true" @mouseout.native="isHoverTest=false">
             <img class="image" src="../../assets/images/test.png">
@@ -28,7 +27,6 @@
             </div>
           </el-card>
         </el-col>
-
         <el-col :span="6">
           <el-card class="box-card" @mouseover.native="isHoverVote=true" @mouseout.native="isHoverVote=false">
             <img class="image" src="../../assets/images/vote.png">
@@ -58,13 +56,13 @@
           </div>
         </el-card>
       </el-col>
-
       <el-col :span="6">
         <el-card class="box-card">
           <div><img class="image" src="../../assets/images/wen.png"></div>
           <span><h3 style="height: 350px;margin: auto">更多内容 敬请期待......</h3><br></span>
         </el-card>
       </el-col>
+
 
       <el-dialog title=请输入问卷标题 :visible.sync="dialogVisible" width="30%" style="margin-top: 100px">
         <el-input  v-model="surveyTitle" ></el-input>
@@ -96,61 +94,56 @@ export default {
     }
   },
   methods: {
-    createForm(type, router) {
-      const formData = new FormData();
-      const userInfo = user.getters.getUser(user.state())
-      formData.append("username", userInfo.user.username);
-      formData.append("title", this.surveyTitle);
-      // formData.append("type", 0);
-      formData.append("type", type);
-
-      this.$axios({
-        method: 'post',
-        url: '/sm/create/qn',
-        data: formData,
-      })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 1:
-            var surveyId = res.data.qn_id;
-            this.$router.push({
-              name: router,
-              query: {
-                pid: surveyId
-              }
-            });
-            break;
-          case 2:
-            this.$message.warning("登录信息失效，请重新登录！");
-            setTimeout(() => {
-              this.$store.dispatch('clear');
-              location.reload();
-            }, 500);
-            break;
-          default:
-            this.$message.error("操作失败！");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    },
     createConfirm(){
       this.dialogVisible=false;
-      switch (this.quesType) {
-        case 1:
-          this.createForm('普通问卷', 'Edit');
-          break;
-        case 2:
-          this.createForm('考试问卷', 'Test');
-          break;
-        case 3:
-          // this.createForm('投票问卷', 'SignUpForm');
-          break;
-        case 4:
-          this.createForm('报名问卷', 'SignUpForm');
-          break;
+      if (this.quesType===1){
+        const formData = new FormData();
+        const userInfo = user.getters.getUser(user.state())
+        formData.append("username", userInfo.user.username);
+        formData.append("title", this.surveyTitle);
+        // formData.append("type", 0);
+        formData.append("type", "普通问卷");
+
+        this.$axios({
+          method: 'post',
+          url: '/sm/create/qn',
+          data: formData,
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 1:
+              var surveyId = res.data.qn_id;
+              this.$router.push({
+                name: 'Edit',
+                query: {
+                  pid: surveyId
+                }
+              });
+              break;
+            case 2:
+              this.$message.warning("登录信息失效，请重新登录！");
+              setTimeout(() => {
+                this.$store.dispatch('clear');
+                location.reload();
+              }, 500);
+              break;
+            default:
+              this.$message.error("操作失败！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      }
+      else if(this.quesType===2){
+        this.$message('创建了一个新的考试问卷');
+      }
+      else if(this.quesType===3){
+        this.$message('创建了一个新的投票问卷');
+      }
+      else if(this.quesType===4){
+        this.$message('创建了一个新的表单问卷');
       }
     },
   }
