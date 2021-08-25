@@ -612,7 +612,7 @@ export default {
           break;
         case "2":
           this.is_collected = 1;
-          this.searchQns(1);
+          this.searchQns(0);
           break;
         case "3":
           this.$router.push('/bin');
@@ -911,6 +911,7 @@ export default {
             break;
           default:
             this.QnList = JSON.parse(res.data.data);
+            this.hasQn = true;
             if (tag === 1) {
               this.$message.success("为您查询到 " + this.QnList.length + " 条问卷");
             }
