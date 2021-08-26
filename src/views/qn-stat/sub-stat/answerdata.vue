@@ -3,10 +3,13 @@
         <div><h1>回收数据</h1></div>
         <el-card class="box-card">
         <div>
-             <el-button type="primary" @click="downloadExcel" style="float: right;margin: 30px;">下载</el-button>
+              <div>
+              <el-button type="primary" @click="downloadExcel" style="float: right;margin: 30px;">下载</el-button>
+              </div>
+              <div>
               <el-table
-                  v-loading="loading"
-                    :data="tableData"
+                    v-loading="loading"
+                    :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
                     border
                     style="width: 100%"
                     >
@@ -44,7 +47,18 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                
+                <el-pagination layout="sizes, prev, pager, next, jumper" 
+                background
+                :current-page="currentPage" 
+                :page-size="pageSize"
+                :page-sizes="pageSizes" 
+                :total="tableData.length" 
+                @size-change="handleSizeChange" 
+                @current-change="handleCurrentChange"
+                style="margin: 20px"
+                v-if="!loading">
+                </el-pagination>
+                </div>
         </div>
         </el-card>
     </div>
@@ -54,20 +68,108 @@
   export default {
     data() {
       return {
+        
+        currentPage: 1,
+        pageSize: 5,
+        pageSizes:[3,5,7],
         loading: true,
         tableData: [
-        //     {
-        // num: 1,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 2,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
+        {
+        num: 1,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 2,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 3,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 4,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },       
+        {
+        num: 5,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 6,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 7,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 8,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },   
+        {
+        num: 9,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 10,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        }, 
+        {
+        num: 11,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 12,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 13,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 14,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },       
+        {
+        num: 15,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 16,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },     
         ]
       }
     },
@@ -95,6 +197,15 @@
       })
     },
     methods: {
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.currentPage = 1;
+        this.pageSize = val;
+      },
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
+        this.currentPage = val;
+      },
       delSubmit(index, num) {
         this.$confirm('此操作将永久删除该答卷, 是否继续?', '提示', {
           confirmButtonText: '确定',
