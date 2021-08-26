@@ -66,9 +66,6 @@ export default {
   methods: {
 
   },
-  created() {
-    this.qnId = this.$route.query.qn_id;
-  }
 }
 
 </script>

@@ -188,6 +188,8 @@ export default {
                     message: '问卷提交成功'
                   });
                   this.success = true;
+                  console.log(this.questions);
+                  console.log(this.answers);
                   break;
                 case 2:
                   this.$message.success("问卷已结束，感谢您的参与！");
