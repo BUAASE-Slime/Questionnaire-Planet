@@ -99,12 +99,14 @@
                   </el-input>
 
                   <!--                  评分-->
-                  <el-rate v-if="item.type==='mark'"
-                           v-bind="ans.id"
-                           :max="item.score">
-                  </el-rate>
+<!--                  <el-rate v-if="item.type==='mark'"-->
+<!--                           v-bind="ans.id"-->
+<!--                           :max="item.score">-->
+<!--                  </el-rate>-->
 
                 </div>
+                <!--                  评分-->
+                <el-rate class="block-choice" v-if="item.type==='mark'" value="0" :max="item.score"></el-rate>
               </el-col>
 
               <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
@@ -858,6 +860,7 @@ export default {
           this.description = res.data.description;
           this.type = res.data.type;
           this.questions = res.data.questions;
+          console.log(this.questions);
 
           this.InitOutline();
           break;
