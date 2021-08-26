@@ -162,12 +162,6 @@ const routes = [
         component: () => import('../views/account-set/account.vue')              
     },
     {
-        path: '/qndone',
-        name: 'qndone',
-        
-        component: () => import('../views/qn-fill/QnDone.vue')              
-    },
-    {
         path: '/*',
         name: 'PageNotFound',
         component: () => import('../views/error/PageNotFound'),
