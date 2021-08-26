@@ -80,7 +80,11 @@
                   {{ item.description }}
                 </div>
 
-                <div class="block-choice" v-for="ans in item.options" :key="ans.id">
+                <div class="block-choice" v-if="item.type==='mark'">
+                  <!--                  评分-->
+                  <el-rate value="0" :max="item.score"></el-rate>
+                </div>
+                <div class="block-choice" v-else v-for="ans in item.options" :key="ans.id">
 
                   <!--                  单选-->
                   <el-radio v-if="item.type==='radio'" value="0">
@@ -101,10 +105,6 @@
                   </el-input>
                 </div>
 
-                <div class="block-choice" v-if="item.type='mark'">
-                  <!--                  评分-->
-                  <el-rate value="0" :max="item.score"></el-rate>
-                </div>
 
               </el-col>
 
@@ -887,6 +887,7 @@ export default {
           this.description = res.data.description;
           this.type = res.data.type;
           this.questions = res.data.questions;
+          this.isReleased = res.data.is_released;
           console.log(this.questions);
 
           this.InitOutline();
