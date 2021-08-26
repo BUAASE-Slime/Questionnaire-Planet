@@ -41,6 +41,14 @@
               <span slot="title">交叉分析</span>
             </el-menu-item>
           </router-link>
+
+          <router-link to="/index">
+            <el-menu-item>
+              <i class="el-icon-back nav-icon"></i>
+              <br>
+              <span slot="title">返回中心</span>
+            </el-menu-item>
+          </router-link>
         </el-menu>
       </el-aside>
     </el-container>
