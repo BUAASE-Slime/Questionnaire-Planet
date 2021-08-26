@@ -145,6 +145,12 @@
       return {
         title:"小学期问卷",
         description:"愉快的小学期",
+        indexnum: 0,
+        dialogVisible: false,
+        currentPage: 1,
+        pageSize: 5,
+        pageSizes:[3,5,7],
+        loading: true,
         answers:[
             // {
             //     question_id: 66,
@@ -353,12 +359,6 @@
             //     answer: ""
             // }
         ],
-        indexnum: 0,
-        dialogVisible: false,
-        currentPage: 1,
-        pageSize: 5,
-        pageSizes:[3,5,7],
-        loading: true,
         tableData: [
         // {
         // num: 1,

@@ -87,7 +87,8 @@
                   :total="item.options.length" 
                   @size-change="handleSizeChange" 
                   @current-change="handleCurrentChange"
-                  style="margin: 20px">
+                  style="margin: 20px"
+                  v-if="item.options.length>5">
                 </el-pagination>
               </div>
               <div class="grid-content bg-purple"></div>
