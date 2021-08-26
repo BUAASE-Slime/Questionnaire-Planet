@@ -7,8 +7,9 @@ module.exports = {
         hotOnly: false,
         proxy: {  //配置跨域
             "/api": {
-                // target: "https://localhost:8000/", //后端跑在本地8000端口，若连接服务器只需改为 https://zewan.cc/
+                //后端跑在本地8000端口，若连接服务器只需改为 https://zewan.cc/
                 target: "https://zewan.cc/",
+                // target: "https://localhost:8000/",
                 ws: true,
                 changOrigin: true,  //允许跨域
                 pathRewrite: {
