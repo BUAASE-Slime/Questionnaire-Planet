@@ -360,10 +360,10 @@ export default {
     },
 
     statUrl(index) {
-      if (this.QnList[index].is_released && this.QnList[index].recycling_num !== 0) {
+      if (this.QnList[index].recycling_num > 0) {
         location.href = this.GLOBAL.baseUrl + "/recyconcept?pid=" + this.QnList[index].survey_id;
       } else {
-        this.$alert('问卷未发布或暂无回收答卷，无统计信息', '问题提示', {
+        this.$alert('问卷暂无回收答卷，无统计信息', '问题提示', {
           confirmButtonText: '确定',
         });
       }
