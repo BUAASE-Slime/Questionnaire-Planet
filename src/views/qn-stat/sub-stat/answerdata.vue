@@ -144,6 +144,12 @@
       return {
         title:"小学期问卷",
         description:"愉快的小学期",
+        indexnum: 0,
+        dialogVisible: false,
+        currentPage: 1,
+        pageSize: 5,
+        pageSizes:[3,5,7],
+        loading: true,
         answers:[
             {
                 question_id: 66,
@@ -352,12 +358,6 @@
                 answer: ""
             }
         ],
-        indexnum: 0,
-        dialogVisible: false,
-        currentPage: 1,
-        pageSize: 5,
-        pageSizes:[3,5,7],
-        loading: true,
         tableData: [
         {
         num: 1,
@@ -495,9 +495,8 @@
         this.indexnum=this.indexnum-1;
       },
       openBox(index) {
-      this.indexnum=index;
-      this.dialogVisible = true;
-      console.log(this.indexnum);
+        this.indexnum=index;
+        this.dialogVisible = true;
       },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);

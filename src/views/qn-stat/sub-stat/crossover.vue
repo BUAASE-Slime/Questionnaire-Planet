@@ -29,12 +29,19 @@
                     <el-button type="primary" @click="anlysis">分析</el-button>
                 </div>
             </div>
-            <div v-if="ans">
-                <el-table style="width: 100%" border :data="tableData" v-loading="loading">
-                  <template v-for="(item,index) in tableHead">
-                    <el-table-column :prop="item.column_name" :label="item.column_comment" :key="index" v-if="item.column_name != 'id'"></el-table-column>
-                  </template>
-                </el-table>
+            <div v-if="ans" v-loading="loading">
+              <div>
+                <span class="axis" style="margin-top:10px; margin-bottom:10px">x: {{questions[value1-1].label}}</span>
+                <i class="el-icon-sort"></i>
+                <span class="axis" style="margin-bottom:20px; margin-top: 10px">y: {{questions[value2-1].label}}</span>
+              </div>
+              <div>
+              <el-table style="width: 100%" border :data="tableData" >
+                <template v-for="(item,index) in tableHead">
+                  <el-table-column :prop="item.column_name" :label="item.column_comment" :key="index" v-if="item.column_name != 'id'"></el-table-column>
+                </template>
+              </el-table>
+              </div>
             </div>
         </el-card>
     </div>
@@ -60,6 +67,8 @@
         const formData = new FormData();
         var id_1 = this.questions[this.value1-1].question_id;
         var id_2 = this.questions[this.value2-1].question_id;
+        // console.log(id_1);
+        // console.log(id_2);
         formData.append("question_id_1", id_1);
         formData.append("question_id_2", id_2);
         this.$axios({
@@ -129,5 +138,11 @@
   }
   .clearfix:after {
     clear: both
+  }
+  .axis{
+    display: block;
+    font-size: 16px;
+    color: #969696;
+    /* margin: 20px; */
   }
 </style>
