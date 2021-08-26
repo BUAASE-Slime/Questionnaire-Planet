@@ -94,6 +94,7 @@
       .then(res => {
         if (res.data.status_code === 1) {
           this.questions = res.data.questions;
+          console.log(this.questions);
         }
       })
       .catch(err => {

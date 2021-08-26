@@ -458,6 +458,8 @@ export default{
       .then(res => {
         if (res.data.status_code === 1) {
           this.questions = res.data.questions;
+          console.log("questions");
+          console.log(this.questions);
         } else {
           this.$message.error("请求失败！");
         }

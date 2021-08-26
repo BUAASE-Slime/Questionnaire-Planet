@@ -891,7 +891,7 @@ export default {
           console.log(res.data.status_code);
           switch (res.data.status_code) {
             case 200:
-              this.linkShare = this.GLOBAL.baseUrl + '/fill?mode=1&code=' + res.data.code;
+              this.linkShare = this.GLOBAL.baseUrl + '/fill_test?mode=1&code=' + res.data.code;
               this.publishSuccess();
 
               if (this.qrcode == null) {
