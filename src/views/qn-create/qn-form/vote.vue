@@ -1,5 +1,5 @@
 <template>
-  <div class="form">
+  <div class="vote">
     <el-header class="header">
       <edit-header
           :title="title"
@@ -11,15 +11,17 @@
           v-on:publishClicked="publish($event)"
           v-on:saveClicked="save($event)"
           v-on:qnPreview="preview($event)"
-          v-on:publishSuccess="publishSuccess($event)"
           v-on:onConfirm="dialogCancel($event)"
       >
       </edit-header>
     </el-header>
 
     <el-container class="container">
+
       <el-aside class="side">
         <el-tabs v-model="activeName" @tab-click="initOutline">
+
+
             <el-tab-pane label="题目类型" name="first">
               <div class="edit">
                 <div class="ques-type">
@@ -43,41 +45,17 @@
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='mark';qsEditDialogVisible=true"></i>
                 </div>
                 <div>
-                  <el-row class="sideTitle">个人信息模板</el-row>
+                  <el-row class="sideTitle">添加投票问题</el-row>
                   <el-row class="easyChoose">
                     <el-col :span="12">
-                      <i class="el-icon-user"></i>
-                      <span class="chooseLabel">姓名</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addName"></i>
+                      <i class="el-icon-check"></i>
+                      <span class="chooseLabel">投票单选</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addVoteRadio"></i>
                     </el-col>
                     <el-col :span="12">
-                      <i class="el-icon-male"></i>
-                      <span class="chooseLabel">性别</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addSex"></i>
-                    </el-col>
-                  </el-row>
-                  <el-row class="easyChoose">
-                    <el-col :span="12">
-                      <i class="el-icon-house"></i>
-                      <span class="chooseLabel">住址</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addHome"></i>
-                    </el-col>
-                    <el-col :span="12">
-                      <i class="el-icon-school"></i>
-                      <span class="chooseLabel">学校</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addSchool"></i>
-                    </el-col>
-                  </el-row>
-                  <el-row class="easyChoose">
-                    <el-col :span="12">
-                      <i class="el-icon-phone-outline"></i>
-                      <span class="chooseLabel">电话</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addPhone"></i>
-                    </el-col>
-                    <el-col :span="12">
-                      <i class="el-icon-message"></i>
-                      <span class="chooseLabel">邮箱</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addEmail"></i>
+                      <i class="el-icon-finished"></i>
+                      <span class="chooseLabel">投票多选</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addVoteCheckbox"></i>
                     </el-col>
                   </el-row>
                 </div>
@@ -114,7 +92,9 @@
 
               <el-col :span="17" class="block-content">
                 <div class="block-title">
-                  {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
+                  {{ item.id }}. {{ item.title }}
+                  <span class="must" v-if="item.must">(必填)</span>
+                  <span class="voteQs" v-if="item.isVote"> [投票题] </span>
                 </div>
 
                 <div
@@ -128,13 +108,13 @@
 
                   <!--                  单选-->
                   <el-radio v-if="item.type==='radio'" value="0">
-                    {{ ans.title }}<span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="ans.hasNumLimit">剩余{{ans.supply-ans.consume}}</span>
+                    {{ ans.title }}
                   </el-radio>
 
                   <!--                  多选-->
                   <el-checkbox v-if="item.type==='checkbox'" value="0">
                     {{ ans.title }}
-                  </el-checkbox><span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="ans.hasNumLimit">剩余{{ans.supply-ans.consume}}</span>
+                  </el-checkbox>
 
                   <!--                  填空-->
                   <el-input
@@ -171,16 +151,13 @@
                   </el-tooltip>
                 </el-button-group>
               </el-col>
-
             </el-row>
           </div>
-
         </div>
       </el-main>
-
     </el-container>
 
-    <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible"  :before-close="cancel_pre" class="dialog" width="1100px">
+    <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible"  :before-close="cancel_pre" class="dialog" >
       <el-form ref="form" :model="willAddQuestion" label-width="100px">
         <el-form-item label="题目类型" >
           <el-select :disabled="selectDisAble" v-model="willAddQuestion.type" placeholder="请选择题目类型" @change="typeChange">
@@ -194,26 +171,25 @@
         </el-form-item>
 
         <el-form-item label="题目标题" style="width: 100%;">
-          <el-input v-model="willAddQuestion.title" placeholder="请输入标题" style="width: 800px" ></el-input>
+          <el-input v-model="willAddQuestion.title" placeholder="请输入标题" ></el-input>
         </el-form-item>
 
         <el-form-item label="题目描述" style="width: 100%;">
-          <el-input v-model="willAddQuestion.description" placeholder="请输入题目描述" style="width: 800px"></el-input>
+          <el-input v-model="willAddQuestion.description" placeholder="请输入题目描述"></el-input>
         </el-form-item>
+
         <el-form-item label="是否必填" >
           <el-checkbox v-model="willAddQuestion.must">必填</el-checkbox>
         </el-form-item>
+
         <template v-if="willAddQuestion.type==='radio'||willAddQuestion.type==='checkbox'">
           <el-form-item :label="'选项'+(index+1)" v-for="(item,index) in willAddQuestion.options" :key="index">
             <el-row>
-              <el-col :span="12">
+              <el-col :span="16">
                 <el-input  v-model="item.title" placeholder="请输入选项名" ></el-input>
               </el-col>
-              <el-col :span="12">
-                <el-button type="danger" plain class="deleteOptionButton"  @click="deleteOption(index)" >删除选项</el-button>
-                <el-button type="success" plain style="margin-right: 8px" v-if="!item.hasNumLimit" @click="item.hasNumLimit=true">添加库存限制</el-button>
-                <el-button type="info" plain style="margin-right: 8px" v-if="item.hasNumLimit" @click="item.hasNumLimit=false">取消库存限制</el-button>
-                <el-input-number v-model="item.supply" v-if="item.hasNumLimit"></el-input-number>
+              <el-col :span="8">
+                <el-button type="danger" plain class="deleteOptionButton" @click="deleteOption(index)" >删除选项</el-button>
               </el-col>
             </el-row>
 
@@ -252,7 +228,7 @@
       <el-row>
         <el-col span="8" style="text-align: center">
           <el-row>
-            <img src="../../../assets/images/example.jpg" height="200px" width="200px">
+            <div id="qrcode_2" style="height:200px; width:200px; margin-left: 22px;"></div>
           </el-row>
         </el-col>
         <el-col span="16">
@@ -271,14 +247,6 @@
       <span slot="footer" class="dialog-footer" style="text-align: center">
                   <el-row>
                     <el-button :span="6" type="success" style="width: 80px"  @click="finish">完 成</el-button>
-                  </el-row>
-      </span>
-    </el-dialog>
-    <el-dialog :visible.sync="editWrongMsgVisible"  class="linkDialog" :show-close="false" :close-on-click-modal="false" width="300px" >
-      <span>{{ editWrongMsg }}</span>
-      <span slot="footer" class="dialog-footer" style="text-align: center">
-                  <el-row>
-                    <el-button :span="6" type="danger" style="width: 80px"  @click="editWrongMsgVisible=false">知道了</el-button>
                   </el-row>
       </span>
     </el-dialog>
@@ -302,21 +270,22 @@
 <script>
 import editHeader from "../../../components/header/editHeader";
 import user from "@/store/user";
+import QRCode from "qrcodejs2";
 
 export default {
-  name: "form",
+  name: "vote",
   data() {
     return {
-      linkShare: 'https://zewan.cc/',
-      settingDialogTitle: "高级设置",   // 高级设置弹框的标题
-      settingDialogVisible: false,     // 高级设置对话框可见性
-      closingDate: null,   // 高级设置中问卷回收的截止日期
-      isReleased: false,   // 是否发布
-      max_recycling: 0,
+      qrcode: null,
+      linkShare: '',
       editWrongMsg:"",
       editWrongMsgVisible:false,
       qsLinkDialogVisible:false,
       qsLinkDialogTitle:"发布成功！",
+      settingDialogTitle: "高级设置",   // 高级设置弹框的标题
+      settingDialogVisible:false,     // 高级设置对话框可见性
+      closingDate: null,   // 高级设置中问卷回收的截止日期
+      isReleased: false,   // 是否发布
       editIndex:0,
       selectDisAble:false,
       hoverItem:0,
@@ -331,25 +300,25 @@ export default {
       questions: [],
       outline: [],
       pid: this.$route.query.pid,
+
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
       willAddQuestion: {
+        question_id: 0,
         id: 0,
         type:'',
         title:'',
         must: false, // 是否必填
+        isVote:false,//是否是投票题
         description: '', // 问题描述
         options:[
           {
-            hasNumLimit:false,  // 是否添加库存限制
             title:'', // 选项标题
-            id: 0 , // 选项id
-            supply: 1,  // 库存
-            consume: 0, // 已消耗库存（已选）
+            id: 0 // 选项id
           }
         ],
-        row: 1, // 填空题区域显示行数
-        score: 5, // 评分题的最大评分
+        row: 1, // 填空区域行数
+        score: 5, // 最大评分
       },
       allType:[
         {
@@ -479,186 +448,27 @@ export default {
     editHeader,
   },
   methods: {
-    addName(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '姓名：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd();
-    },
-    addSex(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'radio',
-        title: '性别：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 1,
-          title: '男',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        },{
-          id:2,
-          title:'女',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
-    },
-    addHome(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '住址：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
-    },
-    addSchool(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '学校',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
-    },
-    addPhone(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '电话：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
-    },
-    addEmail(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '邮箱：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      // 重置
-      this.resetWillAdd()
+    download() {
+      // 获取base64的图片节点
+      var img = document.getElementById('qrcode_2').getElementsByTagName('img')[0];
+      // 构建画布
+      var canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      // 构造url
+      var url = canvas.toDataURL('image/png');
+      console.log(url);
+      // 构造a标签并模拟点击
+      var downloadLink = document.createElement('a');
+      downloadLink.download = '二维码.png';
+      downloadLink.href = url;
+      downloadLink.click();
+      downloadLink.remove();
     },
     finish(){
       this.qsLinkDialogVisible=false;
       this.$router.push('/index')// 跳转到问卷中心？
-    },
-    resetWillAdd(){
-      this.willAddQuestion={
-        id: 0,
-        type:'',
-        title:'',
-        must: false, // 是否必填
-        description: '', // 问题描述
-        options:[
-          {
-            title:'', // 选项标题
-            id: 0 ,// 选项id
-            hasNumLimit:false,
-            supply:1,
-            consume:0,
-          }
-        ],
-        row:1, // 填空区域行数
-        score: 5, // 最大评分
-      }
     },
     publishSuccess:function (){
       this.qsLinkDialogVisible=true;
@@ -770,6 +580,37 @@ export default {
         }
       }
     },
+    addVoteRadio(){
+      this.willAddQuestion.isVote=true;
+      this.willAddQuestion.must=true;
+      this.willAddQuestion.type='radio';
+      this.qsEditDialogVisible=true;
+    },
+    addVoteCheckbox(){
+      this.willAddQuestion.isVote=true;
+      this.willAddQuestion.must=true;
+      this.willAddQuestion.type='checkbox';
+      this.qsEditDialogVisible=true;
+    },
+    resetWillAdd(){
+      this.willAddQuestion={
+        question_id: 0,
+        id: 0,
+        type:'',
+        title:'',
+        must: false, // 是否必填
+        isVote:false,
+        description: '', // 问题描述
+        options:[
+          {
+            title:'', // 选项标题
+            id: 0 // 选项id
+          }
+        ],
+        row: 1, // 填空区域行数
+        score: 5, // 最大评分
+    }
+    },
     dialogCancel: function(){
       this.qsEditDialogTitle="";
       this.resetWillAdd();
@@ -787,15 +628,12 @@ export default {
       });
     },
     typeChange(value){
-      this.willAddQuestion.type = value;
+      this.willAddQuestion.type=value;
     },
     addOption(){
       this.willAddQuestion.options.push({
-        hasNumLimit:false,
-        title:'', // 选项标题
-        id: 0 ,// 选项id
-        supply:1,
-        consume:0,
+        title:'',
+        id:0,
       });
     },
     deleteOption(index){
@@ -816,8 +654,67 @@ export default {
     openSetting: function () {
       this.settingDialogVisible = true;
     },
+    settingSuccess: function () {
+      this.settingDialogVisible = false;
+      this.$message({
+        type: 'success',
+        message: '设置已生效'
+      });
+    },
     publish() {
+      this.$confirm('确认发布？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        const formData = new FormData();
+        formData.append("survey_id", this.pid);
+        this.$axios({
+          url: '/qn/get_code',
+          method: 'post',
+          data: formData,
+        })
+        .then(res => {
+          console.log(res.data.status_code);
+          switch (res.data.status_code) {
+            case 200:
+              this.linkShare = this.GLOBAL.baseUrl + '/fill?mode=1&code=' + res.data.code;
+              this.publishSuccess();
 
+              if (this.qrcode == null) {
+                this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+                  width: 200, //生成的二维码的宽度
+                  height: 200, //生成的二维码的高度
+                  colorDark : "#000000", // 生成的二维码的深色部分
+                  colorLight : "#ffffff", //生成二维码的浅色部分
+                  correctLevel : QRCode.CorrectLevel.H
+                });
+              }
+              this.qrcode.clear();
+              this.qrcode.makeCode(this.linkShare);
+
+              break;
+            case 403:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            case 406:
+              this.$message.info("问卷已发布，无需重复发布");
+              break;
+            default:
+              this.$message.error("发布失败，请检查登录信息！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消发布'
+        });
+      });
     },
     save() {
       const userInfo = user.getters.getUser(user.state());
@@ -832,7 +729,7 @@ export default {
       var paramer = JSON.stringify(param, {questions: 'brackets'})
       this.$axios({
         method: 'post',
-        url: '/sm/save/qn',
+        url: '/sm/save/qn_kepp/history',
         data: paramer,
       })
       .then(res => {
@@ -864,13 +761,44 @@ export default {
       })
     },
     preview() {
-      this.$router.push({
-        name: 'PreviewForm',
-        query: {
-          mode: 0,
-          pid: this.$route.query.pid
-        }
+      const userInfo = user.getters.getUser(user.state());
+      var param = {
+        username: userInfo.user.username,
+        title: this.title,
+        description: this.description,
+        type: this.type,
+        qn_id: this.$route.query.pid,
+        questions: this.questions
+      }
+      var paramer = JSON.stringify(param, {questions: 'brackets'})
+      this.$axios({
+        method: 'post',
+        url: '/sm/save/qn_kepp/history',
+        data: paramer,
       })
+          .then(res => {
+            switch (res.data.status_code) {
+              case 0:
+                this.$message.warning("登录信息失效，请重新登录！");
+                setTimeout(() => {
+                  this.$store.dispatch('clear');
+                  location.reload();
+                }, 500);
+                break;
+              case 1:
+                this.$message.success("保存成功");
+                setTimeout(() => {
+                  location.href = 'preview?mode=0&pid=' + this.$route.query.pid;
+                }, 700);
+                break;
+              default:
+                this.$message.error("保存失败！");
+                break;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
     },
     up: function (index) {
       index--;
@@ -941,7 +869,9 @@ export default {
       // 问卷更新
       let temp = this.deepClone(questions[index]);
       temp.id = questions.length+1;
+      temp.question_id = 0;
       questions.push(temp);
+      this.$message.success("问题复制成功，已粘贴至问卷末尾");
 
     },
     deepClone :function(initialObj) {
@@ -1006,7 +936,7 @@ export default {
       document.body.removeChild(aux);
       if (message !== null) {
         this.$message.success("复制成功");
-      } else{
+      } else {
         this.$message.error("复制失败");
       }
     },
@@ -1022,7 +952,7 @@ export default {
   },
   created() {
     const formData = new FormData();
-    formData.append("qn_id", this.$route.query.pid)
+    formData.append("qn_id", this.$route.query.pid);
     this.$axios({
       method: 'post',
       url: '/sm/get/qn_detail',
@@ -1039,8 +969,12 @@ export default {
           this.description = res.data.description;
           this.type = res.data.type;
           this.questions = res.data.questions;
+          this.isReleased = res.data.is_released;
+          console.log(this.questions);
 
           this.InitOutline();
+          console.log(this.questions);  // 调试
+          console.log(this.outline);  // 调试
           break;
         default:
           this.$message.error("访问失败！");
@@ -1055,68 +989,68 @@ export default {
 </script>
 
 <style>
-.form .linkDialog{
+.vote .linkDialog{
   text-align: left;
 }
-.form .container {
+.vote .container {
   padding: 0;
   height: auto;
   min-height: 610px;
 }
 
-.form header {
+.vote header {
   padding: 0 100px;
 }
 
-.form .el-container {
+.vote .el-container {
   padding: 0 100px;
 }
 
-.form .side {
+.vote .side {
   border-top: solid 1px #e3e3e3;
   border-right: solid 1px #e3e3e3;
   background: #FFFFFF;
 }
 
-.form .main {
+.vote .main {
   border-top: solid 1px #e3e3e3;
   background: #FFFFFF;
 }
 
-.form .edit {
+.vote .edit {
   margin-top: 0;
   overflow: auto;
   height: 550px;
 }
 
-.form .outline {
+.vote .outline {
   overflow: auto;
   height: 550px;
 }
 
-.form .ques-type {
+.vote .ques-type {
   padding: 15px 0;
   font-size: 16px;
   border-bottom: dashed #e3e3e3 1px;
 }
 
-.form .type-icon {
+.vote .type-icon {
   color: #1687fd;
   display: inline-block;
 }
 
-.form .type-icon:hover {
+.vote .type-icon:hover {
   color: #409EFF;
   cursor: pointer;
 }
 
-.form .el-tabs__nav-scroll {
+.vote .el-tabs__nav-scroll {
   text-align: center;
   height: 60px;
   margin: 0 60px;
 }
 
-.form .el-tabs__item {
+.vote .el-tabs__item {
   font-weight: bold;
   padding: 0 20px;
   height: 60px;
@@ -1129,50 +1063,55 @@ export default {
   position: relative;
 }
 
-.form .el-tabs__header {
+.vote .el-tabs__header {
   margin: 0;
 }
 
-.form .el-tree-node__content {
+.vote .el-tree-node__content {
   padding-left: 10px !important;
   height: 40px;
 }
 
-.form .main {
+.vote .main {
   max-height: 610px;
 }
 
-.form .ques .title {
+.vote .ques .title {
   font-size: 28px;
   font-weight: bold;
   padding-top: 10px;
   padding-bottom: 26px;
 }
 
-.form .ques .description {
+.vote .ques .description {
   text-align: left;
-  font-size: 18px;
+  font-size: 16px;
   padding-bottom: 30px;
   color: black;
   line-height: 30px;
 }
 
-.form .ques-block {
+.vote .ques-block {
   padding-bottom: 15px;
   border-top: solid #e3e3e3 1px;
 }
 
-.form .ques-block:hover {
+.vote .ques-block:hover {
   background: #f5f5f5;
   transition: .3s;
 }
 
-.form .ques-block .must {
+.vote .ques-block .must {
   font-weight: normal;
   color: crimson;
 }
 
-.form .block-title {
+.vote .ques-block .voteQs {
+  font-weight: normal;
+  color: #017dc2;
+}
+
+.vote .block-title {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
@@ -1180,7 +1119,7 @@ export default {
   font-weight: bold;
 }
 
-.form .block-description {
+.vote .block-description {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 14px;
@@ -1190,79 +1129,79 @@ export default {
   color: #969696;
 }
 
-.form .block-choice {
+.vote .block-choice {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
   padding: 5px 10px 10px;
 }
 
-.form .el-button-group>.el-button:first-child {
+.vote .el-button-group>.el-button:first-child {
   border-radius: 0 0 0 8px;
 }
 
-.form .el-button-group>.el-button:last-child {
+.vote .el-button-group>.el-button:last-child {
   border-radius: 0 0 8px 0;
 }
 
-.form .block-button .el-button {
+.vote .block-button .el-button {
   background: #b9b9b9;
   border: transparent;
 }
 
-.form .block-button .el-button:hover {
+.vote .block-button .el-button:hover {
   background: #989898;
   border: transparent;
 }
 
-.form .bt {
+.vote .bt {
   color: white;
   font-size: 14px;
   font-weight: bold;
 }
 
-.form .block-choice .el-textarea__inner {
+.vote .block-choice .el-textarea__inner {
   max-height: 100px;
 }
-.form .dialog{
+.vote .dialog{
   text-align: left;
   font-size: large;
 }
-.form .addOptionButton{
+.vote .addOptionButton{
   display: inline-block;
   margin-left: 100px;
 }
-.form .deleteOptionButton{
+.vote .deleteOptionButton{
   margin-left: 20px;
 }
 
-.form .sideTitle{
-  font-size: 18px;
-  font-weight: bold;
-  margin: 10px;
-}
-.form .easyChoose{
-  font-size: medium;
-  margin-top: 10px;
-}
-.form .chooseLabel{
-  margin-right: 10px;
-  margin-left: 5px;
-}
-
-.form .setting-item {
+.vote .setting-item {
   text-align: left;
 }
 
-.form .setting-bt {
+.vote .setting-bt {
   margin-top: 28px;
 }
 
-.form .setting .el-dialog__header {
+.vote .setting .el-dialog__header {
   text-align: left;
 }
 
-.form .setting .item-title {
+.vote .setting .item-title {
   padding-right: 20px;
+}
+.vote .sideTitle{
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.vote .easyChoose{
+  font-size: medium;
+  margin-top: 10px;
+}
+.vote .chooseLabel{
+  margin-right: 10px;
+  margin-left: 5px;
 }
 </style>
