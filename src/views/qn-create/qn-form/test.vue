@@ -354,6 +354,7 @@
             <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
           <el-row style="margin-top: 25px">
             <el-button type="primary" plain @click="download">下载二维码</el-button>
+            <el-button type="primary" @click="genCodeAgain" style="margin-left: 30px">重新生成链接</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -859,6 +860,37 @@ export default {
         message: '设置已生效'
       });
     },
+    genCodeAgain() {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
+      this.$axios({
+        method: 'post',
+        url: '/qn/change/code',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.linkShare = this.GLOBAL.baseUrl + "/fill_test?mode=1&code=" + res.data.code;
+
+          if (this.qrcode == null) {
+            this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+              width: 200, //生成的二维码的宽度
+              height: 200, //生成的二维码的高度
+              colorDark : "#000000", // 生成的二维码的深色部分
+              colorLight : "#ffffff", //生成二维码的浅色部分
+              correctLevel : QRCode.CorrectLevel.H
+            });
+          }
+          this.qrcode.clear();
+          this.qrcode.makeCode(this.linkShare);
+        } else {
+          this.$message.error("请求失败！");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
     publish() {
       this.saveinfo('publish');
 
@@ -872,6 +904,7 @@ export default {
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
+        this.publishSuccess();
         const formData = new FormData();
         formData.append("survey_id", this.pid);
         this.$axios({
@@ -884,7 +917,6 @@ export default {
           switch (res.data.status_code) {
             case 200:
               this.linkShare = this.GLOBAL.baseUrl + '/fill_test?mode=1&code=' + res.data.code;
-              this.publishSuccess();
 
               if (this.qrcode == null) {
                 this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
