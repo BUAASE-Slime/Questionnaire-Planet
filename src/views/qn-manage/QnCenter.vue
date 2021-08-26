@@ -188,6 +188,13 @@ export default {
     }
   },
   methods:{
+    getTypeFormPid(pid) {
+      for (var i=0; i<this.QnList.length; i++) {
+        if (this.QnList[i].survey_id === pid) {
+          return this.QnList[i].type;
+        }
+      }
+    },
     genCodeAgain() {
       const formData = new FormData();
       formData.append("qn_id", this.share_surveyId);
@@ -198,7 +205,23 @@ export default {
       })
       .then(res => {
         if (res.data.status_code === 1) {
-          this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+          switch (this.getTypeFormPid(this.share_surveyId)) {
+            case "1":
+              this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+              break;
+            case "2":
+              this.linkShare = this.GLOBAL.baseUrl + "/fill_test?mode=1&code=" + res.data.code;
+              break;
+            case "3":
+              this.linkShare = this.GLOBAL.baseUrl + "/fill_vote?mode=1&code=" + res.data.code;
+              break;
+            case "4":
+              this.linkShare = this.GLOBAL.baseUrl + "/fill_form?mode=1&code=" + res.data.code;
+              break;
+            case "5":
+              this.linkShare = this.GLOBAL.baseUrl + "/fill_hate?mode=1&code=" + res.data.code;
+              break;
+          }
 
           if (this.qrcode == null) {
             this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
@@ -386,7 +409,23 @@ export default {
               this.$message.warning("您无权执行此操作！");
               break;
             case 1:
-              this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+              switch (this.QnList[index].type) {
+                case "1":
+                  this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+                  break;
+                case "2":
+                  this.linkShare = this.GLOBAL.baseUrl + "/fill_test?mode=1&code=" + res.data.code;
+                  break;
+                case "3":
+                  this.linkShare = this.GLOBAL.baseUrl + "/fill_vote?mode=1&code=" + res.data.code;
+                  break;
+                case "4":
+                  this.linkShare = this.GLOBAL.baseUrl + "/fill_form?mode=1&code=" + res.data.code;
+                  break;
+                case "5":
+                  this.linkShare = this.GLOBAL.baseUrl + "/fill_hate?mode=1&code=" + res.data.code;
+                  break;
+              }
 
               if (this.qrcode == null) {
                 this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
