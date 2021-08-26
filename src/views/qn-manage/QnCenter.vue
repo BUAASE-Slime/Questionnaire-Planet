@@ -1,6 +1,6 @@
 <template>
     <div id='sum' style="display: flex">
-        <div id='aside'> 
+        <div id='aside'>
               <el-button type="primary" id='newButton' icon='el-icon-plus' @click="linkCreate">
                 <span style="font-weight: bold; font-size: 16px">创建问卷</span>
               </el-button>
@@ -131,7 +131,6 @@
       </span>
       </el-dialog>
     </div>
-
 </template>
 
 <script>

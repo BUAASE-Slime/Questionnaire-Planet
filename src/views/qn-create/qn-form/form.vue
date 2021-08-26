@@ -314,15 +314,15 @@ export default {
         description: '', // 问题描述
         options:[
           {
-            hasNumLimit:false,
+            hasNumLimit:false,  // 是否添加库存限制
             title:'', // 选项标题
-            id: 0 ,// 选项id
-            supply:1,
-            consume:0,
+            id: 0 , // 选项id
+            supply: 1,  // 库存
+            consume: 0, // 已消耗库存（已选）
           }
         ],
-        row:1, // 填空区域行数
-        score:10, // 最大评分
+        row: 1, // 填空题区域显示行数
+        score:10, // 评分题的最大评分
       },
       allType:[
         {
