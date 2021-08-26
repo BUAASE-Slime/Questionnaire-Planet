@@ -59,7 +59,7 @@
               <h3 style="float:left; margin: 30px 0 60px;">数据统计</h3>
               <div id="staticdata" style="">
                 <el-table
-                  :data="item.options"
+                  :data="item.options.slice((currentPage-1)*pageSize,currentPage*pageSize)"
                   border
                   style="width: 100%">
                   <el-table-column
@@ -80,6 +80,15 @@
                     >
                   </el-table-column>
                 </el-table>
+                <el-pagination layout="prev, pager, next" 
+                  background
+                  :current-page="currentPage" 
+                  :page-size="pageSize"
+                  :total="item.options.length" 
+                  @size-change="handleSizeChange" 
+                  @current-change="handleCurrentChange"
+                  style="margin: 20px">
+                </el-pagination>
               </div>
               <div class="grid-content bg-purple"></div>
             </el-col>
@@ -140,6 +149,8 @@ export default{
     },
     data() {
         return{
+        currentPage: 1,
+        pageSize: 5,
         nowid: 1,
         item:{},
         radio2: '饼图',
@@ -147,7 +158,7 @@ export default{
         tableData:[
         {
             num: 1,
-            answer: '下次一定',
+            answer: '千呼万唤的泡泡玛特壁纸合集来惹！想要第一时间收获泡泡高清壁纸吗？添加【宇宙观察员1号】为好友回复关键词【dimoo】或【molly】即可轻松get！PS:注意字母大小写哦~不定期更新，更多IP壁纸等你解锁！添加宇宙观察员为好友的小可爱们，有可能收到来自泡泡星球的小礼物哦~数量有限，先到先得！',
         },
         {
             num:2,
@@ -233,8 +244,54 @@ export default{
           must: true,
           options: [{
             id: '1',
-            title: '',
-          }],
+            title: '1',
+            choosed: 1,
+          },
+          {
+            id: '2',
+            title: '2',
+            choosed: 8,
+          },
+          {
+            id: '3',
+            title: '3',
+            choosed: 12,
+          },
+          {
+            id: '4',
+            title: '4',
+            choosed: 1,
+          },
+          {
+            id: '5',
+            title: '5',
+            choosed: 5,
+          },
+          {
+            id: '6',
+            title: '6',
+            choosed: 1,
+          },
+          {
+            id: '7',
+            title: '7',
+            choosed: 1,
+          },
+          {
+            id: '8',
+            title: '8',
+            choosed: 10,
+          },
+          {
+            id: '9',
+            title: '9',
+            choosed: 6,
+          },
+          {
+            id: '10',
+            title: '10',
+            choosed: 10,
+          },],
           row: 1,
           score: 10,
         },
@@ -264,6 +321,22 @@ export default{
       this.item=this.questions[this.nowid-1];
     },
     methods:{
+      // stateFormat(row, column, cellValue) {
+      //     if (!cellValue) return ''
+      //     if (cellValue.length > 200) { 
+      //       return cellValue.slice(0, 200) + '...'
+      //     }
+      //     return cellValue
+      //   },
+        handleSizeChange(val) {
+          console.log(`每页 ${val} 条`);
+          this.currentPage = 1;
+          this.pageSize = val;
+        },
+        handleCurrentChange(val) {
+          console.log(`当前页: ${val}`);
+          this.currentPage = val;
+        },
         frontpage: function(){
             this.nowid-=1,
             this.item=this.questions[this.nowid-1]
