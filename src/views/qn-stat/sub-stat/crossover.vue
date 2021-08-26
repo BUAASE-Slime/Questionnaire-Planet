@@ -30,7 +30,7 @@
                 </div>
             </div>
             <div v-if="ans">
-                <el-table style="width: 100%" border :data="tableData">
+                <el-table style="width: 100%" border :data="tableData" :formatter="stateFormat">
                   <template v-for="(item,index) in tableHead">
                     <el-table-column :prop="item.column_name" :label="item.column_comment" :key="index" v-if="item.column_name != 'id'"></el-table-column>
                   </template>
@@ -94,7 +94,7 @@
           ]
         }, {
           value1: 2,
-          value: 2,
+          value2: 2,
           label: '双皮奶如何',
             answers:[
               {ans:'不错',amount: 10},
@@ -136,7 +136,7 @@
     methods:{
       anlysis: function(){
         this.ans=true
-      }
+      },
     }
   }
 </script>

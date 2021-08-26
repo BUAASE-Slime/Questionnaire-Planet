@@ -104,7 +104,8 @@
             <el-table
                 :data="tableData"
                 border
-                style="width: 100%">
+                style="width: 100%"
+            >
                 <el-table-column
                 prop="num"
                 label="编号"
@@ -112,9 +113,12 @@
                 </el-table-column>
                 <el-table-column
                 prop="answer"
-                label="文本答案">
+                label="文本答案"
+                >
+                <!-- :formatter="stateFormat"                 -->
                 </el-table-column>
             </el-table>
+
         </div>
 
 
@@ -142,7 +146,7 @@ export default{
         tableData:[
         {
             num: 1,
-            answer: '下次一定',
+            answer: '千呼万唤的泡泡玛特壁纸合集来惹！想要第一时间收获泡泡高清壁纸吗？添加【宇宙观察员1号】为好友回复关键词【dimoo】或【molly】即可轻松get！PS:注意字母大小写哦~不定期更新，更多IP壁纸等你解锁！添加宇宙观察员为好友的小可爱们，有可能收到来自泡泡星球的小礼物哦~数量有限，先到先得！',
         },
         {
             num:2,
@@ -240,6 +244,13 @@ export default{
     this.item=this.questions[this.nowid-1]
     },
     methods:{
+      // stateFormat(row, column, cellValue) {
+      //     if (!cellValue) return ''
+      //     if (cellValue.length > 200) { 
+      //       return cellValue.slice(0, 200) + '...'
+      //     }
+      //     return cellValue
+      //   },
         frontpage: function(){
             this.nowid-=1,
             this.item=this.questions[this.nowid-1]
