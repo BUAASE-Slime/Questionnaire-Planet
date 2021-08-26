@@ -729,7 +729,7 @@ export default {
       var paramer = JSON.stringify(param, {questions: 'brackets'})
       this.$axios({
         method: 'post',
-        url: '/sm/save/qn_kepp/history',
+        url: '/sm/save/qn_keep/history',
         data: paramer,
       })
       .then(res => {
@@ -773,7 +773,7 @@ export default {
       var paramer = JSON.stringify(param, {questions: 'brackets'})
       this.$axios({
         method: 'post',
-        url: '/sm/save/qn_kepp/history',
+        url: '/sm/save/qn_keep/history',
         data: paramer,
       })
           .then(res => {

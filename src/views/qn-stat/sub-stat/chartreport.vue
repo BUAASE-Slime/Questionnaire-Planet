@@ -458,6 +458,7 @@ export default{
       .then(res => {
         if (res.data.status_code === 1) {
           this.questions = res.data.questions;
+          this.item=this.questions[this.nowid-1];
           console.log("questions");
           console.log(this.questions);
         } else {
@@ -467,8 +468,6 @@ export default{
       .catch(err => {
         console.log(err);
       });
-
-      this.item=this.questions[this.nowid-1];
     },
     methods:{
       // stateFormat(row, column, cellValue) {
