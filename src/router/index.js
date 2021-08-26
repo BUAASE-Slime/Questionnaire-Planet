@@ -68,12 +68,12 @@ const routes = [
         component: () => import('../views/qn-create/qn-form/investigation'),
     },
     {
-        path: '/test',
+        path: '/edit_test',
         name: 'Test',
         component: () => import('../views/qn-create/qn-form/test'),
     },
     {
-        path: '/form',
+        path: '/edit_form',
         name: 'SignUpForm',
         component: () => import('../views/qn-create/qn-form/form'),
     },
@@ -84,6 +84,22 @@ const routes = [
         meta: {
             noNav: true
         },
+    },
+    {
+        path: '/fill_form',
+        name: 'FillForm',
+        component: () => import('../views/qn-fill/FillQnForm'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
+        path: '/fill_test',
+        name: 'FillTest',
+        component: () => import('../views/qn-fill/FillQnTest'),
+        meta: {
+            noNav: true
+        }
     },
     {
         path: '/preview_form',
