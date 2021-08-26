@@ -601,6 +601,13 @@ export default {
       });
     },
     publish() {
+      this.saveinfo('publish');
+
+      if (this.isReleased) {
+        this.$message.info("问卷已发布，无需重复发布");
+        return;
+      }
+
       this.$confirm('确认发布？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -633,6 +640,9 @@ export default {
               this.qrcode.makeCode(this.linkShare);
 
               break;
+            case 402:
+              this.$message.warning("问卷题目为空，无法发布");
+              break;
             case 403:
               this.$message.warning("您无权执行此操作！");
               break;
@@ -655,51 +665,7 @@ export default {
         });
       });
     },
-    save() {
-      const userInfo = user.getters.getUser(user.state());
-      var param = {
-        username: userInfo.user.username,
-        title: this.title,
-        description: this.description,
-        type: this.type,
-        qn_id: this.$route.query.pid,
-        questions: this.questions
-      }
-      var paramer = JSON.stringify(param, {questions: 'brackets'})
-      this.$axios({
-        method: 'post',
-        url: '/sm/save/qn_kepp/history',
-        data: paramer,
-      })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 0:
-            this.$message.warning("登录信息失效，请重新登录！");
-            setTimeout(() => {
-              this.$store.dispatch('clear');
-              location.reload();
-            }, 500);
-            break;
-          case 1:
-            this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
-              distinguishCancelAndClose: true,
-              confirmButtonText: '返回问卷中心',
-              cancelButtonText: '继续编辑'
-            })
-            .then(() => {
-              this.$router.push('/index');
-            });
-            break;
-          default:
-            this.$message.error("保存失败！");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    },
-    preview() {
+    saveinfo(tag) {
       const userInfo = user.getters.getUser(user.state());
       var param = {
         username: userInfo.user.username,
@@ -725,10 +691,27 @@ export default {
                 }, 500);
                 break;
               case 1:
-                this.$message.success("保存成功");
-                setTimeout(() => {
-                  location.href = 'preview?mode=0&pid=' + this.$route.query.pid;
-                }, 700);
+                switch (tag) {
+                  case 'save':
+                    this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+                      distinguishCancelAndClose: true,
+                      confirmButtonText: '返回问卷中心',
+                      cancelButtonText: '继续编辑'
+                    })
+                    .then(() => {
+                      this.$router.push('/index');
+                    });
+                    break;
+                  case 'preview':
+                    this.$message.success("保存成功");
+                    setTimeout(() => {
+                      location.href = 'preview?mode=0&pid=' + this.$route.query.pid;
+                    }, 700);
+                    break;
+                  case 'publish':
+                    this.$message.success("保存成功");
+                    break;
+                }
                 break;
               default:
                 this.$message.error("保存失败！");
@@ -738,6 +721,12 @@ export default {
           .catch(err => {
             console.log(err);
           })
+    },
+    save() {
+      this.saveinfo('save');
+    },
+    preview() {
+      this.saveinfo('preview');
     },
     up: function (index) {
       index--;

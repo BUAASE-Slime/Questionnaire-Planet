@@ -43,7 +43,9 @@ export default {
   },
   mounted(){
     //页面加载完成后,才执行
-    this.showChart2();
+    setTimeout(() => {
+      this.showChart2();
+    }, 500);
   },
   methods: {
     getData() {

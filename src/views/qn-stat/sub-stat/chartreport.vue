@@ -7,13 +7,13 @@
         <el-card class="box-card investigation">
           <div slot="header" class="clearfix" style="display:inline">
               <h3 style="display:inline">问题{{nowid}}</h3>
-              <div v-if="nowid!=1" style="display:inline">
+              <div v-if="nowid!==1" style="display:inline">
                 <el-button style="float: left; padding: 3px 0" type="text" @click="frontpage">上一页</el-button>
               </div>
               <div v-else style="display:inline">
                 <el-button disabled style="float: left; padding: 3px 0" type="text">上一页</el-button>
               </div>
-              <div v-if="nowid!=questions.length" style="display:inline">
+              <div v-if="nowid!==questions.length" style="display:inline">
                 <el-button style="float: right; padding: 3px 0" type="text" @click="nextpage">下一页</el-button>
               </div>
               <div v-else style="display:inline">
@@ -53,7 +53,7 @@
             </el-col>
           </div>
 
-          <el-row :gutter="20" style="clear:both" v-if="item.type!='text'">
+          <el-row :gutter="20" style="clear:both" v-if="item.type!=='text'">
 
             <el-col :span="6">
               <h3 style="float:left; margin: 30px 0 60px;">数据统计</h3>
@@ -156,146 +156,294 @@ export default{
         radio2: '饼图',
         choose: 1,
         tableData:[
-        {
-            num: 1,
-            answer: '千呼万唤的泡泡玛特壁纸合集来惹！想要第一时间收获泡泡高清壁纸吗？添加【宇宙观察员1号】为好友回复关键词【dimoo】或【molly】即可轻松get！PS:注意字母大小写哦~不定期更新，更多IP壁纸等你解锁！添加宇宙观察员为好友的小可爱们，有可能收到来自泡泡星球的小礼物哦~数量有限，先到先得！',
-        },
-        {
-            num:2,
-            answer:'tired'
-        }
+          {
+              num: 1,
+              answer: '千呼万唤的泡泡玛特壁纸合集来惹！想要第一时间收获泡泡高清壁纸吗？添加【宇宙观察员1号】为好友回复关键词【dimoo】或【molly】即可轻松get！PS:注意字母大小写哦~不定期更新，更多IP壁纸等你解锁！添加宇宙观察员为好友的小可爱们，有可能收到来自泡泡星球的小礼物哦~数量有限，先到先得！',
+          },
+          {
+              num:2,
+              answer:'tired'
+          }
         ],
-        questions:[
+        // questions:[
+        //     {
+        //       id: '1',
+        //       type: 'radio',
+        //       title: '这是一个什么网站？',
+        //       must: true,
+        //       options: [{
+        //           id: '1',
+        //           title: '问卷系统',
+        //           choosed: 15
+        //       }, {
+        //           id: '2',
+        //           title: '出版系统',
+        //           choosed: 13
+        //       }],
+        //       row: '',
+        //       score: '',
+        //     },
+        //     {
+        //     id: '2',
+        //     type: 'checkbox',
+        //     title: '软工小学期助教都有谁？',
+        //     must: false,
+        //     options: [{
+        //         id: '1',
+        //         title: 'ZYH',
+        //         choosed: 15
+        //     }, {
+        //         id: '2',
+        //         title: 'LKW',
+        //         choosed: 153
+        //     },{
+        //         id: '3',
+        //         title: 'ZXH',
+        //         choosed: 151
+        //     }, {
+        //         id: '4',
+        //         title: 'HZH',
+        //         choosed: 153
+        //     }
+        //     ],
+        //     row: '',
+        //     score: '',
+        //     },
+        //     {
+        //   id: '3',
+        //   type: 'radio',
+        //   title: '软工小学期累不累',
+        //   must: false,
+        //   options: [{
+        //     id: '1',
+        //     title: '累',
+        //     choosed: 10
+        //   }, {
+        //     id: '2',
+        //     title: '非常累',
+        //     choosed: 11
+        //   }],
+        //   row: '',
+        //   score: '',
+        // },
+        // {
+        //   id: '4',
+        //   type: 'text',
+        //   title: '您对小学期的评价如何？',
+        //   must: false,
+        //   options: [{
+        //     id: '',
+        //     title: '',
+        //   }],
+        //   row: 3,
+        //   score: '',
+        // },
+        // {
+        //   id: '5',
+        //   type: 'mark',
+        //   title: '给小学期打个分吧~',
+        //   must: true,
+        //   options: [{
+        //     id: '1',
+        //     title: '1',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '2',
+        //     title: '2',
+        //     choosed: 8,
+        //   },
+        //   {
+        //     id: '3',
+        //     title: '3',
+        //     choosed: 12,
+        //   },
+        //   {
+        //     id: '4',
+        //     title: '4',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '5',
+        //     title: '5',
+        //     choosed: 5,
+        //   },
+        //   {
+        //     id: '6',
+        //     title: '6',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '7',
+        //     title: '7',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '8',
+        //     title: '8',
+        //     choosed: 10,
+        //   },
+        //   {
+        //     id: '9',
+        //     title: '9',
+        //     choosed: 6,
+        //   },
+        //   {
+        //     id: '10',
+        //     title: '10',
+        //     choosed: 10,
+        //   },],
+        //   row: 1,
+        //   score: 10,
+        // },
+        // ],
+        //   questions: [],
+          questions: [
             {
-            id: '1',
-            type: 'radio',
-            title: '这是一个什么网站？',
-            must: true,
-            options: [{
-                id: '1',
-                title: '问卷系统',
-                choosed: 15
-            }, {
-                id: '2',
-                title: '出版系统',
-                choosed: 13
-            }],
-            row: '',
-            score: '',
+              id: 1,
+              title: "你的性别",
+              type: "radio",
+              row: 1,
+              score: 10,
+              must: false,
+              options: [
+                {
+                  id: 337,
+                  title: "男",
+                  choosed: 2
+                },
+                {
+                  id: 338,
+                  title: "女",
+                  choosed: 1
+                },
+                {
+                  id: 339,
+                  title: "都不是",
+                  choosed: 0
+                }
+              ]
             },
-            {
-            id: '2',
-            type: 'checkbox',
-            title: '软工小学期助教都有谁？',
-            must: false,
-            options: [{
-                id: '1',
-                title: 'ZYH',
-                choosed: 15
-            }, {
-                id: '2',
-                title: 'LKW',
-                choosed: 153
-            },{
-                id: '3',
-                title: 'ZXH',
-                choosed: 151
-            }, {
-                id: '4',
-                title: 'HZH',
-                choosed: 153
-            }],
-            row: '',
-            score: '',
-            },
-            {
-          id: '3',
-          type: 'radio',
-          title: '软工小学期累不累',
-          must: false,
-          options: [{
-            id: '1',
-            title: '累',
-            choosed: 10
-          }, {
-            id: '2',
-            title: '非常累',
-            choosed: 11
-          }],
-          row: '',
-          score: '',
-        },
-        {
-          id: '4',
-          type: 'text',
-          title: '您对小学期的评价如何？',
-          must: false,
-          options: [{
-            id: '',
-            title: '',
-          }],
-          row: 3,
-          score: '',
-        },
-        {
-          id: '5',
-          type: 'mark',
-          title: '给小学期打个分吧~',
-          must: true,
-          options: [{
-            id: '1',
-            title: '1',
-            choosed: 1,
-          },
-          {
-            id: '2',
-            title: '2',
-            choosed: 8,
-          },
-          {
-            id: '3',
-            title: '3',
-            choosed: 12,
-          },
-          {
-            id: '4',
-            title: '4',
-            choosed: 1,
-          },
-          {
-            id: '5',
-            title: '5',
-            choosed: 5,
-          },
-          {
-            id: '6',
-            title: '6',
-            choosed: 1,
-          },
-          {
-            id: '7',
-            title: '7',
-            choosed: 1,
-          },
-          {
-            id: '8',
-            title: '8',
-            choosed: 10,
-          },
-          {
-            id: '9',
-            title: '9',
-            choosed: 6,
-          },
-          {
-            id: '10',
-            title: '10',
-            choosed: 10,
-          },],
-          row: 1,
-          score: 10,
-        },
-        ]
+            // {
+            //   "id": 2,
+            //   "title": "现在是几点？",
+            //   "type": "text",
+            //   "row": 1,
+            //   "score": 10,
+            //   "must": false,
+            //   "tableData": [
+            //     {
+            //       "num": 1,
+            //       "answer": "这波数据库背锅，我不背"
+            //     },
+            //     {
+            //       "num": 2,
+            //       "answer": "九点"
+            //     }
+            //   ],
+            //   "options": []
+            // },
+            // {
+            //   "id": 3,
+            //   "title": "你是不是还在肝？",
+            //   "type": "radio",
+            //   "row": 1,
+            //   "score": 10,
+            //   "must": false,
+            //   "options": [
+            //     {
+            //       "id": 341,
+            //       "title": "是的",
+            //       "choosed": 1
+            //     },
+            //     {
+            //       "id": 342,
+            //       "title": "非常是啊",
+            //       "choosed": 2
+            //     }
+            //   ]
+            // },
+            // {
+            //   "id": 4,
+            //   "title": "你平时的睡眠时间",
+            //   "type": "radio",
+            //   "row": 1,
+            //   "score": 10,
+            //   "must": false,
+            //   "options": [
+            //     {
+            //       "id": 343,
+            //       "title": "1-3小时",
+            //       "choosed": 1
+            //     },
+            //     {
+            //       "id": 344,
+            //       "title": "3-5小时",
+            //       "choosed": 0
+            //     },
+            //     {
+            //       "id": 345,
+            //       "title": "5-7小时",
+            //       "choosed": 1
+            //     },
+            //     {
+            //       "id": 346,
+            //       "title": "睡觉？不存在的",
+            //       "choosed": 1
+            //     }
+            //   ]
+            // },
+            // {
+            //   "id": 5,
+            //   "title": "你对zht的印象分",
+            //   "type": "mark",
+            //   "row": 1,
+            //   "score": 10,
+            //   "must": false,
+            //   "options": [
+            //     {
+            //       "title": 1,
+            //       "choosed": 0
+            //     },
+            //     {
+            //       "title": 2,
+            //       "choosed": 0
+            //     },
+            //     {
+            //       "title": 3,
+            //       "choosed": 0
+            //     },
+            //     {
+            //       "title": 4,
+            //       "choosed": 1
+            //     },
+            //     {
+            //       "title": 5,
+            //       "choosed": 0
+            //     },
+            //     {
+            //       "title": 6,
+            //       "choosed": 0
+            //     },
+            //     {
+            //       "title": 7,
+            //       "choosed": 0
+            //     },
+            //     {
+            //       "title": 8,
+            //       "choosed": 0
+            //     },
+            //     {
+            //       "title": 9,
+            //       "choosed": 1
+            //     },
+            //     {
+            //       "title": 10,
+            //       "choosed": 1
+            //     }
+            //   ]
+            // }
+          ]
         }
     },
     created() {

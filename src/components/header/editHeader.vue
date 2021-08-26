@@ -3,7 +3,8 @@
     <el-col :span="2" class="lf-bt"><el-button icon="el-icon-edit" @click="open_1">编辑标题</el-button></el-col>
     <el-col :span="2" class="lf-bt"><el-button icon="el-icon-edit-outline" @click="open_2">编辑说明</el-button></el-col>
     <el-col :span="2" class="lf-bt"><el-button icon="el-icon-setting" @click="setting">高级设置</el-button></el-col>
-    <el-col :span="2" class="button"><el-button type="success" icon="el-icon-upload2" @click="publish">发布</el-button></el-col>
+    <el-col :span="2" class="button" v-if="isReleased"><el-button type="success" icon="el-icon-upload2" @click="publish" disabled>发布</el-button></el-col>
+    <el-col :span="2" class="button" v-else><el-button type="success" icon="el-icon-upload2" @click="publish">发布</el-button></el-col>
     <el-col :span="2" class="button"><el-button type="warning" icon="el-icon-receiving" @click="save">保存</el-button></el-col>
     <el-col :span="2" class="button"><el-button type="primary" icon="el-icon-view" @click="preview">预览</el-button></el-col>
     <el-col :span="2" class="state true" v-if="isReleased"><i class="el-icon-finished"></i> 已发布</el-col>
