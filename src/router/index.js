@@ -68,6 +68,11 @@ const routes = [
         component: () => import('../views/qn-create/qn-form/investigation'),
     },
     {
+        path: '/vote',
+        name: 'Vote',
+        component: () => import('../views/qn-create/qn-form/vote'),
+    },
+    {
         path: '/test',
         name: 'Test',
         component: () => import('../views/qn-create/qn-form/test'),
@@ -102,6 +107,14 @@ const routes = [
         }
     },
     {
+        path: '/preview_vote',
+        name: 'PreviewVote',
+        component: () => import('../views/qn-fill/FillQnVote'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
         path: '/preview',
         name: 'Preview',
         component: () => import('../views/qn-fill/FillQn'),
@@ -113,6 +126,11 @@ const routes = [
         path: '/test_result',
         name: 'TestResult',
         component: () => import('../views/qn-fill/FinishTest'),
+    },
+    {
+        path: '/vote_result',
+        name: 'VoteResult',
+        component: () => import('../views/qn-fill/FinishVote'),
     },
     {
         path: '/stat',

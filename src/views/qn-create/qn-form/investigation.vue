@@ -21,7 +21,6 @@
       <el-aside class="side">
         <el-tabs v-model="activeName" @tab-click="initOutline">
 
-
             <el-tab-pane label="题目类型" name="first">
               <div class="edit">
                 <div class="ques-type">
@@ -47,11 +46,18 @@
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="问卷大纲" name="second">
-              <div class="outline">
-                <el-tree :data="outline" :props="defaultProps"></el-tree>
-              </div>
-            </el-tab-pane>
+          <el-tab-pane label="问卷大纲" name="second">
+            <div class="outline">
+              <el-tree
+                  :data="outline"
+                  node-key="id"
+                  :props="defaultProps"
+                  @node-drop="handleDrop"
+                  draggable
+                  :allow-drop="allowDrop"
+              ></el-tree>
+            </div>
+          </el-tab-pane>
 
         </el-tabs>
       </el-aside>
@@ -80,11 +86,7 @@
                   {{ item.description }}
                 </div>
 
-                <div class="block-choice" v-if="item.type==='mark'">
-                  <!--                  评分-->
-                  <el-rate value="0" :max="item.score"></el-rate>
-                </div>
-                <div class="block-choice" v-else v-for="ans in item.options" :key="ans.id">
+                <div class="block-choice" v-for="ans in item.options" :key="ans.id">
 
                   <!--                  单选-->
                   <el-radio v-if="item.type==='radio'" value="0">
@@ -105,7 +107,10 @@
                   </el-input>
                 </div>
 
-
+                <div class="block-choice" v-if="item.type==='mark'">
+                  <!--                  评分-->
+                  <el-rate value="0" :max="item.score"></el-rate>
+                </div>
               </el-col>
 
               <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
@@ -264,7 +269,6 @@ export default {
   data() {
     return {
       qrcode: null,
-
       linkShare: '',
       editWrongMsg:"",
       editWrongMsgVisible:false,
@@ -477,88 +481,117 @@ export default {
       this.qsEditDialogTitle="编辑题目";
       this.qsEditDialogVisible=true;
     },
+    isExistEmptyOption:function (){
+      for(let i=0;i<this.willAddQuestion.options.length;i++){
+        if(this.willAddQuestion.options[i].title==='') return true;
+      }
+      return false;
+    },
+    isExistSameOption:function (){
+      for(let i=0;i<this.willAddQuestion.options.length;i++){
+        for(let j=0;j<this.willAddQuestion.options.length;j++){
+          if(i!==j&&this.willAddQuestion.options[i].title===this.willAddQuestion.options[j].title) return true;
+        }
+      }
+      return false;
+    },
     dialogConfirm(){
       let index = this.editIndex;
-      this.qsEditDialogVisible = false;
       if(this.qsEditDialogTitle==="编辑题目") {
-        this.questions[index].id = this.willAddQuestion.id;
-        this.questions[index].row = this.willAddQuestion.row;
-        this.questions[index].must = this.willAddQuestion.must;
-        this.questions[index].description = this.willAddQuestion.description;
-        this.questions[index].title = this.willAddQuestion.title;
-        this.questions[index].options = this.willAddQuestion.options;
-        this.questions[index].score = this.willAddQuestion.score;
-        this.qsEditDialogTitle = "";
-        // 大纲更新
-        this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
         if (this.willAddQuestion.title === '') {
-          this.editWrongMsg = "标题不能为空！！！";
-          this.editWrongMsgVisible = true;
-        } else {
+          this.$message({
+            type: 'error',
+            message: '标题不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistEmptyOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistSameOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能重复!'
+          });
+        }
+        else {
+          this.questions[index].id = this.willAddQuestion.id;
+          this.questions[index].row = this.willAddQuestion.row;
+          this.questions[index].must = this.willAddQuestion.must;
+          this.questions[index].description = this.willAddQuestion.description;
+          this.questions[index].title = this.willAddQuestion.title;
+          this.questions[index].options = this.willAddQuestion.options;
+          this.questions[index].score = this.willAddQuestion.score;
+          // 大纲更新
+          this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+          this.qsEditDialogTitle = "";
+          this.qsEditDialogVisible = false;
           this.$message({
             type: 'success',
             message: '修改成功!'
           });
+          // 重置
+          this.resetWillAdd()
+          this.selectDisAble = false;
         }
-        // 重置
-        this.willAddQuestion = {
-          id: 0,
-          type: '',
-          title: '',
-          must: false,
-          description: '',
-          options: [
-            {
-              title: '', //选项标题
-              id: 0 //选项id
-            }],
-          row: 1,
-          score: 5,
-        };
-        this.selectDisAble = false;
       }
       else{
-        this.willAddQuestion.id = this.questions.length + 1;
-        // 大纲更新
-        this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-        this.questions.push(this.willAddQuestion);
-        this.$message({
-          type: 'success',
-          message: '添加成功!'
-        });
-        // 重置
-        this.willAddQuestion={
-          id:0,
-          type:'',
-          title:'',
-          must:false,
-          description: '',
-          options:[
-            {
-              title:'', //选项标题
-              id: 0 //选项id
-            }],
-          row:1,
-          score: 5,
-        };
+        if (this.willAddQuestion.title === '') {
+          this.$message({
+            type: 'error',
+            message: '标题不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistEmptyOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistSameOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能重复!'
+          });
+        }
+        else {
+          this.qsEditDialogVisible = false;
+          this.willAddQuestion.id = this.questions.length + 1;
+          // 大纲更新
+          this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+          this.questions.push(this.willAddQuestion);
+          this.$message({
+            type: 'success',
+            message: '添加成功!'
+          });
+          // 重置
+          this.resetWillAdd();
+        }
       }
     },
-    dialogCancel: function(){
-      this.qsEditDialogTitle="";
+    resetWillAdd(){
       this.willAddQuestion={
-        id:0,
+        question_id: 0,
+        id: 0,
         type:'',
         title:'',
-        must:false,
-        description: '',
+        must: false, // 是否必填
+        description: '', // 问题描述
         options:[
           {
             title:'', // 选项标题
             id: 0 // 选项id
-          }],
-        row: 1,
-        score: 5,
-        };
+          }
+        ],
+        row: 1, // 填空区域行数
+        score: 5, // 最大评分
+    }
+    },
+    dialogCancel: function(){
+      this.qsEditDialogTitle="";
+      this.resetWillAdd();
       this.qsEditDialogVisible=false;
       this.selectDisAble=false;
     },
@@ -582,7 +615,13 @@ export default {
       });
     },
     deleteOption(index){
-      this.willAddQuestion.options.splice(index,1);
+      if(this.willAddQuestion.options.length===1){
+        this.$message({
+          type:"error",
+          message:"至少需要设置一个选项！"
+        })
+      }
+      else this.willAddQuestion.options.splice(index,1);
     },
     changeTitle: function (value) {
       this.title = value;
@@ -837,6 +876,18 @@ export default {
         })
       }
     },
+    updateQuestions: function (start, end) {
+      let offset = end - start;
+      if (offset > 0) {
+        for (let i=0; i<offset; i++) {
+          this.down(start+i);
+        }
+      } else {
+        for (let i=0; i<offset*-1; i++) {
+          this.up(start-i);
+        }
+      }
+    },  // good
     toFillQn: function (value) {
       this.$router.push({
         name: 'FillQn',
@@ -866,7 +917,16 @@ export default {
       } else{
         this.$message.error("复制失败");
       }
-    }
+    },
+    // 大纲拖拽处理函数
+    handleDrop(draggingNode, dropNode, dropType) {
+      console.log('tree drop: ', draggingNode.key, dropNode.key, dropType);
+      this.updateQuestions(draggingNode.key, dropNode.key);
+    },
+    allowDrop(draggingNode, dropNode, type) {
+      if (draggingNode.key > dropNode.key) return type==='prev';
+      else return type==='next';
+    },
   },
   created() {
     const formData = new FormData();
