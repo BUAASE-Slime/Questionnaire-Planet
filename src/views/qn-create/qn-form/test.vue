@@ -81,7 +81,14 @@
 
           <el-tab-pane label="问卷大纲" name="second">
             <div class="outline">
-              <el-tree :data="outline" :props="defaultProps"></el-tree>
+              <el-tree
+                  :data="outline"
+                  node-key="id"
+                  :props="defaultProps"
+                  @node-drop="handleDrop"
+                  draggable
+                  :allow-drop="allowDrop"
+              ></el-tree>
             </div>
           </el-tab-pane>
 
@@ -399,7 +406,7 @@ import user from "@/store/user";
 import QRCode from "qrcodejs2";
 
 export default {
-  name: "investigation",
+  name: "test",
   data() {
     return {
       qrcode: null,
@@ -641,6 +648,20 @@ export default {
       this.qsEditDialogTitle = "编辑题目";
       this.qsEditDialogVisible = true;
     },
+    isExistEmptyOption:function (){
+      for(let i=0;i<this.willAddQuestion.options.length;i++){
+        if(this.willAddQuestion.options[i].title==='') return true;
+      }
+      return false;
+    },
+    isExistSameOption:function (){
+      for(let i=0;i<this.willAddQuestion.options.length;i++){
+        for(let j=0;j<this.willAddQuestion.options.length;j++){
+          if(i!==j&&this.willAddQuestion.options[i].title===this.willAddQuestion.options[j].title) return true;
+        }
+      }
+      return false;
+    },
     dialogConfirm(){
       let index = this.editIndex;
       this.qsEditDialogVisible = false;
@@ -659,13 +680,42 @@ export default {
         // 大纲更新
         this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
         if (this.willAddQuestion.title === '') {
-          this.editWrongMsg = "标题不能为空！！！";
-          this.editWrongMsgVisible = true;
-        } else {
+          this.$message({
+            type: 'error',
+            message: '标题不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistEmptyOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistSameOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能重复!'
+          });
+        }
+        else {
+          this.questions[index].id = this.willAddQuestion.id;
+          this.questions[index].row = this.willAddQuestion.row;
+          this.questions[index].must = this.willAddQuestion.must;
+          this.questions[index].description = this.willAddQuestion.description;
+          this.questions[index].title = this.willAddQuestion.title;
+          this.questions[index].options = this.willAddQuestion.options;
+          this.questions[index].score = this.willAddQuestion.score;
+          // 大纲更新
+          this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+          this.qsEditDialogTitle = "";
+          this.qsEditDialogVisible = false;
           this.$message({
             type: 'success',
             message: '修改成功!'
           });
+          // 重置
+          this.resetWillAdd();
+          this.selectDisAble = false;
         }
         // 重置
         this.willAddQuestion = {
@@ -687,22 +737,33 @@ export default {
         this.selectDisAble = false;
       }
       else{
-        // 个人信息标题预设
         if (this.willAddQuestion.type==='name') { this.willAddQuestion.title = '姓名'; this.willAddQuestion.refer = ''; }
         if (this.willAddQuestion.type==='stuId') { this.willAddQuestion.title = '学号'; this.willAddQuestion.refer = '';}
         if (this.willAddQuestion.type==='class') { this.willAddQuestion.title = '班级'; this.willAddQuestion.refer = '';}
         if (this.willAddQuestion.type==='school') { this.willAddQuestion.title = '学校'; this.willAddQuestion.refer = '';}
-        // 标题为空检测
         if (this.willAddQuestion.title === '') {
-          this.editWrongMsg = "标题不能为空！！！";
-          this.editWrongMsgVisible = true;
+          this.$message({
+            type: 'error',
+            message: '标题不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistEmptyOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistSameOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能重复!'
+          });
         }
         else {
           this.qsEditDialogVisible = false;
           this.willAddQuestion.id = this.questions.length + 1;
           // 大纲更新
           this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-          // 判断答案种类预设
           if (this.willAddQuestion.type==='judge') {
             this.willAddQuestion.options = [{title: '对', id: 1}, {title: '错', id: 2}];
           }
@@ -712,23 +773,27 @@ export default {
             message: '添加成功!'
           });
           // 重置
-          this.willAddQuestion={
-            id: 0,
-            type: '',
-            title: '',
-            must: false,
-            description: '',
-            options:[
-              {
-                title: '', //选项标题
-                id: 0 //选项id
-              }],
-            row: 1,
-            score: 10,
-            refer: '',
-            point: 0,  // 分值
-          };
+          this.resetWillAdd();
         }
+      }
+    },
+    resetWillAdd(){
+      this.willAddQuestion={
+        id: 0,
+        type: '',
+        title: '',
+        must: false, // 是否必填
+        description: '', // 问题描述
+        options:[
+          {
+            title: '', // 选项标题
+            id: 0 // 选项id
+          }
+        ],
+        row: 1, // 填空区域行数
+        score: 10, // 最大评分
+        refer: '', // 参考答案
+        point: 0,  // 分值
       }
     },
     dialogCancel: function() {
@@ -778,7 +843,13 @@ export default {
       });
     },
     deleteOption(index){
-      this.willAddQuestion.options.splice(index,1);
+      if(this.willAddQuestion.options.length===1){
+        this.$message({
+          type:"error",
+          message:"至少需要设置一个选项！"
+        })
+      }
+      else this.willAddQuestion.options.splice(index,1);
     },
     changeTitle: function (value) {
       this.title = value;
@@ -1022,6 +1093,18 @@ export default {
         })
       }
     },
+    updateQuestions: function (start, end) {
+      let offset = end - start;
+      if (offset > 0) {
+        for (let i=0; i<offset; i++) {
+          this.down(start+i);
+        }
+      } else {
+        for (let i=0; i<offset*-1; i++) {
+          this.up(start-i);
+        }
+      }
+    },  // good
     toFillQn: function (value) {
       this.$router.push({
         name: 'FillQn',
@@ -1051,7 +1134,16 @@ export default {
       } else{
         this.$message.error("复制失败");
       }
-    }
+    },
+    // 大纲拖拽处理函数
+    handleDrop(draggingNode, dropNode, dropType) {
+      console.log('tree drop: ', draggingNode.key, dropNode.key, dropType);
+      this.updateQuestions(draggingNode.key, dropNode.key);
+    },
+    allowDrop(draggingNode, dropNode, type) {
+      if (draggingNode.key > dropNode.key) return type==='prev';
+      else return type==='next';
+    },
   },
   created() {
     const formData = new FormData();

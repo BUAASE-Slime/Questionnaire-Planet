@@ -1,5 +1,5 @@
 <template>
-  <div class="investigation">
+  <div class="vote">
     <el-header class="header">
       <edit-header
           :title="title"
@@ -20,6 +20,7 @@
 
       <el-aside class="side">
         <el-tabs v-model="activeName" @tab-click="initOutline">
+
 
             <el-tab-pane label="题目类型" name="first">
               <div class="edit">
@@ -42,6 +43,21 @@
                   <i class="el-icon-star-off"></i>
                   <span> 评分题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='mark';qsEditDialogVisible=true"></i>
+                </div>
+                <div>
+                  <el-row class="sideTitle">添加投票问题</el-row>
+                  <el-row class="easyChoose">
+                    <el-col :span="12">
+                      <i class="el-icon-check"></i>
+                      <span class="chooseLabel">投票单选</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addVoteRadio"></i>
+                    </el-col>
+                    <el-col :span="12">
+                      <i class="el-icon-finished"></i>
+                      <span class="chooseLabel">投票多选</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addVoteCheckbox"></i>
+                    </el-col>
+                  </el-row>
                 </div>
               </div>
             </el-tab-pane>
@@ -76,7 +92,9 @@
 
               <el-col :span="17" class="block-content">
                 <div class="block-title">
-                  {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
+                  {{ item.id }}. {{ item.title }}
+                  <span class="must" v-if="item.must">(必填)</span>
+                  <span class="voteQs" v-if="item.isVote"> [投票题] </span>
                 </div>
 
                 <div
@@ -111,6 +129,7 @@
                   <!--                  评分-->
                   <el-rate value="0" :max="item.score"></el-rate>
                 </div>
+
               </el-col>
 
               <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
@@ -132,13 +151,10 @@
                   </el-tooltip>
                 </el-button-group>
               </el-col>
-
             </el-row>
           </div>
-
         </div>
       </el-main>
-
     </el-container>
 
     <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible"  :before-close="cancel_pre" class="dialog" >
@@ -234,24 +250,14 @@
                   </el-row>
       </span>
     </el-dialog>
-    <el-dialog :visible.sync="editWrongMsgVisible"  class="linkDialog" :show-close="false" :close-on-click-modal="false" width="300px" >
-      <span>{{ editWrongMsg }}</span>
-      <span slot="footer" class="dialog-footer" style="text-align: center">
-                  <el-row>
-                    <el-button :span="6" type="danger" style="width: 80px"  @click="editWrongMsgVisible=false">知道了</el-button>
-                  </el-row>
-      </span>
-    </el-dialog>
     <!--    高级设置弹框-->
-    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" >
-      <div class="timeBlock" style="margin-bottom: 30px">
-        <span class="demonstration" style="margin-right: 15px">截止时间</span>
-        <el-date-picker style="margin-left: 100px"
-                        v-model="timeFrame"
-                        @change="formatTime"
-                        type="datetime"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                        placeholder="选择结束时间">
+    <el-dialog custom-class="setting" :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="25%">
+      <div class="setting-item">
+        <span class="item-title">回收截止时间</span>
+        <el-date-picker
+            v-model="closingDate"
+            type="datetime"
+            placeholder="选择日期时间">
         </el-date-picker>
       </div>
       <div class="setting-bt">
@@ -267,22 +273,22 @@ import user from "@/store/user";
 import QRCode from "qrcodejs2";
 
 export default {
-  name: "investigation",
+  name: "vote",
   data() {
     return {
       qrcode: null,
       linkShare: '',
-      editWrongMsg: "",
-      editWrongMsgVisible: false,
-      qsLinkDialogVisible: false,
-      qsLinkDialogTitle: "发布成功！",
+      editWrongMsg:"",
+      editWrongMsgVisible:false,
+      qsLinkDialogVisible:false,
+      qsLinkDialogTitle:"发布成功！",
       settingDialogTitle: "高级设置",   // 高级设置弹框的标题
       settingDialogVisible:false,     // 高级设置对话框可见性
       closingDate: null,   // 高级设置中问卷回收的截止日期
       isReleased: false,   // 是否发布
-      editIndex: 0,
-      selectDisAble: false,
-      hoverItem: 0,
+      editIndex:0,
+      selectDisAble:false,
+      hoverItem:0,
       activeName: 'first',
       title: '',
       description: '',
@@ -300,13 +306,14 @@ export default {
       willAddQuestion: {
         question_id: 0,
         id: 0,
-        type: '',
-        title: '',
+        type:'',
+        title:'',
         must: false, // 是否必填
+        isVote:false,//是否是投票题
         description: '', // 问题描述
         options:[
           {
-            title: '', // 选项标题
+            title:'', // 选项标题
             id: 0 // 选项id
           }
         ],
@@ -459,32 +466,29 @@ export default {
       downloadLink.click();
       downloadLink.remove();
     },
-    formatTime(time) {
-      this.timeFrame = time;
-    },
     finish(){
-      this.qsLinkDialogVisible = false;
-      this.$router.push('/index') // 跳转到问卷中心？
+      this.qsLinkDialogVisible=false;
+      this.$router.push('/index')// 跳转到问卷中心？
     },
     publishSuccess:function (){
       this.qsLinkDialogVisible=true;
     },
     edit:function (index){
       index--;
-      this.willAddQuestion = {
-        id: this.questions[index].id,
-        type: this.questions[index].type,
-        title: this.questions[index].title,
-        must: this.questions[index].must,
+      this.willAddQuestion={
+        id:this.questions[index].id,
+        type:this.questions[index].type,
+        title:this.questions[index].title,
+        must:this.questions[index].must,
         description: this.questions[index].description,
-        options: this.questions[index].options,
-        row: this.questions[index].row,
-        score: this.questions[index].score,
+        options:this.questions[index].options,
+        row:this.questions[index].row,
+        score:this.questions[index].score,
       };
-      this.editIndex = index;
-      this.selectDisAble = true;
-      this.qsEditDialogTitle = "编辑题目";
-      this.qsEditDialogVisible = true;
+      this.editIndex=index;
+      this.selectDisAble=true;
+      this.qsEditDialogTitle="编辑题目";
+      this.qsEditDialogVisible=true;
     },
     isExistEmptyOption:function (){
       for(let i=0;i<this.willAddQuestion.options.length;i++){
@@ -576,6 +580,18 @@ export default {
         }
       }
     },
+    addVoteRadio(){
+      this.willAddQuestion.isVote=true;
+      this.willAddQuestion.must=true;
+      this.willAddQuestion.type='radio';
+      this.qsEditDialogVisible=true;
+    },
+    addVoteCheckbox(){
+      this.willAddQuestion.isVote=true;
+      this.willAddQuestion.must=true;
+      this.willAddQuestion.type='checkbox';
+      this.qsEditDialogVisible=true;
+    },
     resetWillAdd(){
       this.willAddQuestion={
         question_id: 0,
@@ -583,10 +599,11 @@ export default {
         type:'',
         title:'',
         must: false, // 是否必填
+        isVote:false,
         description: '', // 问题描述
         options:[
           {
-            title: '', // 选项标题
+            title:'', // 选项标题
             id: 0 // 选项id
           }
         ],
@@ -610,13 +627,13 @@ export default {
       }).catch(() => {
       });
     },
-    typeChange(value) {
-      this.willAddQuestion.type = value;
+    typeChange(value){
+      this.willAddQuestion.type=value;
     },
     addOption(){
       this.willAddQuestion.options.push({
-        title: '',
-        id: 0,
+        title:'',
+        id:0,
       });
     },
     deleteOption(index){
@@ -645,13 +662,6 @@ export default {
       });
     },
     publish() {
-      this.saveinfo('publish');
-
-      if (this.isReleased) {
-        this.$message.info("问卷已发布，无需重复发布");
-        return;
-      }
-
       this.$confirm('确认发布？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -684,9 +694,6 @@ export default {
               this.qrcode.makeCode(this.linkShare);
 
               break;
-            case 402:
-              this.$message.warning("问卷题目为空，无法发布");
-              break;
             case 403:
               this.$message.warning("您无权执行此操作！");
               break;
@@ -709,7 +716,7 @@ export default {
         });
       });
     },
-    saveinfo(tag) {
+    save() {
       const userInfo = user.getters.getUser(user.state());
       var param = {
         username: userInfo.user.username,
@@ -722,7 +729,51 @@ export default {
       var paramer = JSON.stringify(param, {questions: 'brackets'})
       this.$axios({
         method: 'post',
-        url: '/sm/save/qn_keep/history',
+        url: '/sm/save/qn_kepp/history',
+        data: paramer,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 0:
+            this.$message.warning("登录信息失效，请重新登录！");
+            setTimeout(() => {
+              this.$store.dispatch('clear');
+              location.reload();
+            }, 500);
+            break;
+          case 1:
+            this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+              distinguishCancelAndClose: true,
+              confirmButtonText: '返回问卷中心',
+              cancelButtonText: '继续编辑'
+            })
+            .then(() => {
+              this.$router.push('/index');
+            });
+            break;
+          default:
+            this.$message.error("保存失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+    preview() {
+      const userInfo = user.getters.getUser(user.state());
+      var param = {
+        username: userInfo.user.username,
+        title: this.title,
+        description: this.description,
+        type: this.type,
+        qn_id: this.$route.query.pid,
+        questions: this.questions
+      }
+      var paramer = JSON.stringify(param, {questions: 'brackets'})
+      this.$axios({
+        method: 'post',
+        url: '/sm/save/qn_kepp/history',
         data: paramer,
       })
           .then(res => {
@@ -735,27 +786,10 @@ export default {
                 }, 500);
                 break;
               case 1:
-                switch (tag) {
-                  case 'save':
-                    this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
-                      distinguishCancelAndClose: true,
-                      confirmButtonText: '返回问卷中心',
-                      cancelButtonText: '继续编辑'
-                    })
-                    .then(() => {
-                      this.$router.push('/index');
-                    });
-                    break;
-                  case 'preview':
-                    this.$message.success("保存成功");
-                    setTimeout(() => {
-                      location.href = 'preview?mode=0&pid=' + this.$route.query.pid;
-                    }, 700);
-                    break;
-                  case 'publish':
-                    this.$message.success("保存成功");
-                    break;
-                }
+                this.$message.success("保存成功");
+                setTimeout(() => {
+                  location.href = 'preview?mode=0&pid=' + this.$route.query.pid;
+                }, 700);
                 break;
               default:
                 this.$message.error("保存失败！");
@@ -765,12 +799,6 @@ export default {
           .catch(err => {
             console.log(err);
           })
-    },
-    save() {
-      this.saveinfo('save');
-    },
-    preview() {
-      this.saveinfo('preview');
     },
     up: function (index) {
       index--;
@@ -844,6 +872,7 @@ export default {
       temp.question_id = 0;
       questions.push(temp);
       this.$message.success("问题复制成功，已粘贴至问卷末尾");
+
     },
     deepClone :function(initialObj) {
       let obj = {};
@@ -907,7 +936,7 @@ export default {
       document.body.removeChild(aux);
       if (message !== null) {
         this.$message.success("复制成功");
-      } else{
+      } else {
         this.$message.error("复制失败");
       }
     },
@@ -960,68 +989,68 @@ export default {
 </script>
 
 <style>
-.investigation .linkDialog{
+.vote .linkDialog{
   text-align: left;
 }
-.investigation .container {
+.vote .container {
   padding: 0;
   height: auto;
   min-height: 610px;
 }
 
-.investigation header {
+.vote header {
   padding: 0 100px;
 }
 
-.investigation .el-container {
+.vote .el-container {
   padding: 0 100px;
 }
 
-.investigation .side {
+.vote .side {
   border-top: solid 1px #e3e3e3;
   border-right: solid 1px #e3e3e3;
   background: #FFFFFF;
 }
 
-.investigation .main {
+.vote .main {
   border-top: solid 1px #e3e3e3;
   background: #FFFFFF;
 }
 
-.investigation .edit {
+.vote .edit {
   margin-top: 0;
   overflow: auto;
   height: 550px;
 }
 
-.investigation .outline {
+.vote .outline {
   overflow: auto;
   height: 550px;
 }
 
-.investigation .ques-type {
+.vote .ques-type {
   padding: 15px 0;
   font-size: 16px;
   border-bottom: dashed #e3e3e3 1px;
 }
 
-.investigation .type-icon {
+.vote .type-icon {
   color: #1687fd;
   display: inline-block;
 }
 
-.investigation .type-icon:hover {
+.vote .type-icon:hover {
   color: #409EFF;
   cursor: pointer;
 }
 
-.investigation .el-tabs__nav-scroll {
+.vote .el-tabs__nav-scroll {
   text-align: center;
   height: 60px;
   margin: 0 60px;
 }
 
-.investigation .el-tabs__item {
+.vote .el-tabs__item {
   font-weight: bold;
   padding: 0 20px;
   height: 60px;
@@ -1034,27 +1063,27 @@ export default {
   position: relative;
 }
 
-.investigation .el-tabs__header {
+.vote .el-tabs__header {
   margin: 0;
 }
 
-.investigation .el-tree-node__content {
+.vote .el-tree-node__content {
   padding-left: 10px !important;
   height: 40px;
 }
 
-.investigation .main {
+.vote .main {
   max-height: 610px;
 }
 
-.investigation .ques .title {
+.vote .ques .title {
   font-size: 28px;
   font-weight: bold;
   padding-top: 10px;
   padding-bottom: 26px;
 }
 
-.investigation .ques .description {
+.vote .ques .description {
   text-align: left;
   font-size: 16px;
   padding-bottom: 30px;
@@ -1062,22 +1091,27 @@ export default {
   line-height: 30px;
 }
 
-.investigation .ques-block {
+.vote .ques-block {
   padding-bottom: 15px;
   border-top: solid #e3e3e3 1px;
 }
 
-.investigation .ques-block:hover {
+.vote .ques-block:hover {
   background: #f5f5f5;
   transition: .3s;
 }
 
-.investigation .ques-block .must {
+.vote .ques-block .must {
   font-weight: normal;
   color: crimson;
 }
 
-.investigation .block-title {
+.vote .ques-block .voteQs {
+  font-weight: normal;
+  color: #017dc2;
+}
+
+.vote .block-title {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
@@ -1085,7 +1119,7 @@ export default {
   font-weight: bold;
 }
 
-.investigation .block-description {
+.vote .block-description {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 14px;
@@ -1095,65 +1129,79 @@ export default {
   color: #969696;
 }
 
-.investigation .block-choice {
+.vote .block-choice {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
   padding: 5px 10px 10px;
 }
 
-.investigation .el-button-group>.el-button:first-child {
+.vote .el-button-group>.el-button:first-child {
   border-radius: 0 0 0 8px;
 }
 
-.investigation .el-button-group>.el-button:last-child {
+.vote .el-button-group>.el-button:last-child {
   border-radius: 0 0 8px 0;
 }
 
-.investigation .block-button .el-button {
+.vote .block-button .el-button {
   background: #b9b9b9;
   border: transparent;
 }
 
-.investigation .block-button .el-button:hover {
+.vote .block-button .el-button:hover {
   background: #989898;
   border: transparent;
 }
 
-.investigation .bt {
+.vote .bt {
   color: white;
   font-size: 14px;
   font-weight: bold;
 }
 
-.investigation .block-choice .el-textarea__inner {
+.vote .block-choice .el-textarea__inner {
   max-height: 100px;
 }
-.investigation .dialog{
+.vote .dialog{
   text-align: left;
   font-size: large;
 }
-.investigation .addOptionButton{
+.vote .addOptionButton{
   display: inline-block;
   margin-left: 100px;
 }
-.investigation .deleteOptionButton{
+.vote .deleteOptionButton{
   margin-left: 20px;
 }
 
-.investigation .setting-item {
+.vote .setting-item {
   text-align: left;
 }
 
-.investigation .setting-bt {
+.vote .setting-bt {
   margin-top: 28px;
 }
 
-.investigation .setting .el-dialog__header {
+.vote .setting .el-dialog__header {
   text-align: left;
 }
 
-.investigation .setting .item-title {
+.vote .setting .item-title {
   padding-right: 20px;
+}
+.vote .sideTitle{
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.vote .easyChoose{
+  font-size: medium;
+  margin-top: 10px;
+}
+.vote .chooseLabel{
+  margin-right: 10px;
+  margin-left: 5px;
 }
 </style>
