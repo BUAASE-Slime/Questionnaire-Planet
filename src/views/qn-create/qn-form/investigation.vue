@@ -4,8 +4,10 @@
       <edit-header
           :title="title"
           :description="description"
+          :isReleased="isReleased"
           v-on:titleChanged="changeTitle($event)"
           v-on:descriptionChanged="changeDescription($event)"
+          v-on:advancedSetting="openSetting($event)"
           v-on:publishClicked="publish($event)"
           v-on:saveClicked="save($event)"
           v-on:qnPreview="preview($event)"
@@ -78,7 +80,11 @@
                   {{ item.description }}
                 </div>
 
-                <div class="block-choice" v-for="ans in item.options" :key="ans.id">
+                <div class="block-choice" v-if="item.type==='mark'">
+                  <!--                  评分-->
+                  <el-rate value="0" :max="item.score"></el-rate>
+                </div>
+                <div class="block-choice" v-else v-for="ans in item.options" :key="ans.id">
 
                   <!--                  单选-->
                   <el-radio v-if="item.type==='radio'" value="0">
@@ -97,14 +103,9 @@
                       placeholder="请输入内容"
                       v-bind="ans.title">
                   </el-input>
-
-                  <!--                  评分-->
-                  <el-rate v-if="item.type==='mark'"
-                           v-bind="ans.id"
-                           :max="item.score">
-                  </el-rate>
-
                 </div>
+
+
               </el-col>
 
               <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
@@ -190,7 +191,7 @@
 
         <template v-if="willAddQuestion.type==='mark'">
           <el-form-item label="最大分数">
-            <el-input-number v-model="willAddQuestion.score" :min="1" :max="10" ></el-input-number>
+            <el-input-number v-model="willAddQuestion.score" :min="3" :max="10" ></el-input-number>
           </el-form-item>
         </template>
       </el-form>
@@ -236,6 +237,20 @@
                   </el-row>
       </span>
     </el-dialog>
+    <!--    高级设置弹框-->
+    <el-dialog custom-class="setting" :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="25%">
+      <div class="setting-item">
+        <span class="item-title">回收截止时间</span>
+        <el-date-picker
+            v-model="closingDate"
+            type="datetime"
+            placeholder="选择日期时间">
+        </el-date-picker>
+      </div>
+      <div class="setting-bt">
+        <el-button type="primary" @click="settingSuccess">完成</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -255,6 +270,10 @@ export default {
       editWrongMsgVisible:false,
       qsLinkDialogVisible:false,
       qsLinkDialogTitle:"发布成功！",
+      settingDialogTitle: "高级设置",   // 高级设置弹框的标题
+      settingDialogVisible:false,     // 高级设置对话框可见性
+      closingDate: null,   // 高级设置中问卷回收的截止日期
+      isReleased: false,   // 是否发布
       editIndex:0,
       selectDisAble:false,
       hoverItem:0,
@@ -285,8 +304,8 @@ export default {
             id: 0 // 选项id
           }
         ],
-        row:1, // 填空区域行数
-        score:10, // 最大评分
+        row: 1, // 填空区域行数
+        score: 5, // 最大评分
       },
       allType:[
         {
@@ -494,7 +513,7 @@ export default {
               id: 0 //选项id
             }],
           row: 1,
-          score: 10,
+          score: 5,
         };
         this.selectDisAble = false;
       }
@@ -520,7 +539,7 @@ export default {
               id: 0 //选项id
             }],
           row:1,
-          score:10,
+          score: 5,
         };
       }
     },
@@ -537,8 +556,8 @@ export default {
             title:'', // 选项标题
             id: 0 // 选项id
           }],
-        row:1,
-        score:10,
+        row: 1,
+        score: 5,
         };
       this.qsEditDialogVisible=false;
       this.selectDisAble=false;
@@ -570,6 +589,16 @@ export default {
     },
     changeDescription: function (value) {
       this.description = value;
+    },
+    openSetting: function () {
+      this.settingDialogVisible = true;
+    },
+    settingSuccess: function () {
+      this.settingDialogVisible = false;
+      this.$message({
+        type: 'success',
+        message: '设置已生效'
+      });
     },
     publish() {
       this.$confirm('确认发布？', '提示', {
@@ -858,8 +887,12 @@ export default {
           this.description = res.data.description;
           this.type = res.data.type;
           this.questions = res.data.questions;
+          this.isReleased = res.data.is_released;
+          console.log(this.questions);
 
           this.InitOutline();
+          console.log(this.questions);  // 调试
+          console.log(this.outline);  // 调试
           break;
         default:
           this.$message.error("访问失败！");
@@ -1053,5 +1086,21 @@ export default {
 }
 .investigation .deleteOptionButton{
   margin-left: 20px;
+}
+
+.investigation .setting-item {
+  text-align: left;
+}
+
+.investigation .setting-bt {
+  margin-top: 28px;
+}
+
+.investigation .setting .el-dialog__header {
+  text-align: left;
+}
+
+.investigation .setting .item-title {
+  padding-right: 20px;
 }
 </style>

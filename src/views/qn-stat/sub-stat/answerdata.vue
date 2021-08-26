@@ -25,6 +25,11 @@
                     align="center">
                     </el-table-column>
                     <el-table-column
+                        prop="username"
+                        label="填写用户"
+                        align="center">
+                    </el-table-column>
+                    <el-table-column
                     prop="answer_num"
                     label="完成题目数量"
                     width="180"
@@ -576,7 +581,7 @@
  }
  .op{
     float: right;
-    margin: 5px 30px;
+    margin: 0 30px;
  }
  .box-card{
      margin: 20px;

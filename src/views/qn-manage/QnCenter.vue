@@ -1,6 +1,6 @@
 <template>
     <div id='sum' style="display: flex">
-        <div id='aside'> 
+        <div id='aside'>
               <el-button type="primary" id='newButton' icon='el-icon-plus' @click="linkCreate">
                 <span style="font-weight: bold; font-size: 16px">创建问卷</span>
               </el-button>
@@ -65,7 +65,7 @@
                     <el-col span=20>{{msg.title}}</el-col>
                   </el-row>
                   <span class="headspan">id：{{msg.survey_id}}</span>
-                  <span v-if="msg.is_released" class="headspan" style="color: #1687fd"><i class="el-icon-success"></i> 已发布</span>
+                  <span v-if="msg.is_released" class="headspan" style="color: #02923b"><i class="el-icon-success"></i> 已发布</span>
                   <span v-else class="headspan"><i class="el-icon-error"></i> 未发布</span>
                   <span class="headspan">答卷：
                     <span v-if="msg.recycling_num===0">{{msg.recycling_num}}</span>
@@ -90,8 +90,8 @@
                   <el-button type="text" class="rightside el-icon-star-on" @click="uncollectQn(index)" v-if="msg.is_collected"> 收藏</el-button>
                   <el-button type="text" class="rightside el-icon-star-off" @click="collectQn(index)" v-else> 收藏</el-button>
                   <el-button type="text" class="rightside el-icon-document" @click="copyQn(index)"> 复制</el-button>
-                  <el-button type="text" v-if="msg.is_released" @click="recycle(index)" class="rightside el-icon-video-pause"> 暂停</el-button>
-                  <el-button type="text" v-else @click="release(index)" class="rightside el-icon-video-play"> 发布</el-button>
+                  <el-button type="text" v-if="msg.is_released" @click="recycle(index)" class="rightside el-icon-video-pause" style="color: red"> 暂停</el-button>
+                  <el-button type="text" v-else @click="release(index)" class="rightside el-icon-video-play" style="color: #038235"> 发布</el-button>
                 </div>
               </el-card>
             </div>
@@ -131,7 +131,6 @@
       </span>
       </el-dialog>
     </div>
-
 </template>
 
 <script>
@@ -964,10 +963,6 @@ export default {
         text-align: center;
     }
 
-    .el-icon-video-pause:before {
-      color: red;
-    }
-
     #title{
 
         height: 35px;
@@ -1016,7 +1011,7 @@ export default {
         float: right;
         padding: 10px;
         color: black;
-      font-size: 13px;
+      font-size: 14px;
     }
     #download{
         padding: 3px 10px 12px 10px;
