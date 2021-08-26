@@ -238,13 +238,15 @@
       </span>
     </el-dialog>
     <!--    高级设置弹框-->
-    <el-dialog custom-class="setting" :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="25%">
-      <div class="setting-item">
-        <span class="item-title">回收截止时间</span>
-        <el-date-picker
-            v-model="closingDate"
-            type="datetime"
-            placeholder="选择日期时间">
+    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" >
+      <div class="timeBlock" style="margin-bottom: 30px">
+        <span class="demonstration" style="margin-right: 15px">截止时间</span>
+        <el-date-picker style="margin-left: 100px"
+                        v-model="timeFrame"
+                        @change="formatTime"
+                        type="datetime"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        placeholder="选择结束时间">
         </el-date-picker>
       </div>
       <div class="setting-bt">
@@ -266,17 +268,17 @@ export default {
       qrcode: null,
 
       linkShare: '',
-      editWrongMsg:"",
-      editWrongMsgVisible:false,
-      qsLinkDialogVisible:false,
-      qsLinkDialogTitle:"发布成功！",
+      editWrongMsg: "",
+      editWrongMsgVisible: false,
+      qsLinkDialogVisible: false,
+      qsLinkDialogTitle: "发布成功！",
       settingDialogTitle: "高级设置",   // 高级设置弹框的标题
       settingDialogVisible:false,     // 高级设置对话框可见性
       closingDate: null,   // 高级设置中问卷回收的截止日期
       isReleased: false,   // 是否发布
-      editIndex:0,
-      selectDisAble:false,
-      hoverItem:0,
+      editIndex: 0,
+      selectDisAble: false,
+      hoverItem: 0,
       activeName: 'first',
       title: '',
       description: '',
@@ -294,13 +296,13 @@ export default {
       willAddQuestion: {
         question_id: 0,
         id: 0,
-        type:'',
-        title:'',
+        type: '',
+        title: '',
         must: false, // 是否必填
         description: '', // 问题描述
         options:[
           {
-            title:'', // 选项标题
+            title: '', // 选项标题
             id: 0 // 选项id
           }
         ],
@@ -453,29 +455,32 @@ export default {
       downloadLink.click();
       downloadLink.remove();
     },
+    formatTime(time) {
+      this.timeFrame = time;
+    },
     finish(){
-      this.qsLinkDialogVisible=false;
-      this.$router.push('/index')// 跳转到问卷中心？
+      this.qsLinkDialogVisible = false;
+      this.$router.push('/index') // 跳转到问卷中心？
     },
     publishSuccess:function (){
       this.qsLinkDialogVisible=true;
     },
     edit:function (index){
       index--;
-      this.willAddQuestion={
-        id:this.questions[index].id,
-        type:this.questions[index].type,
-        title:this.questions[index].title,
-        must:this.questions[index].must,
+      this.willAddQuestion = {
+        id: this.questions[index].id,
+        type: this.questions[index].type,
+        title: this.questions[index].title,
+        must: this.questions[index].must,
         description: this.questions[index].description,
-        options:this.questions[index].options,
-        row:this.questions[index].row,
-        score:this.questions[index].score,
+        options: this.questions[index].options,
+        row: this.questions[index].row,
+        score: this.questions[index].score,
       };
-      this.editIndex=index;
-      this.selectDisAble=true;
-      this.qsEditDialogTitle="编辑题目";
-      this.qsEditDialogVisible=true;
+      this.editIndex = index;
+      this.selectDisAble = true;
+      this.qsEditDialogTitle = "编辑题目";
+      this.qsEditDialogVisible = true;
     },
     dialogConfirm(){
       let index = this.editIndex;
@@ -546,14 +551,14 @@ export default {
     dialogCancel: function(){
       this.qsEditDialogTitle="";
       this.willAddQuestion={
-        id:0,
-        type:'',
-        title:'',
-        must:false,
+        id: 0,
+        type: '',
+        title: '',
+        must: false,
         description: '',
         options:[
           {
-            title:'', // 选项标题
+            title: '', // 选项标题
             id: 0 // 选项id
           }],
         row: 1,
@@ -572,13 +577,13 @@ export default {
       }).catch(() => {
       });
     },
-    typeChange(value){
-      this.willAddQuestion.type=value;
+    typeChange(value) {
+      this.willAddQuestion.type = value;
     },
     addOption(){
       this.willAddQuestion.options.push({
-        title:'',
-        id:0,
+        title: '',
+        id: 0,
       });
     },
     deleteOption(index){
@@ -678,7 +683,7 @@ export default {
       var paramer = JSON.stringify(param, {questions: 'brackets'})
       this.$axios({
         method: 'post',
-        url: '/sm/save/qn_kepp/history',
+        url: '/sm/save/qn_keep/history',
         data: paramer,
       })
           .then(res => {
@@ -800,7 +805,6 @@ export default {
       temp.question_id = 0;
       questions.push(temp);
       this.$message.success("问题复制成功，已粘贴至问卷末尾");
-
     },
     deepClone :function(initialObj) {
       let obj = {};

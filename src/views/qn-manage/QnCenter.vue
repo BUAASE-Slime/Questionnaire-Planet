@@ -563,6 +563,26 @@ export default {
       })
     },
 
+    linkEditUrl(index) {
+      switch (this.QnList[index].type) {
+        case "1":
+          location.href = 'edit?pid=' + this.QnList[index].survey_id;
+          break;
+        case "2":
+          location.href = 'edit_test?pid=' + this.QnList[index].survey_id;
+          break;
+        case "3":
+          location.href = 'edit_vote?pid=' + this.QnList[index].survey_id;
+          break;
+        case "4":
+          location.href = 'edit_form?pid=' + this.QnList[index].survey_id;
+          break;
+        case "5":
+          location.href = 'edit_hate?pid=' + this.QnList[index].survey_id;
+          break;
+      }
+    },
+
     editUrl(index) {
       if (this.QnList[index].is_released) {
         this.$confirm('检测到问卷已发布，编辑可能影响已回收答卷数据，请确认是否编辑？', '提示', {
@@ -570,16 +590,27 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          location.href = 'edit?pid=' + this.QnList[index].survey_id;
+          this.linkEditUrl(index);
         }).catch(() => {
         });
       } else {
-        location.href = 'edit?pid=' + this.QnList[index].survey_id;
+        this.linkEditUrl(index);
       }
     },
 
     previewUrl(index) {
-      return 'preview?pid=' + index.survey_id + '&mode=0';
+      switch (index.type) {
+        case "1":
+          return 'preview?pid=' + index.survey_id + '&mode=0';
+        case "2":
+          return 'preview_test?pid=' + index.survey_id + '&mode=0';
+        case "3":
+          return 'preview_vote?pid=' + index.survey_id + '&mode=0';
+        case "4":
+          return 'preview_form?pid=' + index.survey_id + '&mode=0';
+        case "5":
+          return 'preview_hate?pid=' + index.survey_id + '&mode=0';
+      }
     },
 
     handleOpen(key, keyPath) {

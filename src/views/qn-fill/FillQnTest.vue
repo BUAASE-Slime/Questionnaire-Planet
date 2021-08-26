@@ -4,7 +4,21 @@
       <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
     </div>
     <div class="paper">
-      <div class="body">
+      <div v-if="success" style="padding-bottom: 50px">
+        <div class="tyn-icon">
+          <img src="../../assets/images/survey2.png" alt="">
+        </div>
+        <h1 v-if="success">提交成功，感谢您的参与！</h1>
+        <el-button type="primary" size="middle" @click="backToSurvey">继续查看问卷信息</el-button>
+      </div>
+      <div v-else-if="close" style="padding-bottom: 50px">
+        <div class="tyn-icon">
+          <img src="../../assets/images/survey2.png" alt="">
+        </div>
+        <h1 v-if="close">问卷已结束，感谢您的参与！</h1>
+        <el-button type="primary" size="middle" @click="gotoHome">返回</el-button>
+      </div>
+      <div class="body" v-else>
 
         <div class="title">
           {{ title }}
@@ -88,7 +102,7 @@
       </div>
 
       <div class="tail">
-        <a href="http://localhost:8080/">星球问卷</a>&ensp;提供技术支持
+        <a href="http://localhost:8080/">问卷星球</a>&ensp;提供技术支持
       </div>
     </div>
   </div>
@@ -99,7 +113,13 @@ export default {
   name: "FillQn",
   data() {
     return {
+      rootUrl: this.GLOBAL.baseUrl,
+
+      success: false,
+      close: false,
+
       mode: this.$route.query.mode,
+      open: 1,
       title: '考试问卷Beta',
       description: '测试考试问卷的预览模式',
       questions: [
@@ -306,6 +326,12 @@ export default {
     }
   },
   methods: {
+    gotoHome() {
+      this.$router.push('/');
+    },
+    backToSurvey() {
+      this.success = false;
+    },
     submit: function () {
       // 必选检查
       let answers = this.answers;
@@ -314,7 +340,7 @@ export default {
       let num = '';
       for (let i=0; i<answers.length; i++) {
         if (questions[i].must
-            && (answers[i].ans===null || answers[i].ans==='' || (answers[i].ans===0 && answers[i].type==='4'))
+            && (answers[i].ans===null || answers[i].ans==='' || (answers[i].ans===0 && answers[i].type==='mark'))
             && answers[i].ansList.length===0) {
           num += (i+1).toString() + ' ';
           bool = true;
@@ -334,25 +360,93 @@ export default {
         });
         return;
       }
+      // 数据转换
+      for (var i=0; i<this.answers.length; i++) {
+        var ans = this.answers[i].ans;
+        var anslist = this.answers[i].ansList;
+        this.answers[i].question_id = this.questions[i].question_id;
+        switch (this.answers[i].type) {
+          case "radio":
+            this.answers[i].answer = this.answers[i].ans;
+            break;
+          case "checkbox":
+            var ansl = '';
+            for (var j=0; j<anslist.length-1; j++) {
+              ansl = ansl + anslist[j] + '-<^-^>-';
+            }
+            ansl = ansl + anslist[j];
+            this.answers[i].answer = ansl;
+            break;
+          case "mark":
+            this.answers[i].answer = ans.toString();
+            break;
+          default:
+            this.answers[i].answer = ans;
+            break;
+        }
+      }
       // 提交确认
       this.$confirm('确认提交问卷？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '问卷提交成功'
-        });
+        var param = {
+          code: this.$route.query.code,
+          answers: this.answers,
+        };
+        var paramer = JSON.stringify(param, {answers: 'brackets'})
+        this.$axios({
+          method: 'post',
+          url: '/qn/save_ans',
+          data: paramer,
+        })
+            .then(res => {
+              switch (res.data.status_code) {
+                case 1:
+                  this.$message({
+                    type: 'success',
+                    message: '问卷提交成功'
+                  });
+                  this.success = true;
+                  console.log(this.questions);
+                  console.log(this.answers);
+                  break;
+                case 2:
+                  this.$message.warning("问卷已结束，感谢您的参与！");
+                  this.close = true;
+                  break;
+                case 3:
+                  this.$message.warning("问卷已结束，感谢参与！");
+                  this.close = true;
+                  break;
+                default:
+                  this.$message.error("操作失败！");
+                  break;
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            })
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消提交'
-        });
+
       });
     },
     quit: function () {
-      this.$router.push('/index');
+      this.$confirm('请选择返回问卷编辑页面或问卷中心？', '确认信息', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '编辑页面',
+        cancelButtonText: '问卷中心'
+      })
+          .then(() => {
+            location.href = this.GLOBAL.baseUrl + "/edit?pid=" + this.$route.query.pid;
+          })
+          .catch(action => {
+            if (action === 'cancel') {
+              this.$router.push('/index');
+            }
+          });
+
     },
   },
   created() {
@@ -376,6 +470,57 @@ export default {
                 this.description = res.data.description;
                 this.type = res.data.type;
                 this.questions = res.data.questions;
+
+                //建立答案框架
+                for (var i=0; i<this.questions.length; i++) {
+                  this.answers.push({
+                    question_id: this.questions[i].question_id,
+                    type: this.questions[i].type,
+                    ans: null,
+                    ansList: [],
+                    answer: ''
+                  })
+                }
+
+                break;
+              default:
+                this.$message.error("访问失败！");
+                break;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+    }
+    else if (this.mode === '1') {
+      const formData = new FormData();
+      formData.append("code", this.$route.query.code);
+      this.$axios({
+        method: 'post',
+        url: '/sm/get/qn_for_fill',
+        data: formData,
+      })
+          .then(res => {
+            switch (res.data.status_code) {
+              case 2:
+                this.$router.push('PageNotFound');
+                break;
+              case 1:
+                this.title = res.data.title;
+                this.description = res.data.description;
+                this.type = res.data.type;
+                this.questions = res.data.questions;
+
+                //建立答案框架
+                for (var i=0; i<this.questions.length; i++) {
+                  this.answers.push({
+                    question_id: this.questions[i].question_id,
+                    type: this.questions[i].type,
+                    ans: null,
+                    ansList: [],
+                    answer: ''
+                  })
+                }
                 break;
               default:
                 this.$message.error("访问失败！");
@@ -391,6 +536,10 @@ export default {
 </script>
 
 <style>
+.tyn-icon {
+  margin: 50px ;
+  padding-top: 100px;
+}
 .qn-fill {
   background-image: url("../../assets/images/preview_bk.png");
   background-repeat: repeat-y;

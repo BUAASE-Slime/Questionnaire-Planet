@@ -4,8 +4,10 @@
       <edit-header
           :title="title"
           :description="description"
+          :isReleased="isReleased"
           v-on:titleChanged="changeTitle($event)"
           v-on:descriptionChanged="changeDescription($event)"
+          v-on:advancedSetting="openSetting($event)"
           v-on:publishClicked="publish($event)"
           v-on:saveClicked="save($event)"
           v-on:qnPreview="preview($event)"
@@ -18,6 +20,8 @@
     <el-container class="container">
       <el-aside class="side">
         <el-tabs v-model="activeName" @tab-click="initOutline">
+
+
             <el-tab-pane label="题目类型" name="first">
               <div class="edit">
                 <div class="ques-type">
@@ -192,9 +196,11 @@
         <el-form-item label="题目描述" style="width: 100%;">
           <el-input v-model="willAddQuestion.description" placeholder="请输入题目描述" style="width: 800px"></el-input>
         </el-form-item>
+
         <el-form-item label="是否必填" >
           <el-checkbox v-model="willAddQuestion.must">必填</el-checkbox>
         </el-form-item>
+
         <template v-if="willAddQuestion.type==='radio'||willAddQuestion.type==='checkbox'">
           <el-form-item :label="'选项'+(index+1)" v-for="(item,index) in willAddQuestion.options" :key="index">
             <el-row>
