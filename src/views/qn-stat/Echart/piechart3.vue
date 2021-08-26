@@ -7,37 +7,71 @@
 </template>
 
 <script>
-
-var that;
-
 export default {
   name: 'echart',
-  data () {
-    return {
-      chart1_name:null,
-      chart1_data:null,
+  props: {
+    data: [],
+    type: {
+      type: String
     }
   },
-  created: function () {
-    // `this` 指向 vm 实例
-    that = this
-
-    that.chart2_data=[{value:3, name:'a'},
-                      {value:3, name:'b'},
-                      {value:2, name:'c'},
-                      {value:1, name:'d'}];
+  data () {
+    return {
+      chart2_data: [],
+    }
+  },
+  watch: {
+    data: {
+      handler (newV, oldV) {
+        console.log(oldV, newV);
+        this.chart2_data = [];
+        this.data = newV;
+        this.getData();
+        this.showChart2();
+      },
+      deep: true,
+    },
+    type: {
+      handler(newV, oldV) {
+        console.log(oldV, newV);
+        this.type = newV;
+      }
+    }
+  },
+  created () {
+    this.getData();
   },
   mounted(){
     //页面加载完成后,才执行
-    that.showChart2();
+    this.showChart2();
   },
   methods: {
+    getData() {
+      console.log(this.data);
+      var title;
+      var choosed;
+      for (var i=0; i<this.data.length; i++) {
+        title = this.data[i].title;
+        choosed = this.data[i].choosed;
+        if (this.type === 'mark') {
+          title = (i+1).toString();
+        } else if (this.data.length > 5 ||(title.length > 5 && this.data.length >= 4)) {
+          title = "选项" + (i+1).toString();
+        }
+        this.chart2_data.push({
+          value: choosed,
+          name: title
+        });
+      }
+      console.log('chart2_data');
+      console.log(this.chart2_data);
+    },
     showChart2()
     {
       console.log("showChart2")
 
       // 基于准备好的dom，初始化echarts实例
-      let myChart2 = that.$echarts.init(document.getElementById('myChart2'))
+      let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
       // 绘制图表
       var option2 = {
             tooltip : {

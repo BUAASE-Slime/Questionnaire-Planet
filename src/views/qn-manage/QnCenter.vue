@@ -65,16 +65,20 @@
                     <el-col span=20>{{msg.title}}</el-col>
                   </el-row>
                   <span class="headspan">id：{{msg.survey_id}}</span>
-                  <span class="headspan">答卷：{{msg.recycling_num}}</span>
-                  <span v-if="msg.is_released" class="headspan">已发布</span>
-                  <span v-else class="headspan">未发布</span>
+                  <span v-if="msg.is_released" class="headspan" style="color: #1687fd"><i class="el-icon-success"></i> 已发布</span>
+                  <span v-else class="headspan"><i class="el-icon-error"></i> 未发布</span>
+                  <span class="headspan">答卷：
+                    <span v-if="msg.recycling_num===0">{{msg.recycling_num}}</span>
+                    <span v-else style="color: #1687fd">{{msg.recycling_num}}</span>
+                  </span>
                   <span class="headspan">创建时间：{{msg.create_time}}</span>
                 </div>
                 <div slot="default" class="card-body">
-                  <el-link :href="editUrl(msg)" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
+                  <el-link @click="editUrl(index)" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
                   <el-link :href="previewUrl(msg)" :underline="false" class="leftside el-icon-view">&nbsp;预览</el-link>
                   <el-link @click="openShare(index)" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
-                  <el-link href="PageNotFound" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
+                  <el-link @click="statUrl(index)" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
+                  <el-link @click="refresh(index)" :underline="false" class="leftside el-icon-refresh">&nbsp;清空</el-link>
                   <el-dropdown split-button class="leftside" size="mini" id="download" @command="selectExportType">
                     导出
                     <el-dropdown-menu slot="dropdown">
@@ -116,6 +120,7 @@
               <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
             <el-row style="margin-top: 25px">
               <el-button type="primary" plain @click="download">下载二维码</el-button>
+              <el-button type="primary" @click="genCodeAgain" style="margin-left: 30px">重新生成链接</el-button>
             </el-row>
           </el-col>
         </el-row>
@@ -137,7 +142,7 @@ import QRCode from 'qrcodejs2';
 
 export default {
   created() {
-    this.searchQns();
+    this.searchQns(0);
   },
   data() {
     return {
@@ -184,6 +189,37 @@ export default {
     }
   },
   methods:{
+    genCodeAgain() {
+      const formData = new FormData();
+      formData.append("qn_id", this.share_surveyId);
+      this.$axios({
+        method: 'post',
+        url: '/qn/change/code',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+
+          if (this.qrcode == null) {
+            this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
+              width: 200, //生成的二维码的宽度
+              height: 200, //生成的二维码的高度
+              colorDark : "#000000", // 生成的二维码的深色部分
+              colorLight : "#ffffff", //生成二维码的浅色部分
+              correctLevel : QRCode.CorrectLevel.H
+            });
+          }
+          this.qrcode.clear();
+          this.qrcode.makeCode(this.linkShare);
+        } else {
+          this.$message.error("请求失败！");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
     beforeHandleCommand(index, format) {
       return {
         'index': index,
@@ -226,24 +262,31 @@ export default {
     },
 
     recycle:function (index){
-      const formData = new FormData();
-      formData.append("qn_id", this.QnList[index].survey_id);
-      this.$axios({
-        url: '/sm/pause_qn',
-        method: 'post',
-        data: formData,
+      this.$confirm('暂停问卷后，问卷将无法正常填写吗，是否确定？', '确认信息', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
       })
-      .then(res => {
-        if (res.data.status_code === 1) {
-          this.$message.success("暂停发布成功");
-          this.QnList[index].is_released=false;
-        } else {
-          this.$message.error("执行操作失败");
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+      .then(() => {
+        const formData = new FormData();
+        formData.append("qn_id", this.QnList[index].survey_id);
+        this.$axios({
+          url: '/sm/pause_qn',
+          method: 'post',
+          data: formData,
+        })
+            .then(res => {
+              if (res.data.status_code === 1) {
+                this.$message.success("暂停发布成功");
+                this.QnList[index].is_released=false;
+              } else {
+                this.$message.error("执行操作失败");
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            })
+      });
     },
     release:function(index){
       const formData = new FormData();
@@ -265,22 +308,6 @@ export default {
           case 10:
             this.$message.success("问卷发布成功！");
             this.QnList[index].is_released=true;
-            this.shareOpen = true;
-            this.share_surveyId = this.QnList[index].survey_id;
-            this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
-
-            if (this.qrcode != null) {
-              this.qrcode.clear();
-            }
-            this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
-              text: this.linkShare,
-              width: 200, //生成的二维码的宽度
-              height: 200, //生成的二维码的高度
-              colorDark : "#000000", // 生成的二维码的深色部分
-              colorLight : "#ffffff", //生成二维码的浅色部分
-              correctLevel : QRCode.CorrectLevel.H
-            });
-
             break;
           default:
             this.$message.error("问卷发布失败！");
@@ -290,6 +317,57 @@ export default {
       .catch(err => {
         console.log(err);
       })
+    },
+
+    refresh(index) {
+      if (this.QnList[index].recycling_num === 0) {
+        this.$alert('该问卷未发布或无回收答卷，无法清空数据', '问题提示', {
+          confirmButtonText: '确定',
+        });
+        return;
+      }
+
+      this.$confirm('清空数据将不可再恢复，确定吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const formData = new FormData();
+        formData.append("qn_id", this.QnList[index].survey_id);
+        this.$axios({
+          method: 'post',
+          url: '/sm/delete/all_submit',
+          data: formData,
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 0:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            case 1:
+              this.QnList[index].recycling_num = 0;
+              this.$message({
+                type: 'success',
+                message: '清空数据成功'
+              });
+              break;
+            default:
+              this.$message.error("清空失败！");
+              break;
+          }
+        })
+      }).catch(() => {
+      });
+    },
+
+    statUrl(index) {
+      if (this.QnList[index].is_released && this.QnList[index].recycling_num !== 0) {
+        location.href = this.GLOBAL.baseUrl + "/recyconcept?pid=" + this.QnList[index].survey_id;
+      } else {
+        this.$alert('问卷未发布或暂无回收答卷，无统计信息', '问题提示', {
+          confirmButtonText: '确定',
+        });
+      }
     },
 
     openShare(index) {
@@ -311,17 +389,18 @@ export default {
             case 1:
               this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
 
-              if (this.qrcode != null) {
-                this.qrcode.clear();
+              if (this.qrcode == null) {
+                this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
+                  width: 200, //生成的二维码的宽度
+                  height: 200, //生成的二维码的高度
+                  colorDark : "#000000", // 生成的二维码的深色部分
+                  colorLight : "#ffffff", //生成二维码的浅色部分
+                  correctLevel : QRCode.CorrectLevel.H
+                });
               }
-              this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
-                text: this.linkShare,
-                width: 200, //生成的二维码的宽度
-                height: 200, //生成的二维码的高度
-                colorDark : "#000000", // 生成的二维码的深色部分
-                colorLight : "#ffffff", //生成二维码的浅色部分
-                correctLevel : QRCode.CorrectLevel.H
-              });
+              this.qrcode.clear();
+              this.qrcode.makeCode(this.linkShare);
+
               break;
             default:
               this.$message.error("操作失败！");
@@ -486,8 +565,20 @@ export default {
     },
 
     editUrl(index) {
-      return 'edit?pid=' + index.survey_id;
+      if (this.QnList[index].is_released) {
+        this.$confirm('检测到问卷已发布，编辑可能影响已回收答卷数据，请确认是否编辑？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          location.href = 'edit?pid=' + this.QnList[index].survey_id;
+        }).catch(() => {
+        });
+      } else {
+        location.href = 'edit?pid=' + this.QnList[index].survey_id;
+      }
     },
+
     previewUrl(index) {
       return 'preview?pid=' + index.survey_id + '&mode=0';
     },
@@ -517,11 +608,11 @@ export default {
       switch (this.activeIdx) {
         case "1":
           this.is_collected = 0;
-          this.searchQns();
+          this.searchQns(0);
           break;
         case "2":
           this.is_collected = 1;
-          this.searchQns();
+          this.searchQns(0);
           break;
         case "3":
           this.$router.push('/bin');
@@ -720,7 +811,7 @@ export default {
 
     searchQn() {
       this.qnKey = this.input;
-      this.searchQns();
+      this.searchQns(1);
     },
     selectType(command) {
       this.qnType = command;
@@ -735,7 +826,7 @@ export default {
           this.is_released = "0";
           break;
       }
-      this.searchQns();
+      this.searchQns(1);
     },
     orderIndex(command) {
       console.log(command);
@@ -771,10 +862,10 @@ export default {
           this.orderType = "desc";
           break;
       }
-      this.searchQns();
+      this.searchQns(0);
     },
 
-    searchQns() {
+    searchQns(tag) {
       let formData = new FormData();
       const userInfo = user.getters.getUser(user.state());
       formData.append("username", userInfo.user.username);
@@ -816,10 +907,14 @@ export default {
             break;
           case 404:
             this.hasQn = false;
-            console.log('success! qn none!')
+            console.log('成功但未查询到问卷！');
             break;
           default:
             this.QnList = JSON.parse(res.data.data);
+            this.hasQn = true;
+            if (tag === 1) {
+              this.$message.success("为您查询到 " + this.QnList.length + " 条问卷");
+            }
             console.log('success');
             break;
         }
@@ -867,6 +962,10 @@ export default {
         height: 50px;
         font-size: 14px;
         text-align: center;
+    }
+
+    .el-icon-video-pause:before {
+      color: red;
     }
 
     #title{

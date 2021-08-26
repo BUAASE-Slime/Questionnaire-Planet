@@ -5,32 +5,69 @@
 </template>
 
 <script>
-
-var that;
-
 export default {
   name: 'echart',
-  data () {
-    return {
-      chart1_name:null,
-      chart1_data:null,
+  props: {
+    data: [],
+    type: {
+      type: String
     }
   },
-  created: function () {
+  watch: {
+    data: {
+      handler (newV, oldV) {
+        console.log(oldV, newV);
+        this.chart4_name = [];
+        this.chart4_data = [];
+        this.data = newV;
+        this.getData();
+        this.showChart4();
+      },
+      deep: true,
+    },
+    type: {
+      handler(newV, oldV) {
+        console.log(oldV, newV);
+        this.type = newV;
+      }
+    }
+  },
+  data () {
+    return {
+      chart4_name: [],
+      chart4_data: [],
+    }
+  },
+  created () {
     // `this` 指向 vm 实例
-    that = this
-    that.chart4_name =  ["a","b","c","d"];
-    that.chart4_data =  [5, 20, 36, 10];
+    this.getData();
   },
   mounted(){
     //页面加载完成后,才执行
-    that.showChart4();
+    this.showChart4();
   },
   methods: {
+    getData() {
+      console.log(this.data);
+      var title;
+      var choosed;
+      for (var i=0; i<this.data.length; i++) {
+        title = this.data[i].title;
+        choosed = this.data[i].choosed;
+        if (this.type === 'mark') {
+          this.chart4_name.push((i+1).toString());
+        } else if (this.data.length > 5 ||(title.length > 5 && this.data.length >= 4)) {
+          this.chart4_name.push("选项" + (i+1).toString());
+        } else {
+          this.chart4_name.push(title);
+        }
+        this.chart4_data.push(choosed);
+      }
+    },
  
     showChart4()
     {
-      var myChart4= that.$echarts.init(document.getElementById('myChart4'));
+      var myChart4= this.$echarts.init(document.getElementById('myChart4'));
       let option4 = {
             tooltip: {
                 trigger: 'axis',
@@ -48,7 +85,7 @@ export default {
                 {
                     type: 'category',
                     name:'选项',
-                    data:that.chart4_name,
+                    data:this.chart4_name,
                     axisPointer: {
                         type: 'shadow'
                     }
@@ -65,9 +102,9 @@ export default {
             ],
             series: [
                 {
-                    name: that.chart4_dataName,
+                    name: this.chart4_dataName,
                     type:'line',
-                    data:that.chart4_data,
+                    data:this.chart4_data,
                 }
             ]
         };

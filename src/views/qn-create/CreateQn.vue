@@ -14,7 +14,6 @@
             </div>
           </el-card>
         </el-col>
-
         <el-col :span="6">
           <el-card class="box-card"  @mouseover.native="isHoverTest=true" @mouseout.native="isHoverTest=false">
             <img class="image" src="../../assets/images/test.png">
@@ -28,7 +27,6 @@
             </div>
           </el-card>
         </el-col>
-
         <el-col :span="6">
           <el-card class="box-card" @mouseover.native="isHoverVote=true" @mouseout.native="isHoverVote=false">
             <img class="image" src="../../assets/images/vote.png">
@@ -58,13 +56,13 @@
           </div>
         </el-card>
       </el-col>
-
       <el-col :span="6">
         <el-card class="box-card">
           <div><img class="image" src="../../assets/images/wen.png"></div>
           <span><h3 style="height: 350px;margin: auto">更多内容 敬请期待......</h3><br></span>
         </el-card>
       </el-col>
+
 
       <el-dialog title=请输入问卷标题 :visible.sync="dialogVisible" width="30%" style="margin-top: 100px">
         <el-input  v-model="surveyTitle" ></el-input>

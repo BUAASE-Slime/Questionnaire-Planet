@@ -7,7 +7,7 @@
                     <span>定义行</span><br>
                       <el-select v-model="value1" placeholder="请选择">
                         <el-option
-                        v-for="item in options"
+                        v-for="item in questions"
                         :key="item.value1"
                         :label="item.label"
                         :value="item.value1">
@@ -18,7 +18,7 @@
                     <span>定义列</span><br>
                       <el-select v-model="value2" placeholder="请选择">
                         <el-option
-                        v-for="item in options"
+                        v-for="item in questions"
                         :key="item.value2"
                         :label="item.label"
                         :value="item.value2">
@@ -30,7 +30,7 @@
                 </div>
             </div>
             <div v-if="ans">
-                <el-table style="width: 100%" border :data="tableData" :formatter="stateFormat">
+                <el-table style="width: 100%" border :data="tableData" v-loading="loading">
                   <template v-for="(item,index) in tableHead">
                     <el-table-column :prop="item.column_name" :label="item.column_comment" :key="index" v-if="item.column_name != 'id'"></el-table-column>
                   </template>
@@ -45,98 +45,60 @@
     data() {
       return {
         ans: false,
-        tableHead:[
-            {
-              column_name: "column_0",column_comment:"子问题"
-            },
-            {
-              column_name: "column_1",column_comment:"不错"
-            },
-            {
-              column_name: "column_2",column_comment:"非常不错"
-            },
-            {
-              column_name: "column_3",column_comment:"难吃"
-            }
-        ],
-        tableData: [{
-            column_1: '3(10.00%)',
-            column_0: '不错',
-            column_2: '4(20.00%)',
-            column_3: '1(3.33%)',
-          },
-          {
-            column_1: '3(10.00%)',
-            column_0: '非常不错',
-            column_2: '4(20.00%)',
-            column_3: '1(3.33%)',
-          },
-          {
-            column_1: '3(10.00%)',
-            column_0: '难吃',
-            column_2: '4(20.00%)',
-            column_3: '1(3.33%)',
-          },
-          {
-            column_1: '3(10.00%)',
-            column_0: '一般',
-            column_2: '4(20.00%)',
-            column_3: '1(3.33%)',
-          },],
-        options: [{
-          value1: 1,
-          value2:1,
-          label: '黄金糕如何',
-          answers:[
-              {ans:'不错',amount: 10},
-              {ans:'非常不错',amount: 5},
-              {ans:'不好吃',amount: 3},
-          ]
-        }, {
-          value1: 2,
-          value2: 2,
-          label: '双皮奶如何',
-            answers:[
-              {ans:'不错',amount: 10},
-              {ans:'非常不错',amount: 5},
-              {ans:'不好吃',amount: 3},
-          ]
-        }, {
-          value1: 3,
-          value2: 3,
-          label: '蚵仔煎如何',
-            answers:[
-              {ans:'不错',amount: 4},
-              {ans:'非常不错',amount: 7},
-              {ans:'不好吃',amount: 2},
-          ]
-        }, {
-          value1: 4,
-          value2: 4,
-          label: '龙须面如何',
-            answers:[
-              {ans:'不错',amount: 3},
-              {ans:'非常不错',amount: 3},
-              {ans:'不好吃',amount: 9},
-          ]
-        }, {
-          value1: 5,
-          value2: 5,
-          label: '北京烤鸭如何',
-            answers:[
-              {ans:'不错',amount: 1},
-              {ans:'非常不错',amount: 2},
-              {ans:'不好吃',amount: 6},
-          ]
-        }],
+        tableHead:[],
+        tableData: [],
+        questions: [],
         value1: '',
-        value2: ''
+        value2: '',
+        loading: true,
       }
     },
     methods:{
       anlysis: function(){
-        this.ans=true
-      },
+        this.ans = true;
+
+        const formData = new FormData();
+        var id_1 = this.questions[this.value1-1].question_id;
+        var id_2 = this.questions[this.value2-1].question_id;
+        formData.append("question_id_1", id_1);
+        formData.append("question_id_2", id_2);
+        this.$axios({
+          method: 'post',
+          url: '/sm/cross/analysis',
+          data: formData,
+        })
+        .then(res => {
+          if (res.data.status_code === 1) {
+            this.tableHead = res.data.tableHead;
+            this.tableData = res.data.tableData;
+            this.loading = false;
+            console.log(this.tableHead);
+            console.log(this.tableData);
+          } else {
+            this.$message.error("操作失败");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      }
+    },
+    created() {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
+      this.$axios({
+        method: 'post',
+        url: '/sm/get/qn/question/analysis',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.questions = res.data.questions;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     }
   }
 </script>
