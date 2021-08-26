@@ -22,10 +22,10 @@
             <h2 style="display: inline;">{{week_collect}}</h2>
         </div>
         <div v-if="swigram">
-            <histogram1 ></histogram1>
+            <histogram1 :chart1_name="chart1_name" :chart1_data="chart1_data"></histogram1>
         </div>
         <div v-else>
-            <linechart></linechart>
+            <linechart :chart4_name="chart1_name" :chart4_data="chart1_data"></linechart>
         </div>
         </el-card>
     </div>
@@ -42,10 +42,14 @@ export default {
   data() {
     return{
       swigram: true,
-      sum_collect: 115,
-      day_collect: 3,
-      week_collect: 104,
-      radio2: '柱状图'
+      sum_collect: null,
+      day_collect: null,
+      week_collect: null,
+      radio2: '柱状图',
+
+      surveyId: '',
+      chart1_data: null,
+      chart1_name: null,
     }
   },
   methods:{
@@ -57,6 +61,34 @@ export default {
       this.swigram=false
       console.log(this.swigram)
     },
+  },
+  created() {
+    const formData = new FormData();
+    formData.append("qn_id", parseInt(this.$route.query.pid));
+    this.$axios({
+      method: 'post',
+      url: '/sm/get/recycling_num',
+      data: formData,
+    })
+    .then(res => {
+      switch (res.data.status_code) {
+        case 1:
+          this.sum_collect = res.data.num_all;
+          this.day_collect = res.data.num_day;
+          this.week_collect = res.data.num_week;
+          this.chart1_data = res.data.nums;
+          this.chart1_name = res.data.dates;
+          break;
+        default:
+          this.$message.error("访问失败！");
+          setTimeout(() => {
+            this.$router.push('/index');
+          }, 1000);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
   }
 };
 

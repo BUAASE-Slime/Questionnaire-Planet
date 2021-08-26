@@ -68,12 +68,38 @@ const routes = [
         component: () => import('../views/qn-create/qn-form/investigation'),
     },
     {
+        path: '/test',
+        name: 'Test',
+        component: () => import('../views/qn-create/qn-form/test'),
+    },
+    {
+        path: '/form',
+        name: 'SignUpForm',
+        component: () => import('../views/qn-create/qn-form/form'),
+    },
+    {
         path: '/fill',
         name: 'FillQn',
         component: () => import('../views/qn-fill/FillQn'),
         meta: {
             noNav: true
         },
+    },
+    {
+        path: '/preview_form',
+        name: 'PreviewForm',
+        component: () => import('../views/qn-fill/FillQnForm'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
+        path: '/preview_test',
+        name: 'PreviewTest',
+        component: () => import('../views/qn-fill/FillQnTest'),
+        meta: {
+            noNav: true
+        }
     },
     {
         path: '/preview',
@@ -84,6 +110,11 @@ const routes = [
         }
     },
     {
+        path: '/test_result',
+        name: 'TestResult',
+        component: () => import('../views/qn-fill/FinishTest'),
+    },
+    {
         path: '/stat',
         name: 'QnStat',
         component: () => import('../views/qn-stat/QnStat'),
@@ -91,24 +122,28 @@ const routes = [
             {
                 path: '/recyconcept',
                 name: 'recyconcept',
+                props: true,
                 
                 component: () => import('../views/qn-stat/sub-stat/recyconcept')
             },
             {
                 path: '/answerdata',
                 name: 'answerdata',
+                props: true,
                 
                 component: () => import('../views/qn-stat/sub-stat/answerdata')              
             },
             {
                 path: '/chartreport',
                 name: 'chartreport',
+                props: true,
                 
                 component: () => import('../views/qn-stat/sub-stat/chartreport')              
             },
             {
                 path: '/crossover',
                 name: 'crossover',
+                props: true,
                 
                 component: () => import('../views/qn-stat/sub-stat/crossover')              
             },

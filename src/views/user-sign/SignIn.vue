@@ -119,7 +119,7 @@ export default {
       })
       .then(res => {
         switch (res.data.status_code) {
-          case 200:
+          case 1:
             location.reload();
             // 前端保存用户信息
             this.$store.dispatch('saveUserInfo', {user: {
@@ -127,19 +127,19 @@ export default {
               'confirmed': true,
             }});
             break;
-          case 405:
+          case -1:
             this.$message.error('请检查填写的内容！');
             break;
-          case 401:
+          case 2:
             this.$message.warning('用户已登录！');
             break;
-          case 402:
+          case 3:
             this.$message.error('用户名不存在！');
             break;
-          case 403:
+          case 4:
             this.$message.error('用户名或密码错误！');
             break;
-          case 404:
+          case 5:
             this.$message.warning('用户未通过邮件确认，请及时确认！');
             this.$store.dispatch('saveUserInfo', {user: {
               'username': this.form.username,
