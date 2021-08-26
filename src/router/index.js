@@ -150,6 +150,9 @@ const routes = [
         path: '/test_result',
         name: 'TestResult',
         component: () => import('../views/qn-fill/FinishTest'),
+        meta: {
+            noNav: true
+        }
     },
     {
         path: '/vote_result',

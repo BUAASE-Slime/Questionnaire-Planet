@@ -8,7 +8,7 @@
       </div>
 
       <div class="note">
-        结果只统计客观题
+        您的总分 / 满分
       </div>
 
       <el-divider></el-divider>
@@ -72,7 +72,7 @@
           </div>
 
           <div v-if="!isInfo(item)" class="tail-info">
-            <div class="tail-point" v-if="item.type !== 'text'">
+            <div class="tail-point">
               <div v-if="answers[item.id-1].correct">您的得分：{{ item.point }}</div>
               <div v-else>您的得分：0</div>
             </div>
@@ -80,6 +80,7 @@
             <div class="tail-refer" v-if="item.refer!==null && item.refer!==undefined">
               <div v-if="item.type==='radio' || item.type==='judge'">您的答案：{{ answers[item.id-1].ans }}</div>
               <div v-if="item.type==='checkbox'">您的答案：{{ answers[item.id-1].ansList }}</div>
+              <div v-if="item.type==='text'">您的答案：{{ answers[item.id-1].ans }}</div>
               <div v-if="item.refer!==''">参考答案：{{ item.refer }}</div>
               <div v-if="item.refer===''">参考答案：无</div>
             </div>
@@ -89,7 +90,7 @@
       </div>
 
       <div class="tail">
-        <a href="http://localhost:8080/">星球问卷</a>&ensp;提供技术支持
+        <a href="http://localhost:8080/">问卷星球</a>&ensp;提供技术支持
       </div>
 
     </div>
@@ -100,6 +101,10 @@
 <script>
 export default {
   name: "FinishTest",
+  props: {
+    questions: [],
+    answers: [],
+  },
   data(){
     return{
       hoverColor:{
@@ -107,214 +112,214 @@ export default {
       },
       totalScore: null,
       actualScore: null,
-      questions: [
-        {
-          id: 1,
-          type: 'name',
-          title: '姓名',
-          must: true, // 是否必填
-          description: '', // 问题描述
-          options: [
-            {
-              title: '', // 选项标题
-              id: 0 // 选项id
-            },
-          ],
-          row: 1, // 填空区域行数
-          refer: '', // 参考答案
-          point: 0,  // 分值
-        },
-        {
-          id: 2,
-          type: 'stuId',
-          title: '学号',
-          must: true, // 是否必填
-          description: '', // 问题描述
-          options: [
-            {
-              title: '', // 选项标题
-              id: 0 // 选项id
-            },
-          ],
-          row: 1, // 填空区域行数
-          refer: '', // 参考答案
-          point: 0,  // 分值
-        },
-        {
-          id: 3,
-          type: 'class',
-          title: '班级',
-          must: true, // 是否必填
-          description: '', // 问题描述
-          options: [
-            {
-              title: '', // 选项标题
-              id: 0 // 选项id
-            },
-          ],
-          row: 1, // 填空区域行数
-          refer: '', // 参考答案
-          point: 0,  // 分值
-        },
-        {
-          id: 4,
-          type: 'school',
-          title: '学校',
-          must: true, // 是否必填
-          description: '', // 问题描述
-          options: [
-            {
-              title: '', // 选项标题
-              id: 0 // 选项id
-            },
-          ],
-          row: 1, // 填空区域行数
-          refer: '', // 参考答案
-          point: 0,  // 分值
-        },
-        {
-          id: 5,
-          type: 'radio',
-          title: '这是一个什么问卷？',
-          must: true, // 是否必填
-          description: '请谨慎做答', // 问题描述
-          options: [
-            {
-              title: '考试问卷', // 选项标题
-              id: 1 // 选项id
-            },
-            {
-              title: '调查问卷', // 选项标题
-              id: 2 // 选项id
-            },
-          ],
-          row: 0, // 填空区域行数
-          refer: '考试问卷', // 参考答案
-          point: 10,  // 分值
-        },
-        {
-          id: 6,
-          type: 'checkbox',
-          title: '软工助教都有谁？',
-          must: false, // 是否必填
-          description: '', // 问题描述
-          options: [
-            {
-              title: 'ZYH', // 选项标题
-              id: 1 // 选项id
-            },
-            {
-              title: 'LKW', // 选项标题
-              id: 2 // 选项id
-            },
-            {
-              title: 'MHY', // 选项标题
-              id: 3 // 选项id
-            },
-            {
-              title: 'HZH', // 选项标题
-              id: 4 // 选项id
-            },
-          ],
-          row: 0, // 填空区域行数
-          refer: '["LKW", "MHY"]', // 参考答案
-          point: 20,  // 分值
-        },
-        {
-          id: 7,
-          type: 'text',
-          title: '小学期累不累？',
-          must: false, // 是否必填
-          description: '请谨慎考虑做答', // 问题描述
-          options: [
-            {
-              title: '', // 选项标题
-              id: 0 // 选项id
-            },
-          ],
-          row: 5, // 填空区域行数
-          refer: '', // 参考答案
-          point: 30,  // 分值
-        },
-        {
-          id: 8,
-          type: 'judge',
-          title: '从来没有加过班',
-          must: true, // 是否必填
-          description: '请谨慎考虑做答', // 问题描述
-          options: [
-            {
-              title: '对', // 选项标题
-              id: 1 // 选项id
-            },
-            {
-              title: '错', // 选项标题
-              id: 2 // 选项id
-            },
-          ],
-          row: 0, // 填空区域行数
-          refer: '对', // 参考答案
-          point: 50,  // 分值
-        },
-      ],
-      answers: [
-        {
-          question_id: '1',
-          type: 'name',
-          ans: 'Zuo_zuo',
-          ansList: [],
-          correct: null,
-        },
-        {
-          question_id: '2',
-          type: 'stuId',
-          ans: '19373260',
-          ansList: [],
-          correct: null,
-        },
-        {
-          question_id: '3',
-          type: 'class',
-          ans: '192111',
-          ansList: [],
-          correct: null,
-        },
-        {
-          question_id: '4',
-          type: 'school',
-          ans: '北航',
-          ansList: [],
-          correct: null,
-        },
-        {
-          question_id: '5',
-          type: 'radio',
-          ans: '调查问卷',
-          ansList: [],
-          correct: null,
-        },
-        {
-          question_id: '6',
-          type: 'checkbox',
-          ans: null,
-          ansList: ["LKW", "MHY"],
-          correct: null,
-        },
-        {
-          question_id: '7',
-          type: 'text',
-          ans: '累死啦',
-          ansList: [],
-          correct: null,
-        },
-        {
-          question_id: '8',
-          type: 'judge',
-          ans: '对',
-          ansList: [],
-          correct: null,
-        },
-      ],
+      // questions: [
+      //   {
+      //     id: 1,
+      //     type: 'name',
+      //     title: '姓名',
+      //     must: true, // 是否必填
+      //     description: '', // 问题描述
+      //     options: [
+      //       {
+      //         title: '', // 选项标题
+      //         id: 0 // 选项id
+      //       },
+      //     ],
+      //     row: 1, // 填空区域行数
+      //     refer: '', // 参考答案
+      //     point: 0,  // 分值
+      //   },
+      //   {
+      //     id: 2,
+      //     type: 'stuId',
+      //     title: '学号',
+      //     must: true, // 是否必填
+      //     description: '', // 问题描述
+      //     options: [
+      //       {
+      //         title: '', // 选项标题
+      //         id: 0 // 选项id
+      //       },
+      //     ],
+      //     row: 1, // 填空区域行数
+      //     refer: '', // 参考答案
+      //     point: 0,  // 分值
+      //   },
+      //   {
+      //     id: 3,
+      //     type: 'class',
+      //     title: '班级',
+      //     must: true, // 是否必填
+      //     description: '', // 问题描述
+      //     options: [
+      //       {
+      //         title: '', // 选项标题
+      //         id: 0 // 选项id
+      //       },
+      //     ],
+      //     row: 1, // 填空区域行数
+      //     refer: '', // 参考答案
+      //     point: 0,  // 分值
+      //   },
+      //   {
+      //     id: 4,
+      //     type: 'school',
+      //     title: '学校',
+      //     must: true, // 是否必填
+      //     description: '', // 问题描述
+      //     options: [
+      //       {
+      //         title: '', // 选项标题
+      //         id: 0 // 选项id
+      //       },
+      //     ],
+      //     row: 1, // 填空区域行数
+      //     refer: '', // 参考答案
+      //     point: 0,  // 分值
+      //   },
+      //   {
+      //     id: 5,
+      //     type: 'radio',
+      //     title: '这是一个什么问卷？',
+      //     must: true, // 是否必填
+      //     description: '请谨慎做答', // 问题描述
+      //     options: [
+      //       {
+      //         title: '考试问卷', // 选项标题
+      //         id: 1 // 选项id
+      //       },
+      //       {
+      //         title: '调查问卷', // 选项标题
+      //         id: 2 // 选项id
+      //       },
+      //     ],
+      //     row: 0, // 填空区域行数
+      //     refer: '考试问卷', // 参考答案
+      //     point: 10,  // 分值
+      //   },
+      //   {
+      //     id: 6,
+      //     type: 'checkbox',
+      //     title: '软工助教都有谁？',
+      //     must: false, // 是否必填
+      //     description: '', // 问题描述
+      //     options: [
+      //       {
+      //         title: 'ZYH', // 选项标题
+      //         id: 1 // 选项id
+      //       },
+      //       {
+      //         title: 'LKW', // 选项标题
+      //         id: 2 // 选项id
+      //       },
+      //       {
+      //         title: 'MHY', // 选项标题
+      //         id: 3 // 选项id
+      //       },
+      //       {
+      //         title: 'HZH', // 选项标题
+      //         id: 4 // 选项id
+      //       },
+      //     ],
+      //     row: 0, // 填空区域行数
+      //     refer: '["LKW", "MHY"]', // 参考答案
+      //     point: 20,  // 分值
+      //   },
+      //   {
+      //     id: 7,
+      //     type: 'text',
+      //     title: '小学期累不累？',
+      //     must: false, // 是否必填
+      //     description: '请谨慎考虑做答', // 问题描述
+      //     options: [
+      //       {
+      //         title: '', // 选项标题
+      //         id: 0 // 选项id
+      //       },
+      //     ],
+      //     row: 5, // 填空区域行数
+      //     refer: '', // 参考答案
+      //     point: 30,  // 分值
+      //   },
+      //   {
+      //     id: 8,
+      //     type: 'judge',
+      //     title: '从来没有加过班',
+      //     must: true, // 是否必填
+      //     description: '请谨慎考虑做答', // 问题描述
+      //     options: [
+      //       {
+      //         title: '对', // 选项标题
+      //         id: 1 // 选项id
+      //       },
+      //       {
+      //         title: '错', // 选项标题
+      //         id: 2 // 选项id
+      //       },
+      //     ],
+      //     row: 0, // 填空区域行数
+      //     refer: '对', // 参考答案
+      //     point: 50,  // 分值
+      //   },
+      // ],
+      // answers: [
+      //   {
+      //     question_id: '1',
+      //     type: 'name',
+      //     ans: 'Zuo_zuo',
+      //     ansList: [],
+      //     correct: null,
+      //   },
+      //   {
+      //     question_id: '2',
+      //     type: 'stuId',
+      //     ans: '19373260',
+      //     ansList: [],
+      //     correct: null,
+      //   },
+      //   {
+      //     question_id: '3',
+      //     type: 'class',
+      //     ans: '192111',
+      //     ansList: [],
+      //     correct: null,
+      //   },
+      //   {
+      //     question_id: '4',
+      //     type: 'school',
+      //     ans: '北航',
+      //     ansList: [],
+      //     correct: null,
+      //   },
+      //   {
+      //     question_id: '5',
+      //     type: 'radio',
+      //     ans: '调查问卷',
+      //     ansList: [],
+      //     correct: null,
+      //   },
+      //   {
+      //     question_id: '6',
+      //     type: 'checkbox',
+      //     ans: null,
+      //     ansList: ["LKW", "MHY"],
+      //     correct: null,
+      //   },
+      //   {
+      //     question_id: '7',
+      //     type: 'text',
+      //     ans: '累死啦',
+      //     ansList: [],
+      //     correct: null,
+      //   },
+      //   {
+      //     question_id: '8',
+      //     type: 'judge',
+      //     ans: '对',
+      //     ansList: [],
+      //     correct: null,
+      //   },
+      // ],
     }
   },
   methods: {
@@ -333,7 +338,7 @@ export default {
     let score = 0;
     for (let i=0; i<questions.length; i++) {
       // 略过信息和主观题
-      if (this.isInfo(questions[i]) || questions[i].type==='text') { continue;}
+      if (this.isInfo(questions[i])) { continue;}
       // 统计
       if (questions[i].type === 'radio' || questions[i].type === 'judge') {
         if (questions[i].refer === answers[i].ans) {
@@ -348,6 +353,12 @@ export default {
         console.log(reference);
         console.log(answers[i].ansList);
         if (reference.toString() === answers[i].ansList.toString()) {
+          answers[i].correct = true;
+          score += questions[i].point;
+        }
+        total += questions[i].point;
+      } else if (questions[i].type === 'text') {
+        if (questions[i].refer === answers[i].ans) {
           answers[i].correct = true;
           score += questions[i].point;
         }

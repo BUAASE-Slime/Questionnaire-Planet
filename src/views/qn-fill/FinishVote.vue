@@ -18,7 +18,7 @@
           </div>
         </div>
         <div class="tail">
-          <a href="http://localhost:8080/">星球问卷</a>&ensp;提供技术支持
+          <a href="http://localhost:8080/">问卷星球</a>&ensp;提供技术支持
         </div>
       </div>
 
