@@ -383,14 +383,6 @@
                         placeholder="选择结束时间">
         </el-date-picker>
       </div>
-      <div>
-        <span style="margin-right: 15px">是否为问卷评分&emsp;&emsp;&emsp;&emsp;</span>
-        <el-switch
-            v-model="scoringMode"
-            active-text="是"
-            inactive-text="否">
-        </el-switch>
-      </div>
       <span slot="footer" class="dialog-footer" style="text-align: center">
         <el-row>
           <el-button type="primary" style="margin-right: 40px" @click="settingSuccess">完成</el-button>
