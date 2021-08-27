@@ -11,7 +11,6 @@
           v-on:publishClicked="publish($event)"
           v-on:saveClicked="save($event)"
           v-on:qnPreview="preview($event)"
-          v-on:publishSuccess="publishSuccess($event)"
           v-on:onConfirm="dialogCancel($event)"
       >
       </edit-header>
@@ -130,13 +129,14 @@
 
                   <!--                  单选-->
                   <el-radio v-if="item.type==='radio'" value="0">
-                    {{ ans.title }}<span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="ans.hasNumLimit">剩余{{ans.supply-ans.consume}}</span>
+                    {{ ans.title }}<span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="ans.hasNumLimit">剩余{{ans.supply-ans.consume}}&emsp;总计{{ans.supply}}</span>
                   </el-radio>
 
                   <!--                  多选-->
                   <el-checkbox v-if="item.type==='checkbox'" value="0">
                     {{ ans.title }}
-                  </el-checkbox><span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="ans.hasNumLimit">剩余{{ans.supply-ans.consume}}</span>
+                    <span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="ans.hasNumLimit">剩余{{ans.supply-ans.consume}}&emsp;总计{{ans.supply}}</span>
+                  </el-checkbox>
 
                   <!--                  填空-->
                   <el-input
@@ -229,6 +229,7 @@
           <el-form-item label="填空">
             <el-input
                 type="textarea"
+                class="my-input"
                 :rows="willAddQuestion.row"
                 resize="none">
             </el-input>
@@ -256,7 +257,7 @@
       <el-row>
         <el-col span="8" style="text-align: center">
           <el-row>
-            <img src="../../../assets/images/example.jpg" height="200px" width="200px">
+            <div id="qrcode_2" style="height:200px; width:200px; margin-left: 22px;"></div>
           </el-row>
         </el-col>
         <el-col span="16">
@@ -269,6 +270,7 @@
             <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
           <el-row style="margin-top: 25px">
             <el-button type="primary" plain @click="download">下载二维码</el-button>
+            <el-button type="primary" @click="genCodeAgain" style="margin-left: 30px">重新生成链接</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -287,13 +289,15 @@
       </span>
     </el-dialog>
     <!--    高级设置弹框-->
-    <el-dialog custom-class="setting" :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="25%">
-      <div class="setting-item">
-        <span class="item-title">回收截止时间</span>
-        <el-date-picker
-            v-model="closingDate"
-            type="datetime"
-            placeholder="选择日期时间">
+    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="30%">
+      <div class="timeBlock" style="margin-bottom: 30px">
+        <span class="demonstration" style="margin-right: 15px">截止时间</span>
+        <el-date-picker style="margin-left: 100px"
+                        v-model="timeFrame"
+                        @change="formatTime"
+                        type="datetime"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        placeholder="选择结束时间">
         </el-date-picker>
       </div>
       <div class="setting-bt">
@@ -306,12 +310,15 @@
 <script>
 import editHeader from "../../../components/header/editHeader";
 import user from "@/store/user";
+import QRCode from "qrcodejs2";
 
 export default {
   name: "form",
   data() {
     return {
-      linkShare: 'https://zewan.cc/',
+      qrcode: null,
+      timeFrame: '',
+      linkShare: '',
       settingDialogTitle: "高级设置",   // 高级设置弹框的标题
       settingDialogVisible: false,     // 高级设置对话框可见性
       closingDate: null,   // 高级设置中问卷回收的截止日期
@@ -338,6 +345,7 @@ export default {
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
       willAddQuestion: {
+        question_id: 0,
         id: 0,
         type:'',
         title:'',
@@ -483,6 +491,58 @@ export default {
     editHeader,
   },
   methods: {
+    genCodeAgain() {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
+      this.$axios({
+        method: 'post',
+        url: '/qn/change/code',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+
+          if (this.qrcode == null) {
+            this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+              width: 200, //生成的二维码的宽度
+              height: 200, //生成的二维码的高度
+              colorDark : "#000000", // 生成的二维码的深色部分
+              colorLight : "#ffffff", //生成二维码的浅色部分
+              correctLevel : QRCode.CorrectLevel.H
+            });
+          }
+          this.qrcode.clear();
+          this.qrcode.makeCode(this.linkShare);
+        } else {
+          this.$message.error("请求失败！");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+    download() {
+      // 获取base64的图片节点
+      var img = document.getElementById('qrcode_2').getElementsByTagName('img')[0];
+      // 构建画布
+      var canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      // 构造url
+      var url = canvas.toDataURL('image/png');
+      console.log(url);
+      // 构造a标签并模拟点击
+      var downloadLink = document.createElement('a');
+      downloadLink.download = '二维码.png';
+      downloadLink.href = url;
+      downloadLink.click();
+      downloadLink.remove();
+    },
+    formatTime(time) {
+      this.timeFrame = time;
+    },
     addName(){
       this.willAddQuestion={
         id: this.questions.length+1,
@@ -646,6 +706,7 @@ export default {
     },
     resetWillAdd(){
       this.willAddQuestion={
+        question_id: 0,
         id: 0,
         type:'',
         title:'',
@@ -670,6 +731,7 @@ export default {
     edit:function (index){
       index--;
       this.willAddQuestion={
+        question_id:this.questions[index].question_id,
         id:this.questions[index].id,
         type:this.questions[index].type,
         title:this.questions[index].title,
@@ -736,7 +798,7 @@ export default {
             message: '修改成功!'
           });
           // 重置
-          this.resetWillAdd()
+          this.resetWillAdd();
           this.selectDisAble = false;
         }
       }
@@ -820,14 +882,84 @@ export default {
     openSetting: function () {
       this.settingDialogVisible = true;
     },
-    publish() {
-
+    settingSuccess: function () {
+      this.settingDialogVisible = false;
+      this.$message({
+        type: 'success',
+        message: '设置已生效'
+      });
     },
-    save() {
+    publish() {
+      this.saveinfo('publish');
+
+      if (this.isReleased) {
+        this.$message.info("问卷已发布，无需重复发布");
+        return;
+      }
+
+      this.$confirm('确认发布？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        this.publishSuccess();
+        const formData = new FormData();
+        formData.append("survey_id", this.pid);
+        this.$axios({
+          url: '/qn/get_code',
+          method: 'post',
+          data: formData,
+        })
+        .then(res => {
+          console.log(res.data.status_code);
+          switch (res.data.status_code) {
+            case 200:
+              this.linkShare = this.GLOBAL.baseUrl + '/fill_form?mode=1&code=' + res.data.code;
+
+              if (this.qrcode == null) {
+                this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+                  width: 200, //生成的二维码的宽度
+                  height: 200, //生成的二维码的高度
+                  colorDark : "#000000", // 生成的二维码的深色部分
+                  colorLight : "#ffffff", //生成二维码的浅色部分
+                  correctLevel : QRCode.CorrectLevel.H
+                });
+              }
+              this.qrcode.clear();
+              this.qrcode.makeCode(this.linkShare);
+
+              break;
+            case 402:
+              this.$message.warning("问卷题目为空，无法发布");
+              break;
+            case 403:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            case 406:
+              this.$message.info("问卷已发布，无需重复发布");
+              break;
+            default:
+              this.$message.error("发布失败，请检查登录信息！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消发布'
+        });
+      });
+    },
+    saveinfo(tag) {
       const userInfo = user.getters.getUser(user.state());
       var param = {
         username: userInfo.user.username,
         title: this.title,
+        finished_time: this.timeFrame,
         description: this.description,
         type: this.type,
         qn_id: this.$route.query.pid,
@@ -836,45 +968,55 @@ export default {
       var paramer = JSON.stringify(param, {questions: 'brackets'})
       this.$axios({
         method: 'post',
-        url: '/sm/save/qn',
+        url: '/sp/save_qn',
         data: paramer,
       })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 0:
-            this.$message.warning("登录信息失效，请重新登录！");
-            setTimeout(() => {
-              this.$store.dispatch('clear');
-              location.reload();
-            }, 500);
-            break;
-          case 1:
-            this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
-              distinguishCancelAndClose: true,
-              confirmButtonText: '返回问卷中心',
-              cancelButtonText: '继续编辑'
-            })
-            .then(() => {
-              this.$router.push('/index');
-            });
-            break;
-          default:
-            this.$message.error("保存失败！");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+          .then(res => {
+            switch (res.data.status_code) {
+              case 0:
+                this.$message.warning("登录信息失效，请重新登录！");
+                setTimeout(() => {
+                  this.$store.dispatch('clear');
+                  location.reload();
+                }, 500);
+                break;
+              case 1:
+                switch (tag) {
+                  case 'save':
+                    this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+                      distinguishCancelAndClose: true,
+                      confirmButtonText: '返回问卷中心',
+                      cancelButtonText: '继续编辑'
+                    })
+                    .then(() => {
+                      this.$router.push('/index');
+                    });
+                    break;
+                  case 'preview':
+                    this.$message.success("保存成功");
+                    setTimeout(() => {
+                      location.href = 'preview_form?mode=0&pid=' + this.$route.query.pid;
+                    }, 700);
+                    break;
+                  case 'publish':
+                    this.$message.success("保存成功");
+                    break;
+                }
+                break;
+              default:
+                this.$message.error("保存失败！");
+                break;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+    },
+    save() {
+      this.saveinfo('save');
     },
     preview() {
-      this.$router.push({
-        name: 'PreviewForm',
-        query: {
-          mode: 0,
-          pid: this.$route.query.pid
-        }
-      })
+      this.saveinfo('preview');
     },
     up: function (index) {
       index--;
@@ -945,8 +1087,9 @@ export default {
       // 问卷更新
       let temp = this.deepClone(questions[index]);
       temp.id = questions.length+1;
+      temp.question_id = 0;
       questions.push(temp);
-
+      this.$message.success("问题复制成功，已粘贴至问卷末尾");
     },
     deepClone :function(initialObj) {
       let obj = {};
@@ -1026,7 +1169,7 @@ export default {
   },
   created() {
     const formData = new FormData();
-    formData.append("qn_id", this.$route.query.pid)
+    formData.append("qn_id", this.$route.query.pid);
     this.$axios({
       method: 'post',
       url: '/sm/get/qn_detail',
@@ -1043,7 +1186,10 @@ export default {
           this.description = res.data.description;
           this.type = res.data.type;
           this.questions = res.data.questions;
-
+          this.isReleased = res.data.is_released;
+          if (res.data.max_recycling !== undefined) {
+            this.max_recycling = res.data.max_recycling;
+          }
           this.InitOutline();
           break;
         default:
@@ -1228,6 +1374,7 @@ export default {
 .form .block-choice .el-textarea__inner {
   max-height: 100px;
 }
+
 .form .dialog{
   text-align: left;
   font-size: large;

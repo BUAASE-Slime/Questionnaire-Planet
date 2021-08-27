@@ -101,7 +101,6 @@ export default {
       close: false,
 
       mode: this.$route.query.mode,
-      open: 1,
       title: '',
       description: '',
       questions: [],

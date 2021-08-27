@@ -373,7 +373,7 @@
       </span>
     </el-dialog>
     <!--    高级设置弹框-->
-    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" >
+    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="30%">
       <div class="timeBlock" style="margin-bottom: 30px">
         <span class="demonstration" style="margin-right: 15px">截止时间</span>
         <el-date-picker style="margin-left: 100px"
