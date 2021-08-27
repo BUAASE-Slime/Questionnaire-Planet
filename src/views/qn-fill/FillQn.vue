@@ -32,7 +32,7 @@
 
         <div class="main">
           <div class="ques-block" v-for="item in questions" :key="item.id">
-
+            <div v-if="item.is_shown&&ahead(item.last_question)">
             <div class="q-title">
               {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
             </div>
@@ -47,14 +47,14 @@
             <!--                  单选-->
             <div v-if="item.type==='radio'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
-                <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].ans" :label="opt.title">
+                <el-radio v-if="item.type==='radio'" @change="changeHandler(item.question_id,item.id,answers[item.id-1].ans)" v-model="answers[item.id-1].ans" :label="opt.title">
                   {{ opt.title }}
                 </el-radio>
               </div>
             </div>
 
             <!--                  多选-->
-            <el-checkbox-group class="q-opt" v-if="item.type==='checkbox'" v-model="answers[item.id-1].ansList">
+            <el-checkbox-group class="q-opt" v-if="item.type==='checkbox'" @change="changeHandler2(item.question_id,item.id,answers[item.id-1].ansList)" v-model="answers[item.id-1].ansList">
               <el-checkbox v-for="opt in item.options" :key="opt.id" :label="opt.title">
                 {{ opt.title }}
               </el-checkbox>
@@ -74,6 +74,7 @@
             <div class="q-opt" v-if="item.type==='mark'">
               <el-rate v-model="answers[item.id-1].ans" :max="item.score"></el-rate>
             </div>
+          </div>
           </div>
         </div>
 
@@ -103,12 +104,228 @@ export default {
       mode: this.$route.query.mode,
       title: '',
       description: '',
-      questions: [],
-      answers: [],
-      type: ''
+      // questions: [],
+      // answers: [],
+      type: '',
+      answers:[
+            {
+                question_id: 66,
+                type: "radio",
+                ans: "",
+                ansList: [],
+                answer: ""
+            },
+            {
+                question_id: 67,
+                type: "checkbox",
+                ans: null,
+                ansList: [],
+                answer: ""
+            },
+            {
+                question_id: 68,
+                type: "radio",
+                ans: "",
+                ansList: [],
+                answer: ""
+            },
+            {
+                question_id: 69,
+                type: "radio",
+                ans: "",
+                ansList: [],
+                answer: ""
+            },
+            {
+                question_id: 70,
+                type: "mark",
+                ans: 9,
+                ansList: [],
+                answer: "9"
+            },     
+      ],
+      questions: [
+          {
+              last_question: 0,
+              last_option: 0,
+              is_shown: true,
+              question_id: 222,
+              row: 1,
+              score: 10,
+              title: "小学期开发的内容是？",
+              description: "看看你们是不是还没看需求",
+              must: true,
+              type: "radio",
+              qn_id: 97,
+              refer: "问卷星球",
+              point: 20,
+              id: 1,
+              options: [
+                  {
+                      id: 590,
+                      title: "问卷星球"
+                  },
+                  {
+                      id: 591,
+                      title: "出版系统"
+                  }
+              ],
+              answer: ""
+          },
+          {
+              last_question: 222,
+              last_option: 590,
+              is_shown: false,
+              question_id: 223,
+              row: 1,
+              score: 10,
+              title: "本次小学期的助教有？",
+              description: "不会吧不会吧，不会有人真以为助教只是助教吧？",
+              must: true,
+              type: "checkbox",
+              refer: "ZXH-<^-^>-HZY",
+              point: 30,
+              id: 2,
+              options: [
+                  {
+                      id: 592,
+                      title: "ZXH"
+                  },
+                  {
+                      id: 593,
+                      title: "ZYH"
+                  },
+                  {
+                      id: 594,
+                      title: "HZY"
+                  },
+                  {
+                      id: 595,
+                      title: "ZHT"
+                  },
+                  {
+                      id: 596,
+                      title: "LKW"
+                  }
+              ],
+              answer: ""
+          },
+          {
+              last_question: 223,
+              last_option: 592,
+              is_shown: false,
+              question_id: 224,
+              row: 1,
+              score: 10,
+              title: "敏捷开发中你感受得到一丝丝快乐吗？",
+              description: "",
+              must: false,
+              type: "radio",
+              refer: "感受不到",
+              point: 5,
+              id: 3,
+              options: [
+                  {
+                      id: 597,
+                      title: "感受不到"
+                  },
+                  {
+                      id: 598,
+                      title: "一丝丝都感受不到"
+                  }
+              ],
+              answer: ""
+          },
+          {
+              last_question: 224,
+              last_option: 597,
+              is_shown: false,
+              question_id: 225,
+              row: 1,
+              score: 10,
+              title: "第一次迭代验收前每天平均睡眠时间",
+              description: "有人在第一次验收前夜通宵了吗，我看到 JBW 鏖战了20多小时",
+              must: true,
+              type: "radio",
+              refer: "1-3小时",
+              point: 6,
+              id: 4,
+              options: [
+                  {
+                      id: 599,
+                      title: "1-3小时"
+                  },
+                  {
+                      id: 600,
+                      title: "3-5小时"
+                  },
+                  {
+                      id: 601,
+                      title: "5-7小时"
+                  },
+                  {
+                      id: 602,
+                      title: "睡啥觉，起来敲代码"
+                  }
+              ],
+              answer: ""
+          }
+      ]
+
     }
   },
   methods: {
+    ahead(qid){
+        if(qid==0) return true;
+        for(let i=0;i<this.questions.length;i++){
+          if(this.questions[i].question_id==qid){
+            if(this.questions[i].is_shown==true) return this.ahead(this.questions[i].last_question);
+            else return false;
+          }
+        }
+        return false;
+    },
+    changeHandler(qid,id,value) {
+        console.log( id+ '改变之后的值是:' + value);
+        let pid=0;
+        for(let j=0;j<this.questions[id-1].options.length;j++){
+          if(value==this.questions[id-1].options[j].title) pid=this.questions[id-1].options[j].id;
+        }
+        for(let i=id;i<this.questions.length;i++){
+          if(this.questions[i].last_question==qid&&this.questions[i].last_option==pid){
+            this.questions[i].is_shown=true;
+          }
+          else if(this.questions[i].last_question==qid){
+            this.questions[i].is_shown=false;
+          }
+        }
+    },
+    changeHandler2(qid,id,value){
+      console.log( id+ '改变之后的值是:' + value);
+      let pid=[];
+      let a=0;
+      let find=false;
+        for(let j=0;j<this.questions[id-1].options.length;j++){
+          for(let k=0;k<value.length;k++){
+            if(value[k]==this.questions[id-1].options[j].title) {
+              pid[a++]=this.questions[id-1].options[j].id;
+              break;
+            }
+          }
+        }
+        for(let i=id;i<this.questions.length;i++){
+          if(this.questions[i].last_question==qid){
+            for(let k=0;k<pid.length;k++){
+              if(this.questions[i].last_option==pid[k]){
+                this.questions[i].is_shown=true; 
+                find=true; 
+                break;
+              }
+            }
+            if(!find) this.questions[i].is_shown=false;
+          }
+        }
+    },
     gotoHome() {
       this.$router.push('/');
     },
@@ -226,6 +443,7 @@ export default {
   mounted() {
   },
   created() {
+
     if (this.mode === '0') {
       const formData = new FormData();
       formData.append("qn_id", this.$route.query.pid);
