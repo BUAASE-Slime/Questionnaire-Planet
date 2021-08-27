@@ -518,6 +518,7 @@
             data = res.data.answers;
             console.log(data);
             this.questions = res.data.questions;
+            this.description = res.data.description;
 
             this.answers = [];
             //建立答案框架
@@ -532,9 +533,7 @@
             }
             for (var j=0; j<this.answers.length; j++) {
               for (var k=0; k<data.length; k++) {
-                console.log("enter");
                 if (this.answers[j].question_id === data[k].question_id) {
-                  console.log("enter");
                   switch (this.answers[j].type) {
                     case 'checkbox':
                       this.answers[j].ansList = data[k].answer.split('-<^-^>-');
@@ -544,6 +543,10 @@
                       this.answers[j].answer = data[k].answer;
                       break;
                     case 'radio':
+                      this.answers[j].ans = data[k].answer;
+                      this.answers[j].answer = data[k].answer;
+                      break;
+                    default:
                       this.answers[j].ans = data[k].answer;
                       this.answers[j].answer = data[k].answer;
                       break;

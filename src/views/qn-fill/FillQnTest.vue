@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FinishTest v-if="success || repeat" :questions="questions" :answers="answers"></FinishTest>
+    <FinishTest v-if="success || repeat"></FinishTest>
     <div class="qn-fill" v-else>
       <div class="back-bt" v-if="mode==='0' || mode===0">
         <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
@@ -104,7 +104,7 @@
         </div>
 
         <div class="tail">
-          <a href="http://localhost:8080/">问卷星球</a>&ensp;提供技术支持
+          <a :href="rootUrl">问卷星球</a>&ensp;提供技术支持
         </div>
       </div>
     </div>
