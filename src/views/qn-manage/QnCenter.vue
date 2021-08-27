@@ -58,7 +58,7 @@
 
             </div>
 
-            <div v-if="hasQn">
+            <div v-if="hasQn" id="main-body">
               <el-card v-for="(msg,index) in QnList" class="box-card" :key='index'>
                 <div slot="header" style="display:flex">
                   <el-row>
@@ -935,6 +935,9 @@ export default {
     },
 
     searchQns(tag) {
+      let loadingInstance = this.$loading({
+        target: '#main-body',
+      });
       let formData = new FormData();
       const userInfo = user.getters.getUser(user.state());
       formData.append("username", userInfo.user.username);
@@ -980,6 +983,7 @@ export default {
             break;
           default:
             this.QnList = JSON.parse(res.data.data);
+            loadingInstance.close();
             this.hasQn = true;
             if (tag === 1) {
               this.$message.success("为您查询到 " + this.QnList.length + " 条问卷");

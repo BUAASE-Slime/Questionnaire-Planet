@@ -5,6 +5,7 @@
       </el-row>
       <el-row style="text-align: center">
         <el-table
+            v-loading="loading"
             :data="binData"
             stripe
             style="width: 70%"
@@ -69,6 +70,7 @@ export default {
   name: "QnBin",
   data() {
     return {
+      loading: true,
       /*
       binData: [
         {
@@ -278,12 +280,12 @@ export default {
           location.reload();
           break;
         case 404:
-          this.binData = []
-          console.log('success! qn none!')
+          this.binData = [];
+          this.loading = false;
           break;
         default:
           this.binData = JSON.parse(res.data.data);
-          console.log('success');
+          this.loading = false;
           break;
       }
     })
