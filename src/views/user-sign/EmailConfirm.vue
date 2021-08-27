@@ -1,13 +1,5 @@
 <template>
   <div class="confirm">
-<!--    <div v-if="success" class="register-success">-->
-<!--      <el-row>-->
-<!--        <div class="msg">-->
-<!--          <h1>恭喜您验证成功！</h1>-->
-<!--        </div>-->
-<!--      </el-row>-->
-<!--    </div>-->
-<!--    <h3 v-else>验证失败，请检查验证链接，或链接已失效</h3>-->
   </div>
 </template>
 
@@ -22,17 +14,17 @@ export default {
       success: false,
     }
   },
-  mounted() {
+  created() {
     const codeForm = new FormData();
     codeForm.append("code", this.$route.query.code);  // this.$route.query.code获取url中?code=后的参数
     this.$axios({
       method: 'post',
-      url: '/user/confirm/',
+      url: '/user/confirm/email',
       data: codeForm,
     })
     .then(res => {
       switch (res.data.status_code) {
-        case 200:
+        case 1:
           this.success = true;
           this.$message.success('恭喜您验证成功!');
           this.$store.dispatch('saveUserInfo', {user: {
@@ -43,16 +35,16 @@ export default {
             this.$router.push('/');
           }, 2000);
           break;
-        case 401:
+        case 2:
           this.$message.error('无效的确认请求');
           setTimeout(()=> {
             this.$router.push('/');
           }, 2000);
           break;
-        case 402:
+        case 3:
           this.$message.error('验证码已过期，请重新注册');
           setTimeout(()=> {
-            this.$router.push('/unverified_email');
+            this.$router.push('/register');
           }, 2000);
           break;
       }

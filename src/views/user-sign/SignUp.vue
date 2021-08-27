@@ -1,7 +1,7 @@
 <template>
   <div class="register">
     <div>
-      <img class="logo-name" src="../../assets/images/publish-logo.png" alt="logo" @click="handleToHome"/>
+      <img class="logo-name" src="../../assets/images/sign-in-logo.png" alt="logo" @click="handleToHome"/>
     </div>
 
     <div class="register-wrap">
@@ -68,8 +68,8 @@
 }
 .logo-name {
   margin-top: 30px;
-  width: 300px;
-  height: 150px;
+  width: 350px;
+  height: 175px;
   cursor: pointer;
   overflow: hidden;
 }
@@ -83,23 +83,23 @@
 .register {
   width: 100%;
   height: 100%;
-  background: url("../../assets/images/sign-in.png") no-repeat;
+  background: url("../../assets/images/sign-in-5.jpg") no-repeat;
   background-size: cover;
   overflow: hidden;
   position: fixed;
 }
 .title{
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 .register-wrap {
   width: 350px;
-  height: 430px;
+  height: 440px;
   padding: 20px 25px 0 25px;
   line-height: 40px;
   position: relative;
   display: inline-block;
-  background-color: rgb(255, 255, 255, 0.8);
+  background-color: rgb(255, 255, 255, 0.85);
   border-radius: 20px;
 }
 </style>
@@ -195,7 +195,7 @@ export default {
           })
           .then(res => {
             switch (res.data.status_code) {
-              case 200:
+              case 1:
                 this.$store.dispatch('saveUserInfo', {user: {
                     'username': this.ruleForm.username,
                     'confirmed': false,
@@ -205,22 +205,22 @@ export default {
                   this.$router.push('/unverified_email');
                 },1500);
                 break;
-              case 301:
+              case -1:
                 this.$message.warning('请检查填写的内容！');
                 break;
-              case 401:
+              case 2:
                 this.$message.warning('用户名已注册！');
                 break;
-              case 402:
+              case 3:
                 this.$message.error('邮箱已注册或不可用！');
                 break;
-              case 403:
+              case 4:
                 this.$message.error('密码不符合规则，需满足8-18，英文字母+数字！');
                 break;
-              case 404:
+              case 5:
                 this.$message.error('两次输入的密码不一致！');
                 break;
-              case 405:
+              case 6:
                 this.$message.error('邮件验证码发送失败，请检查邮箱是否填写正确！');
                 break;
             }
