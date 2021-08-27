@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div>
-      <img class="logo-name" src="../../assets/images/publish-logo.png" alt="logo" @click="handleToHome"/>
+      <img class="logo-name" src="../../assets/images/sign-in-logo.png" alt="logo" @click="handleToHome"/>
     </div>
     <div class="login-wrap">
       <h1 class="title">登录</h1>
@@ -33,27 +33,27 @@
 <style scoped>
 .logo-name {
   margin-top: 30px;
-  width: 300px;
-  height: 150px;
+  width: 350px;
+  height: 175px;
   cursor: pointer;
   overflow: hidden;
 }
 .login {
   width: 100%;
   height: 100%;
-  background: url("../../assets/images/sign-in.png") no-repeat;
+  background: url("../../assets/images/sign-in-5.jpg") no-repeat;
   background-size: cover;
   overflow: hidden;
   position: fixed;
 }
 .login-wrap {
   width: 350px;
-  height: 307px;
+  height: 330px;
   padding: 20px 25px 0 25px;
   line-height: 40px;
   position: relative;
   display: inline-block;
-  background-color: rgb(255, 255, 255, 0.8);
+  background-color: rgb(255, 255, 255, 0.85);
   border-radius: 20px;
 }
 h3 {
@@ -89,7 +89,7 @@ a:hover {
 }
 .title{
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 </style>
 
@@ -119,7 +119,7 @@ export default {
       })
       .then(res => {
         switch (res.data.status_code) {
-          case 200:
+          case 1:
             location.reload();
             // 前端保存用户信息
             this.$store.dispatch('saveUserInfo', {user: {
@@ -127,19 +127,19 @@ export default {
               'confirmed': true,
             }});
             break;
-          case 405:
+          case -1:
             this.$message.error('请检查填写的内容！');
             break;
-          case 401:
+          case 2:
             this.$message.warning('用户已登录！');
             break;
-          case 402:
+          case 3:
             this.$message.error('用户名不存在！');
             break;
-          case 403:
+          case 4:
             this.$message.error('用户名或密码错误！');
             break;
-          case 404:
+          case 5:
             this.$message.warning('用户未通过邮件确认，请及时确认！');
             this.$store.dispatch('saveUserInfo', {user: {
               'username': this.form.username,
