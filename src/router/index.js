@@ -68,14 +68,19 @@ const routes = [
         component: () => import('../views/qn-create/qn-form/investigation'),
     },
     {
-        path: '/test',
+        path: '/edit_test',
         name: 'Test',
         component: () => import('../views/qn-create/qn-form/test'),
     },
     {
-        path: '/form',
+        path: '/edit_form',
         name: 'SignUpForm',
         component: () => import('../views/qn-create/qn-form/form'),
+    },
+    {
+        path: '/edit_vote',
+        name: 'EditVote',
+        component: () => import('../views/qn-create/qn-form/vote'),
     },
     {
         path: '/fill',
@@ -84,6 +89,30 @@ const routes = [
         meta: {
             noNav: true
         },
+    },
+    {
+        path: '/fill_form',
+        name: 'FillForm',
+        component: () => import('../views/qn-fill/FillQnForm'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
+        path: '/fill_test',
+        name: 'FillTest',
+        component: () => import('../views/qn-fill/FillQnTest'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
+        path: '/fill_vote',
+        name: 'FillVote',
+        component: () => import('../views/qn-fill/FillQnVote'),
+        meta: {
+            noNav: true
+        }
     },
     {
         path: '/preview_form',
@@ -102,6 +131,14 @@ const routes = [
         }
     },
     {
+        path: '/preview_vote',
+        name: 'PreviewVote',
+        component: () => import('../views/qn-fill/FillQnVote'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
         path: '/preview',
         name: 'Preview',
         component: () => import('../views/qn-fill/FillQn'),
@@ -113,6 +150,17 @@ const routes = [
         path: '/test_result',
         name: 'TestResult',
         component: () => import('../views/qn-fill/FinishTest'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
+        path: '/vote_result',
+        name: 'VoteResult',
+        component: () => import('../views/qn-fill/FinishVote'),
+        meta: {
+            noNav: true
+        }
     },
     {
         path: '/stat',

@@ -7,13 +7,13 @@
         <el-card class="box-card investigation">
           <div slot="header" class="clearfix" style="display:inline">
               <h3 style="display:inline">问题{{nowid}}</h3>
-              <div v-if="nowid!=1" style="display:inline">
+              <div v-if="nowid!==1" style="display:inline">
                 <el-button style="float: left; padding: 3px 0" type="text" @click="frontpage">上一页</el-button>
               </div>
               <div v-else style="display:inline">
                 <el-button disabled style="float: left; padding: 3px 0" type="text">上一页</el-button>
               </div>
-              <div v-if="nowid!=questions.length" style="display:inline">
+              <div v-if="nowid!==questions.length" style="display:inline">
                 <el-button style="float: right; padding: 3px 0" type="text" @click="nextpage">下一页</el-button>
               </div>
               <div v-else style="display:inline">
@@ -53,7 +53,7 @@
             </el-col>
           </div>
 
-          <el-row :gutter="20" style="clear:both" v-if="item.type!='text'">
+          <el-row :gutter="20" style="clear:both" v-if="item.type!=='text'">
 
             <el-col :span="6">
               <h3 style="float:left; margin: 30px 0 60px;">数据统计</h3>
@@ -205,7 +205,8 @@ export default{
         //         id: '4',
         //         title: 'HZH',
         //         choosed: 153
-        //     }],
+        //     }
+        //     ],
         //     row: '',
         //     score: '',
         //     },
@@ -312,6 +313,8 @@ export default{
         if (res.data.status_code === 1) {
           this.questions = res.data.questions;
           this.item=this.questions[this.nowid-1];
+          console.log("questions");
+          console.log(this.questions);
         } else {
           this.$message.error("请求失败！");
         }
@@ -319,8 +322,6 @@ export default{
       .catch(err => {
         console.log(err);
       });
-
-      
     },
     methods:{
       // stateFormat(row, column, cellValue) {

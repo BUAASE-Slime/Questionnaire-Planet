@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FinishTest v-if="success" :questions="questions" :answers="answers"></FinishTest>
+    <FinishVote v-if="success" :questions="questions"></FinishVote>
     <div class="qn-fill" v-else>
       <div class="back-bt" v-if="mode==='0' || mode===0">
         <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
@@ -11,7 +11,7 @@
             <img src="../../assets/images/survey2.png" alt="">
           </div>
           <h1 v-if="close">问卷已结束，感谢您的参与！</h1>
-          <el-button type="primary" size="middle" @click="gotoHome">返回</el-button>
+          <el-button type="primary" size="middle">返回</el-button>
         </div>
         <div class="body" v-else>
 
@@ -31,15 +31,7 @@
               <div class="q-title">
                 {{ item.id }}. {{ item.title }}
                 <span class="must" v-if="item.must">(必填)</span>
-                <span
-                    class="point"
-                    v-if="item.type!=='name'
-                   && item.type!=='stuId'
-                   && item.type!=='class'
-                   && item.type!=='school'"
-                >
-                &ensp;[分值 : {{ item.point }}]
-              </span>
+                <span class="voteQs" v-if="item.isVote"> [投票题] </span>
               </div>
 
               <div
@@ -49,22 +41,10 @@
                 {{ item.description }}
               </div>
 
-              <!--     姓名/学号/班级/学校-->
-              <div class="q-opt"
-                   v-if="item.type === 'name'
-                   || item.type === 'stuId'
-                   || item.type === 'class'
-                   || item.type === 'school'">
-                <el-input
-                    placeholder="请输入内容"
-                    v-model="answers[item.id-1].ans">
-                </el-input>
-              </div>
-
-              <!--              判断/单选-->
-              <div v-if="item.type==='radio' || item.type === 'judge'">
+              <!--                  单选-->
+              <div v-if="item.type==='radio'">
                 <div class="q-opt" v-for="opt in item.options" :key="opt.id">
-                  <el-radio v-model="answers[item.id-1].ans" :label="opt.title">
+                  <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].ans" :label="opt.title">
                     {{ opt.title }}
                   </el-radio>
                 </div>
@@ -87,6 +67,10 @@
                 </el-input>
               </div>
 
+              <!--                  评分-->
+              <div class="q-opt" v-if="item.type==='mark'">
+                <el-rate v-model="answers[item.id-1].ans" :max="item.score"></el-rate>
+              </div>
             </div>
           </div>
 
@@ -97,7 +81,7 @@
         </div>
 
         <div class="tail">
-          <a href="http://localhost:8080/">问卷星球</a>&ensp;提供技术支持
+          <a :href="rootUrl">问卷星球</a>&ensp;提供技术支持
         </div>
       </div>
     </div>
@@ -105,250 +89,60 @@
 </template>
 
 <script>
-import FinishTest from "@/views/qn-fill/FinishTest";
+import FinishVote from "@/views/qn-fill/FinishVote";
 export default {
   name: "FillQn",
-  components: {FinishTest},
+  components: {FinishVote},
   data() {
     return {
       rootUrl: this.GLOBAL.baseUrl,
-
       success: false,
       close: false,
-
-      qn_id: '',
       mode: this.$route.query.mode,
       open: 1,
-      title: '考试问卷Beta',
-      description: '测试考试问卷的预览模式',
-      questions: [
-        // {
-        //   id: 1,
-        //   type: 'name',
-        //   title: '姓名',
-        //   must: true, // 是否必填
-        //   description: '', // 问题描述
-        //   options: [
-        //     {
-        //       title: '', // 选项标题
-        //       id: 0 // 选项id
-        //     },
-        //   ],
-        //   row: 1, // 填空区域行数
-        //   refer: '', // 参考答案
-        //   point: 0,  // 分值
-        // },
-        // {
-        //   id: 2,
-        //   type: 'stuId',
-        //   title: '学号',
-        //   must: true, // 是否必填
-        //   description: '', // 问题描述
-        //   options: [
-        //     {
-        //       title: '', // 选项标题
-        //       id: 0 // 选项id
-        //     },
-        //   ],
-        //   row: 1, // 填空区域行数
-        //   refer: '', // 参考答案
-        //   point: 0,  // 分值
-        // },
-        // {
-        //   id: 3,
-        //   type: 'class',
-        //   title: '班级',
-        //   must: true, // 是否必填
-        //   description: '', // 问题描述
-        //   options: [
-        //     {
-        //       title: '', // 选项标题
-        //       id: 0 // 选项id
-        //     },
-        //   ],
-        //   row: 1, // 填空区域行数
-        //   refer: '', // 参考答案
-        //   point: 0,  // 分值
-        // },
-        // {
-        //   id: 4,
-        //   type: 'school',
-        //   title: '学校',
-        //   must: true, // 是否必填
-        //   description: '', // 问题描述
-        //   options: [
-        //     {
-        //       title: '', // 选项标题
-        //       id: 0 // 选项id
-        //     },
-        //   ],
-        //   row: 1, // 填空区域行数
-        //   refer: '', // 参考答案
-        //   point: 0,  // 分值
-        // },
-        // {
-        //   id: 5,
-        //   type: 'radio',
-        //   title: '这是一个什么问卷？',
-        //   must: true, // 是否必填
-        //   description: '请谨慎做答', // 问题描述
-        //   options: [
-        //     {
-        //       title: '考试问卷', // 选项标题
-        //       id: 1 // 选项id
-        //     },
-        //     {
-        //       title: '调查问卷', // 选项标题
-        //       id: 2 // 选项id
-        //     },
-        //   ],
-        //   row: 0, // 填空区域行数
-        //   refer: '考试问卷', // 参考答案
-        //   point: 10,  // 分值
-        // },
-        // {
-        //   id: 6,
-        //   type: 'checkbox',
-        //   title: '软工助教都有谁？',
-        //   must: false, // 是否必填
-        //   description: '', // 问题描述
-        //   options: [
-        //     {
-        //       title: 'ZYH', // 选项标题
-        //       id: 1 // 选项id
-        //     },
-        //     {
-        //       title: 'LKW', // 选项标题
-        //       id: 2 // 选项id
-        //     },
-        //     {
-        //       title: 'MHY', // 选项标题
-        //       id: 3 // 选项id
-        //     },
-        //     {
-        //       title: 'HZH', // 选项标题
-        //       id: 4 // 选项id
-        //     },
-        //   ],
-        //   row: 0, // 填空区域行数
-        //   refer: '["LKW", "MHY"]', // 参考答案
-        //   point: 10,  // 分值
-        // },
-        // {
-        //   id: 7,
-        //   type: 'text',
-        //   title: '小学期累不累？',
-        //   must: false, // 是否必填
-        //   description: '请谨慎考虑做答', // 问题描述
-        //   options: [
-        //     {
-        //       title: '', // 选项标题
-        //       id: 0 // 选项id
-        //     },
-        //   ],
-        //   row: 5, // 填空区域行数
-        //   refer: '', // 参考答案
-        //   point: 30,  // 分值
-        // },
-        // {
-        //   id: 8,
-        //   type: 'judge',
-        //   title: '从来没有加过班',
-        //   must: true, // 是否必填
-        //   description: '请谨慎考虑做答', // 问题描述
-        //   options: [
-        //     {
-        //       title: '对', // 选项标题
-        //       id: 1 // 选项id
-        //     },
-        //     {
-        //       title: '错', // 选项标题
-        //       id: 2 // 选项id
-        //     },
-        //   ],
-        //   row: 0, // 填空区域行数
-        //   refer: '对', // 参考答案
-        //   point: 50,  // 分值
-        // },
-      ],
-      answers: [
-        // {
-        //   question_id: '1',
-        //   type: 'name',
-        //   ans: null,
-        //   ansList: [],
-        //   answer: ''
-        // },
-        // {
-        //   question_id: '2',
-        //   type: 'stuId',
-        //   ans: null,
-        //   ansList: [],
-        //   answer: ''
-        // },
-        // {
-        //   question_id: '3',
-        //   type: 'class',
-        //   ans: null,
-        //   ansList: [],
-        //   answer: ''
-        // },
-        // {
-        //   question_id: '4',
-        //   type: 'school',
-        //   ans: null,
-        //   ansList: [],
-        //   answer: ''
-        // },
-        // {
-        //   question_id: '5',
-        //   type: 'radio',
-        //   ans: null,
-        //   ansList: [],
-        //   answer: ''
-        // },
-        // {
-        //   question_id: '6',
-        //   type: 'checkbox',
-        //   ans: null,
-        //   ansList: [],
-        //   answer: ''
-        // },
-        // {
-        //   question_id: '7',
-        //   type: 'text',
-        //   ans: null,
-        //   ansList: [],
-        //   answer: ''
-        // },
-        // {
-        //   question_id: '8',
-        //   type: 'judge',
-        //   ans: null,
-        //   ansList: [],
-        //   answer: ''
-        // },
+      title: '',
+      description: '',
+      questions: [{
+          question_id: 0,
+          id: 1,
+          type:'radio',
+          title:'第一个',
+          must: true, // 是否必填
+          isVote:true,//是否是投票题
+          description: '1111111', // 问题描述
+          options:[
+            {
+              title:'A', // 选项标题
+              id: 1 // 选项id
+            }
+          ],
+          row: 1, // 填空区域行数
+          score: 5, // 最大评分
+      }],
+      answers: [{
+        question_id: '1',
+        type: 'name',
+        ans: null,
+        ansList: [],
+      },
       ],
       type: ''
     }
   },
   methods: {
-    gotoHome() {
-      this.$router.push('/');
-    },
     backToSurvey() {
       this.success = false;
     },
     submit: function () {
       // 必选检查
+      let answers = this.answers;
+      let questions = this.questions;
       let bool = false;
       let num = '';
-      console.log(this.answers);
-      for (let i=0; i<this.answers.length; i++) {
-        console.log(this.questions[i].must);
-        if (this.questions[i].must
-            && (this.answers[i].ans===null || this.answers[i].ans==='' || (this.answers[i].ans===0 && this.answers[i].type==='mark'))
-            && this.answers[i].ansList.length===0) {
+      for (let i=0; i<answers.length; i++) {
+        if (questions[i].must
+            && (answers[i].ans===null || answers[i].ans==='' || (answers[i].ans===0 && answers[i].type==='mark'))
+            && answers[i].ansList.length===0) {
           num += (i+1).toString() + ' ';
           bool = true;
         }
@@ -357,8 +151,6 @@ export default {
         this.$message.warning('必填问题 ' + num + ' 尚未作答完毕，无法提交');
         return;
       }
-      // 答案调试
-      console.log(this.answers)
       // 预览mode判断
       if (this.mode==='0' || this.mode===0) {
         this.$message({
@@ -376,9 +168,6 @@ export default {
           case "radio":
             this.answers[i].answer = this.answers[i].ans;
             break;
-          case "judge":
-            this.answers[i].answer = this.answers[i].ans;
-            break;
           case "checkbox":
             var ansl = '';
             for (var j=0; j<anslist.length-1; j++) {
@@ -387,11 +176,11 @@ export default {
             ansl = ansl + anslist[j];
             this.answers[i].answer = ansl;
             break;
+          case "text":
+            this.answers[i].answer = ans;
+            break;
           case "mark":
             this.answers[i].answer = ans.toString();
-            break;
-          default:
-            this.answers[i].answer = ans;
             break;
         }
       }
@@ -404,12 +193,11 @@ export default {
         var param = {
           code: this.$route.query.code,
           answers: this.answers,
-          qn_id: this.qn_id,
         };
         var paramer = JSON.stringify(param, {answers: 'brackets'})
         this.$axios({
           method: 'post',
-          url: '/sm/save/exam/paper',
+          url: '/qn/save_ans',
           data: paramer,
         })
             .then(res => {
@@ -420,16 +208,9 @@ export default {
                     message: '问卷提交成功'
                   });
                   this.success = true;
-                  console.log(this.questions);
-                  console.log(this.answers);
                   break;
                 case 2:
-                  this.$message.warning("问卷已结束，感谢您的参与！");
-                  this.close = true;
-                  break;
-                case 3:
-                  this.$message.warning("问卷已结束，感谢参与！");
-                  this.close = true;
+                  this.$message.success("问卷已结束，感谢您的参与！");
                   break;
                 default:
                   this.$message.error("操作失败！");
@@ -449,21 +230,23 @@ export default {
         confirmButtonText: '编辑页面',
         cancelButtonText: '问卷中心'
       })
-      .then(() => {
-        location.href = this.GLOBAL.baseUrl + "/edit_test?pid=" + this.$route.query.pid;
-      })
-      .catch(action => {
-        if (action === 'cancel') {
-          this.$router.push('/index');
-        }
-      });
+          .then(() => {
+            location.href = this.GLOBAL.baseUrl + "/edit?pid=" + this.$route.query.pid;
+          })
+          .catch(action => {
+            if (action === 'cancel') {
+              this.$router.push('/index');
+            }
+          });
+
     },
   },
+  mounted() {
+  },
   created() {
-    const formData = new FormData();
-    formData.append("qn_id", this.$route.query.pid)
-
     if (this.mode === '0') {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
       this.$axios({
         method: 'post',
         url: '/sm/get/qn_detail',
@@ -480,8 +263,6 @@ export default {
                 this.description = res.data.description;
                 this.type = res.data.type;
                 this.questions = res.data.questions;
-
-                console.log(this.questions);
 
                 //建立答案框架
                 for (var i=0; i<this.questions.length; i++) {
@@ -521,10 +302,7 @@ export default {
                 this.title = res.data.title;
                 this.description = res.data.description;
                 this.type = res.data.type;
-                this.qn_id = res.data.qn_id;
                 this.questions = res.data.questions;
-
-                console.log(this.questions);
 
                 //建立答案框架
                 for (var i=0; i<this.questions.length; i++) {
@@ -536,6 +314,9 @@ export default {
                     answer: ''
                   })
                 }
+                break;
+              case 3:
+                this.close = true;
                 break;
               default:
                 this.$message.error("访问失败！");
@@ -628,9 +409,9 @@ export default {
   color: crimson;
 }
 
-.qn-fill .body .point {
+.qn-fill .body .voteQs {
   font-weight: normal;
-  color: #EC9D2D;
+  color: #017dc2;
 }
 
 .qn-fill .body .q-opt {

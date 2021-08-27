@@ -89,62 +89,78 @@ export default {
       isHoverForm: false,
       isHoverVote: false,
       dialogVisible :false,
-      quesType: "",
+      quesType: 1,
       surveyTitle: "",
     }
   },
   methods: {
+    createSurvey(tag) {
+      var formData = new FormData();
+      const userInfo = user.getters.getUser(user.state());
+      formData.append("username", userInfo.user.username);
+      formData.append("title", this.surveyTitle);
+
+      console.log(tag);
+
+      console.log(userInfo.user.username);
+      console.log(formData.get('username'));
+
+      var editUrlName = '';
+
+      switch (tag) {
+        case 1:
+          formData.append("type", "1");
+          editUrlName = 'Edit';
+          break;
+        case 2:
+          formData.append("type", "2");
+          editUrlName = 'Test';
+          break;
+        case 3:
+          formData.append("type", "3");
+          editUrlName = 'EditVote';
+          break;
+        case 4:
+          formData.append("type", "4");
+          editUrlName = 'SignUpForm';
+          break;
+      }
+
+      this.$axios({
+        method: 'post',
+        url: '/sm/create/qn',
+        data: formData,
+      })
+      .then(res => {
+        switch (res.data.status_code) {
+          case 1:
+            var surveyId = res.data.qn_id;
+            this.$router.push({
+              name: editUrlName,
+              query: {
+                pid: surveyId
+              }
+            });
+            break;
+          case 2:
+            this.$message.warning("登录信息失效，请重新登录！");
+            setTimeout(() => {
+              this.$store.dispatch('clear');
+              location.reload();
+            }, 500);
+            break;
+          default:
+            this.$message.error("操作失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
     createConfirm(){
       this.dialogVisible=false;
-      if (this.quesType===1){
-        const formData = new FormData();
-        const userInfo = user.getters.getUser(user.state())
-        formData.append("username", userInfo.user.username);
-        formData.append("title", this.surveyTitle);
-        // formData.append("type", 0);
-        formData.append("type", "普通问卷");
-
-        this.$axios({
-          method: 'post',
-          url: '/sm/create/qn',
-          data: formData,
-        })
-        .then(res => {
-          switch (res.data.status_code) {
-            case 1:
-              var surveyId = res.data.qn_id;
-              this.$router.push({
-                name: 'Edit',
-                query: {
-                  pid: surveyId
-                }
-              });
-              break;
-            case 2:
-              this.$message.warning("登录信息失效，请重新登录！");
-              setTimeout(() => {
-                this.$store.dispatch('clear');
-                location.reload();
-              }, 500);
-              break;
-            default:
-              this.$message.error("操作失败！");
-              break;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        })
-      }
-      else if(this.quesType===2){
-        this.$message('创建了一个新的考试问卷');
-      }
-      else if(this.quesType===3){
-        this.$message('创建了一个新的投票问卷');
-      }
-      else if(this.quesType===4){
-        this.$message('创建了一个新的表单问卷');
-      }
+      this.createSurvey(this.quesType);
     },
   }
 }
