@@ -787,46 +787,46 @@ export default {
         url: '/sm/save/qn_keep/history',
         data: paramer,
       })
-          .then(res => {
-            switch (res.data.status_code) {
-              case 0:
-                this.$message.warning("登录信息失效，请重新登录！");
+      .then(res => {
+        switch (res.data.status_code) {
+          case 0:
+            this.$message.warning("登录信息失效，请重新登录！");
+            setTimeout(() => {
+              this.$store.dispatch('clear');
+              location.reload();
+            }, 500);
+            break;
+          case 1:
+            switch (tag) {
+              case 'save':
+                this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+                  distinguishCancelAndClose: true,
+                  confirmButtonText: '返回问卷中心',
+                  cancelButtonText: '继续编辑'
+                })
+                .then(() => {
+                  this.$router.push('/index');
+                });
+                break;
+              case 'preview':
+                this.$message.success("保存成功");
                 setTimeout(() => {
-                  this.$store.dispatch('clear');
-                  location.reload();
-                }, 500);
+                  location.href = 'preview_vote?mode=0&pid=' + this.$route.query.pid;
+                }, 700);
                 break;
-              case 1:
-                switch (tag) {
-                  case 'save':
-                    this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
-                      distinguishCancelAndClose: true,
-                      confirmButtonText: '返回问卷中心',
-                      cancelButtonText: '继续编辑'
-                    })
-                    .then(() => {
-                      this.$router.push('/index');
-                    });
-                    break;
-                  case 'preview':
-                    this.$message.success("保存成功");
-                    setTimeout(() => {
-                      location.href = 'preview_vote?mode=0&pid=' + this.$route.query.pid;
-                    }, 700);
-                    break;
-                  case 'publish':
-                    this.$message.success("保存成功");
-                    break;
-                }
-                break;
-              default:
-                this.$message.error("保存失败！");
+              case 'publish':
+                this.$message.success("保存成功");
                 break;
             }
-          })
-          .catch(err => {
-            console.log(err);
-          })
+            break;
+          default:
+            this.$message.error("保存失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     },
     save() {
       this.saveinfo('save');
