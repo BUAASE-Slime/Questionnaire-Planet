@@ -1,100 +1,98 @@
 <template>
-  <div class="qn-fill">
-    <div class="back-bt" v-if="mode==='0' || mode===0">
-      <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
-    </div>
-    <div class="paper">
-      <div v-if="success" style="padding-bottom: 50px">
-        <div class="tyn-icon">
-          <img src="../../assets/images/survey2.png" alt="">
-        </div>
-        <h1 v-if="success">提交成功，感谢您的参与！</h1>
-        <el-button type="primary" size="middle" @click="backToSurvey">继续查看问卷信息</el-button>
+  <div>
+    <FinishVote v-if="success" :questions="questions"></FinishVote>
+    <div class="qn-fill" v-else>
+      <div class="back-bt" v-if="mode==='0' || mode===0">
+        <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
       </div>
-      <div v-else-if="close" style="padding-bottom: 50px">
-        <div class="tyn-icon">
-          <img src="../../assets/images/survey2.png" alt="">
+      <div class="paper">
+        <div v-if="close" style="padding-bottom: 50px">
+          <div class="tyn-icon">
+            <img src="../../assets/images/survey2.png" alt="">
+          </div>
+          <h1 v-if="close">问卷已结束，感谢您的参与！</h1>
+          <el-button type="primary" size="middle">返回</el-button>
         </div>
-        <h1 v-if="close">问卷已结束，感谢您的参与！</h1>
-        <el-button type="primary" size="middle">返回</el-button>
-      </div>
-      <div class="body" v-else>
+        <div class="body" v-else>
 
-        <div class="title">
-          {{ title }}
-        </div>
+          <div class="title">
+            {{ title }}
+          </div>
 
-        <div class="description" v-if="this.description!==''">
-          &emsp;&emsp;{{ description }}
-        </div>
+          <div class="description" v-if="this.description!==''">
+            &emsp;&emsp;{{ description }}
+          </div>
 
-        <el-divider></el-divider>
+          <el-divider></el-divider>
 
-        <div class="main">
-          <div class="ques-block" v-for="item in questions" :key="item.id">
+          <div class="main">
+            <div class="ques-block" v-for="item in questions" :key="item.id">
 
-            <div class="q-title">
-              {{ item.id }}. {{ item.title }}
-              <span class="must" v-if="item.must">(必填)</span>
-              <span class="voteQs" v-if="item.isVote"> [投票题] </span>
-            </div>
+              <div class="q-title">
+                {{ item.id }}. {{ item.title }}
+                <span class="must" v-if="item.must">(必填)</span>
+                <span class="voteQs" v-if="item.isVote"> [投票题] </span>
+              </div>
 
-            <div
-                class="q-description"
-                v-if="item.description!=='' && item.description!==null && item.description!==undefined"
-            >
-              {{ item.description }}
-            </div>
+              <div
+                  class="q-description"
+                  v-if="item.description!=='' && item.description!==null && item.description!==undefined"
+              >
+                {{ item.description }}
+              </div>
 
-            <!--                  单选-->
-            <div v-if="item.type==='radio'">
-              <div class="q-opt" v-for="opt in item.options" :key="opt.id">
-                <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].ans" :label="opt.title">
+              <!--                  单选-->
+              <div v-if="item.type==='radio'">
+                <div class="q-opt" v-for="opt in item.options" :key="opt.id">
+                  <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].ans" :label="opt.title">
+                    {{ opt.title }}
+                  </el-radio>
+                </div>
+              </div>
+
+              <!--                  多选-->
+              <el-checkbox-group class="q-opt" v-if="item.type==='checkbox'" v-model="answers[item.id-1].ansList">
+                <el-checkbox v-for="opt in item.options" :key="opt.id" :label="opt.title">
                   {{ opt.title }}
-                </el-radio>
+                </el-checkbox>
+              </el-checkbox-group>
+
+              <!--                  填空-->
+              <div class="q-opt" v-if="item.type==='text'">
+                <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 2, maxRows: item.row}"
+                    placeholder="请输入内容"
+                    v-model="answers[item.id-1].ans">
+                </el-input>
+              </div>
+
+              <!--                  评分-->
+              <div class="q-opt" v-if="item.type==='mark'">
+                <el-rate v-model="answers[item.id-1].ans" :max="item.score"></el-rate>
               </div>
             </div>
-
-            <!--                  多选-->
-            <el-checkbox-group class="q-opt" v-if="item.type==='checkbox'" v-model="answers[item.id-1].ansList">
-              <el-checkbox v-for="opt in item.options" :key="opt.id" :label="opt.title">
-                {{ opt.title }}
-              </el-checkbox>
-            </el-checkbox-group>
-
-            <!--                  填空-->
-            <div class="q-opt" v-if="item.type==='text'">
-              <el-input
-                  type="textarea"
-                  :autosize="{ minRows: 2, maxRows: item.row}"
-                  placeholder="请输入内容"
-                  v-model="answers[item.id-1].ans">
-              </el-input>
-            </div>
-
-            <!--                  评分-->
-            <div class="q-opt" v-if="item.type==='mark'">
-              <el-rate v-model="answers[item.id-1].ans" :max="item.score"></el-rate>
-            </div>
           </div>
+
+          <div class="submit-bt">
+            <el-button type="primary" @click="submit">提交</el-button>
+          </div>
+
         </div>
 
-        <div class="submit-bt">
-          <el-button type="primary" @click="submit">提交</el-button>
+        <div class="tail">
+          <a :href="rootUrl">问卷星球</a>&ensp;提供技术支持
         </div>
-
-      </div>
-
-      <div class="tail">
-        <a :href="rootUrl">问卷星球</a>&ensp;提供技术支持
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import FinishVote from "@/views/qn-fill/FinishVote";
 export default {
   name: "FillQn",
+  components: {FinishVote},
   data() {
     return {
       rootUrl: this.GLOBAL.baseUrl,
