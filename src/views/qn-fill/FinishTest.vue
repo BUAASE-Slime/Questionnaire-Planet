@@ -90,7 +90,7 @@
       </div>
 
       <div class="tail">
-        <a href="http://localhost:8080/">问卷星球</a>&ensp;提供技术支持
+        <a :href="rootUrl">问卷星球</a>&ensp;提供技术支持
       </div>
 
     </div>
@@ -99,17 +99,22 @@
 </template>
 
 <script>
+import user from "@/store/user";
+
 export default {
   name: "FinishTest",
   props: {
-    questions: [],
-    answers: [],
+
   },
   data(){
     return{
+      rootUrl: this.GLOBAL.baseUrl,
+
       hoverColor:{
         "--hcolor":"red"
       },
+      questions: [],
+      answers: [],
       totalScore: null,
       actualScore: null,
       // questions: [
@@ -329,45 +334,114 @@ export default {
     isRight: function (item) {
       return this.answers[item.id-1].correct;
     },
+    judge() {
+      console.log(1111);
+      // 判卷
+      let questions = this.questions;
+      let answers = this.answers;
+      let total = 0;
+      let score = 0;
+      for (let i=0; i<questions.length; i++) {
+        // 略过信息和主观题
+        if (this.isInfo(questions[i])) { continue;}
+        // 统计
+        if (questions[i].type === 'radio' || questions[i].type === 'judge') {
+          if (questions[i].refer === answers[i].ans) {
+            answers[i].correct = true;
+            score += questions[i].point;
+          }
+          total += questions[i].point;
+        }
+        if (questions[i].type === 'checkbox') {
+          // 预处理
+          let reference = questions[i].refer;
+          // let reference = questions[i].refer.substring(1, questions[i].refer.length-1).replace(/"/g, "").split(', ');
+          console.log("reference");
+          console.log(reference);
+          console.log("answers");
+          console.log(answers[i].ansList);
+          if (reference.toString() === answers[i].ansList.toString()) {
+            answers[i].correct = true;
+            score += questions[i].point;
+          }
+          total += questions[i].point;
+        } else if (questions[i].type === 'text') {
+          if (questions[i].refer === answers[i].ans) {
+            answers[i].correct = true;
+            score += questions[i].point;
+          }
+          total += questions[i].point;
+        }
+      }
+      this.actualScore = score;
+      this.totalScore = total;
+    },
   },
   created() {
-    // 判卷
-    let questions = this.questions;
-    let answers = this.answers;
-    let total = 0;
-    let score = 0;
-    for (let i=0; i<questions.length; i++) {
-      // 略过信息和主观题
-      if (this.isInfo(questions[i])) { continue;}
-      // 统计
-      if (questions[i].type === 'radio' || questions[i].type === 'judge') {
-        if (questions[i].refer === answers[i].ans) {
-          answers[i].correct = true;
-          score += questions[i].point;
+    var data = [];
+    const userInfo = user.getters.getUser(user.state());
+    const formData = new FormData();
+    formData.append("code", this.$route.query.code);
+    formData.append("username", userInfo.user.username);
+    this.$axios({
+      method: 'post',
+      url: '/sm/get/submit_answers/code',
+      data: formData,
+    })
+    .then(res => {
+      if (res.data.status_code === 1) {
+        data = res.data.answers;
+        console.log(data);
+        this.questions = res.data.questions;
+
+        for (var m=0; m<this.questions.length; m++) {
+          if (this.questions[m].type === 'checkbox') {
+            this.questions[m].refer = this.questions[m].refer.split('-<^-^>-');
+          }
         }
-        total += questions[i].point;
+
+        this.answers = [];
+        //建立答案框架
+        for (var i=0; i<this.questions.length; i++) {
+          this.answers.push({
+            question_id: this.questions[i].question_id,
+            type: this.questions[i].type,
+            ans: null,
+            ansList: [],
+            answer: ''
+          });
+        }
+        for (var j=0; j<this.answers.length; j++) {
+          for (var k=0; k<data.length; k++) {
+            if (this.answers[j].question_id === data[k].question_id) {
+              switch (this.answers[j].type) {
+                case 'checkbox':
+                  this.answers[j].ansList = data[k].answer.split('-<^-^>-');
+                  break;
+                case 'mark':
+                  this.answers[j].ans = parseInt(data[k].answer);
+                  this.answers[j].answer = data[k].answer;
+                  break;
+                case 'radio':
+                  this.answers[j].ans = data[k].answer;
+                  this.answers[j].answer = data[k].answer;
+                  break;
+                default:
+                  this.answers[j].ans = data[k].answer;
+                  this.answers[j].answer = data[k].answer;
+                  break;
+              }
+            }
+          }
+        }
+
+        this.judge();
+      } else {
+        this.$message.error("请求失败！");
       }
-      if (questions[i].type === 'checkbox') {
-        // 预处理
-        let reference = questions[i].refer.substring(1, questions[i].refer.length-1).replace(/"/g, "").split(', ');
-        console.log(reference);
-        console.log(answers[i].ansList);
-        if (reference.toString() === answers[i].ansList.toString()) {
-          answers[i].correct = true;
-          score += questions[i].point;
-        }
-        total += questions[i].point;
-      } else if (questions[i].type === 'text') {
-        if (questions[i].refer === answers[i].ans) {
-          answers[i].correct = true;
-          score += questions[i].point;
-        }
-        total += questions[i].point;
-      }
-    }
-    this.actualScore = score;
-    this.totalScore = total;
+    });
   },
+
 }
 </script>
 

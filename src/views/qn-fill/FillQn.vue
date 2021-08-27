@@ -152,12 +152,7 @@ export default {
             this.answers[i].answer = this.answers[i].ans;
             break;
           case "checkbox":
-            var ansl = '';
-            for (var j=0; j<anslist.length-1; j++) {
-              ansl = ansl + anslist[j] + '-<^-^>-';
-            }
-            ansl = ansl + anslist[j];
-            this.answers[i].answer = ansl;
+            this.answers[i].answer = anslist.join('-<^-^>-');
             break;
           case "text":
             this.answers[i].answer = ans;
@@ -183,33 +178,31 @@ export default {
           url: '/qn/save_ans',
           data: paramer,
         })
-            .then(res => {
-              switch (res.data.status_code) {
-                case 1:
-                  this.$message({
-                    type: 'success',
-                    message: '问卷提交成功'
-                  });
-                  this.success = true;
-                  console.log(this.questions);
-                  console.log(this.answers);
-                  break;
-                case 2:
-                  this.$message.warning("问卷已结束，感谢您的参与！");
-                  this.close = true;
-                  break;
-                case 3:
-                  this.$message.warning("问卷已结束，感谢参与！");
-                  this.close = true;
-                  break;
-                default:
-                  this.$message.error("操作失败！");
-                  break;
-              }
-            })
-            .catch(err => {
-              console.log(err);
-            })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 1:
+              this.$message({
+                type: 'success',
+                message: '问卷提交成功'
+              });
+              this.success = true;
+              break;
+            case 2:
+              this.$message.warning("问卷已结束，感谢您的参与！");
+              this.close = true;
+              break;
+            case 3:
+              this.$message.warning("问卷已结束，感谢您的参与！");
+              this.close = true;
+              break;
+            default:
+              this.$message.error("操作失败！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
       }).catch(() => {
 
       });
@@ -304,6 +297,9 @@ export default {
                     answer: ''
                   })
                 }
+                break;
+              case 3:
+                this.close = true;
                 break;
               default:
                 this.$message.error("访问失败！");
