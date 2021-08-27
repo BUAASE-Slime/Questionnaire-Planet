@@ -443,7 +443,6 @@ export default {
   mounted() {
   },
   created() {
-
     if (this.mode === '0') {
       const formData = new FormData();
       formData.append("qn_id", this.$route.query.pid);
