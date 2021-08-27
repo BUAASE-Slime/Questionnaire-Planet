@@ -158,6 +158,9 @@ const routes = [
         path: '/vote_result',
         name: 'VoteResult',
         component: () => import('../views/qn-fill/FinishVote'),
+        meta: {
+            noNav: true
+        }
     },
     {
         path: '/stat',
