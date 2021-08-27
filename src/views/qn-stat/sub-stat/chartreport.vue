@@ -157,145 +157,145 @@ export default{
         radio2: '饼图',
         choose: 1,
         tableData:[
-        {
-            num: 1,
-            answer: '千呼万唤的泡泡玛特壁纸合集来惹！想要第一时间收获泡泡高清壁纸吗？添加【宇宙观察员1号】为好友回复关键词【dimoo】或【molly】即可轻松get！PS:注意字母大小写哦~不定期更新，更多IP壁纸等你解锁！添加宇宙观察员为好友的小可爱们，有可能收到来自泡泡星球的小礼物哦~数量有限，先到先得！',
-        },
-        {
-            num:2,
-            answer:'tired'
-        }
+        // {
+        //     num: 1,
+        //     answer: '千呼万唤的泡泡玛特壁纸合集来惹！想要第一时间收获泡泡高清壁纸吗？添加【宇宙观察员1号】为好友回复关键词【dimoo】或【molly】即可轻松get！PS:注意字母大小写哦~不定期更新，更多IP壁纸等你解锁！添加宇宙观察员为好友的小可爱们，有可能收到来自泡泡星球的小礼物哦~数量有限，先到先得！',
+        // },
+        // {
+        //     num:2,
+        //     answer:'tired'
+        // }
         ],
         questions:[
-            {
-            id: '1',
-            type: 'radio',
-            title: '这是一个什么网站？',
-            must: true,
-            options: [{
-                id: '1',
-                title: '问卷系统',
-                choosed: 15
-            }, {
-                id: '2',
-                title: '出版系统',
-                choosed: 13
-            }],
-            row: '',
-            score: '',
-            },
-            {
-            id: '2',
-            type: 'checkbox',
-            title: '软工小学期助教都有谁？',
-            must: false,
-            options: [{
-                id: '1',
-                title: 'ZYH',
-                choosed: 15
-            }, {
-                id: '2',
-                title: 'LKW',
-                choosed: 153
-            },{
-                id: '3',
-                title: 'ZXH',
-                choosed: 151
-            }, {
-                id: '4',
-                title: 'HZH',
-                choosed: 153
-            }],
-            row: '',
-            score: '',
-            },
-            {
-          id: '3',
-          type: 'radio',
-          title: '软工小学期累不累',
-          must: false,
-          options: [{
-            id: '1',
-            title: '累',
-            choosed: 10
-          }, {
-            id: '2',
-            title: '非常累',
-            choosed: 11
-          }],
-          row: '',
-          score: '',
-        },
-        {
-          id: '4',
-          type: 'text',
-          title: '您对小学期的评价如何？',
-          must: false,
-          options: [{
-            id: '',
-            title: '',
-          }],
-          row: 3,
-          score: '',
-        },
-        {
-          id: '5',
-          type: 'mark',
-          title: '给小学期打个分吧~',
-          must: true,
-          options: [{
-            id: '1',
-            title: '1',
-            choosed: 1,
-          },
-          {
-            id: '2',
-            title: '2',
-            choosed: 8,
-          },
-          {
-            id: '3',
-            title: '3',
-            choosed: 12,
-          },
-          {
-            id: '4',
-            title: '4',
-            choosed: 1,
-          },
-          {
-            id: '5',
-            title: '5',
-            choosed: 5,
-          },
-          {
-            id: '6',
-            title: '6',
-            choosed: 1,
-          },
-          {
-            id: '7',
-            title: '7',
-            choosed: 1,
-          },
-          {
-            id: '8',
-            title: '8',
-            choosed: 10,
-          },
-          {
-            id: '9',
-            title: '9',
-            choosed: 6,
-          },
-          {
-            id: '10',
-            title: '10',
-            choosed: 10,
-          },],
-          row: 1,
-          score: 10,
-        },
+        //     {
+        //     id: '1',
+        //     type: 'radio',
+        //     title: '这是一个什么网站？',
+        //     must: true,
+        //     options: [{
+        //         id: '1',
+        //         title: '问卷系统',
+        //         choosed: 15
+        //     }, {
+        //         id: '2',
+        //         title: '出版系统',
+        //         choosed: 13
+        //     }],
+        //     row: '',
+        //     score: '',
+        //     },
+        //     {
+        //     id: '2',
+        //     type: 'checkbox',
+        //     title: '软工小学期助教都有谁？',
+        //     must: false,
+        //     options: [{
+        //         id: '1',
+        //         title: 'ZYH',
+        //         choosed: 15
+        //     }, {
+        //         id: '2',
+        //         title: 'LKW',
+        //         choosed: 153
+        //     },{
+        //         id: '3',
+        //         title: 'ZXH',
+        //         choosed: 151
+        //     }, {
+        //         id: '4',
+        //         title: 'HZH',
+        //         choosed: 153
+        //     }],
+        //     row: '',
+        //     score: '',
+        //     },
+        //     {
+        //   id: '3',
+        //   type: 'radio',
+        //   title: '软工小学期累不累',
+        //   must: false,
+        //   options: [{
+        //     id: '1',
+        //     title: '累',
+        //     choosed: 10
+        //   }, {
+        //     id: '2',
+        //     title: '非常累',
+        //     choosed: 11
+        //   }],
+        //   row: '',
+        //   score: '',
+        // },
+        // {
+        //   id: '4',
+        //   type: 'text',
+        //   title: '您对小学期的评价如何？',
+        //   must: false,
+        //   options: [{
+        //     id: '',
+        //     title: '',
+        //   }],
+        //   row: 3,
+        //   score: '',
+        // },
+        // {
+        //   id: '5',
+        //   type: 'mark',
+        //   title: '给小学期打个分吧~',
+        //   must: true,
+        //   options: [{
+        //     id: '1',
+        //     title: '1',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '2',
+        //     title: '2',
+        //     choosed: 8,
+        //   },
+        //   {
+        //     id: '3',
+        //     title: '3',
+        //     choosed: 12,
+        //   },
+        //   {
+        //     id: '4',
+        //     title: '4',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '5',
+        //     title: '5',
+        //     choosed: 5,
+        //   },
+        //   {
+        //     id: '6',
+        //     title: '6',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '7',
+        //     title: '7',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '8',
+        //     title: '8',
+        //     choosed: 10,
+        //   },
+        //   {
+        //     id: '9',
+        //     title: '9',
+        //     choosed: 6,
+        //   },
+        //   {
+        //     id: '10',
+        //     title: '10',
+        //     choosed: 10,
+        //   },],
+        //   row: 1,
+        //   score: 10,
+        // },
         ]
         }
     },
@@ -311,6 +311,7 @@ export default{
       .then(res => {
         if (res.data.status_code === 1) {
           this.questions = res.data.questions;
+          this.item=this.questions[this.nowid-1];
         } else {
           this.$message.error("请求失败！");
         }
@@ -319,7 +320,7 @@ export default{
         console.log(err);
       });
 
-      this.item=this.questions[this.nowid-1];
+      
     },
     methods:{
       // stateFormat(row, column, cellValue) {
