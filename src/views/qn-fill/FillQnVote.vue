@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FinishVote v-if="success" :questions="questions"></FinishVote>
+    <FinishVote v-if="success || repeated" :questions="questions"></FinishVote>
     <div class="qn-fill" v-else>
       <div class="back-bt" v-if="mode==='0' || mode===0">
         <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
@@ -95,6 +95,7 @@ export default {
   components: {FinishVote},
   data() {
     return {
+      repeated: false,
       rootUrl: this.GLOBAL.baseUrl,
       success: false,
       close: false,
@@ -102,29 +103,32 @@ export default {
       open: 1,
       title: '',
       description: '',
-      questions: [{
-          question_id: 0,
-          id: 1,
-          type:'radio',
-          title:'第一个',
-          must: true, // 是否必填
-          isVote:true,//是否是投票题
-          description: '1111111', // 问题描述
-          options:[
-            {
-              title:'A', // 选项标题
-              id: 1 // 选项id
-            }
-          ],
-          row: 1, // 填空区域行数
-          score: 5, // 最大评分
-      }],
-      answers: [{
-        question_id: '1',
-        type: 'name',
-        ans: null,
-        ansList: [],
-      },
+      questions: [
+      //     {
+      //     question_id: 0,
+      //     id: 1,
+      //     type:'radio',
+      //     title:'第一个',
+      //     must: true, // 是否必填
+      //     isVote:true,//是否是投票题
+      //     description: '1111111', // 问题描述
+      //     options:[
+      //       {
+      //         title:'A', // 选项标题
+      //         id: 1 // 选项id
+      //       }
+      //     ],
+      //     row: 1, // 填空区域行数
+      //     score: 5, // 最大评分
+      // }
+      ],
+      answers: [
+      //     {
+      //   question_id: '1',
+      //   type: 'name',
+      //   ans: null,
+      //   ansList: [],
+      // },
       ],
       type: ''
     }
@@ -139,8 +143,10 @@ export default {
       let questions = this.questions;
       let bool = false;
       let num = '';
+      console.log(answers.length);
       for (let i=0; i<answers.length; i++) {
-        if (questions[i].must
+        console.log(questions[i].must);
+        if (questions[i].must===true
             && (answers[i].ans===null || answers[i].ans==='' || (answers[i].ans===0 && answers[i].type==='mark'))
             && answers[i].ansList.length===0) {
           num += (i+1).toString() + ' ';
@@ -169,18 +175,16 @@ export default {
             this.answers[i].answer = this.answers[i].ans;
             break;
           case "checkbox":
-            var ansl = '';
-            for (var j=0; j<anslist.length-1; j++) {
-              ansl = ansl + anslist[j] + '-<^-^>-';
-            }
-            ansl = ansl + anslist[j];
-            this.answers[i].answer = ansl;
+            this.answers[i].answer = anslist.join('-<^-^>-');
+            break;
+          case "mark":
+            this.answers[i].answer = ans.toString();
             break;
           case "text":
             this.answers[i].answer = ans;
             break;
-          case "mark":
-            this.answers[i].answer = ans.toString();
+          default:
+            this.answers[i].answer = ans;
             break;
         }
       }
@@ -200,26 +204,31 @@ export default {
           url: '/qn/save_ans',
           data: paramer,
         })
-            .then(res => {
-              switch (res.data.status_code) {
-                case 1:
-                  this.$message({
-                    type: 'success',
-                    message: '问卷提交成功'
-                  });
-                  this.success = true;
-                  break;
-                case 2:
-                  this.$message.success("问卷已结束，感谢您的参与！");
-                  break;
-                default:
-                  this.$message.error("操作失败！");
-                  break;
-              }
-            })
-            .catch(err => {
-              console.log(err);
-            })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 1:
+              this.$message({
+                type: 'success',
+                message: '问卷提交成功'
+              });
+              this.success = true;
+              break;
+            case 2:
+              this.$message.warning("问卷已结束，感谢您的参与！");
+              this.close = true;
+              break;
+            case 3:
+              this.$message.warning("问卷已结束，感谢您的参与！");
+              this.close = true;
+              break;
+            default:
+              this.$message.error("操作失败！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
       }).catch(() => {
 
       });
@@ -293,39 +302,42 @@ export default {
         url: '/sm/get/qn_for_fill',
         data: formData,
       })
-          .then(res => {
-            switch (res.data.status_code) {
-              case 2:
-                this.$router.push('PageNotFound');
-                break;
-              case 1:
-                this.title = res.data.title;
-                this.description = res.data.description;
-                this.type = res.data.type;
-                this.questions = res.data.questions;
+      .then(res => {
+        switch (res.data.status_code) {
+          case 2:
+            this.$router.push('PageNotFound');
+            break;
+          case 1:
+            this.title = res.data.title;
+            this.description = res.data.description;
+            this.type = res.data.type;
+            this.questions = res.data.questions;
 
-                //建立答案框架
-                for (var i=0; i<this.questions.length; i++) {
-                  this.answers.push({
-                    question_id: this.questions[i].question_id,
-                    type: this.questions[i].type,
-                    ans: null,
-                    ansList: [],
-                    answer: ''
-                  })
-                }
-                break;
-              case 3:
-                this.close = true;
-                break;
-              default:
-                this.$message.error("访问失败！");
-                break;
+            //建立答案框架
+            for (var i=0; i<this.questions.length; i++) {
+              this.answers.push({
+                question_id: this.questions[i].question_id,
+                type: this.questions[i].type,
+                ans: null,
+                ansList: [],
+                answer: ''
+              })
             }
-          })
-          .catch(err => {
-            console.log(err);
-          })
+            break;
+          case 3:
+            this.close = true;
+            break;
+          case 888:
+            this.repeated = true;
+            break;
+          default:
+            this.$message.error("访问失败");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     }
   },
 }

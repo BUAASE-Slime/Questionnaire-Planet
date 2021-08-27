@@ -18,7 +18,7 @@
           </div>
         </div>
         <div class="tail">
-          <a href="http://localhost:8080/">问卷星球</a>&ensp;提供技术支持
+          <a :href="rootUrl">问卷星球</a>&ensp;提供技术支持
         </div>
       </div>
 
@@ -32,6 +32,7 @@ export default {
   name: "FinishVote",
   data(){
     return{
+      rootUrl: this.GLOBAL.baseUrl,
       voteQuestions: [
         {
           question_id: 1,
@@ -110,6 +111,38 @@ export default {
         return x;
       };
     }
+  },
+  created() {
+    const formData = new FormData();
+    formData.append("code", this.$route.query.code);
+    console.log(this.$route.query.code);
+    this.$axios({
+      method: 'post',
+      url: '/sm/get/vote/current_situation/from/code',
+      data: formData,
+    })
+    .then(res => {
+      switch (res.data.status_code) {
+        case 1:
+          this.voteQuestions = res.data.questions;
+          break;
+        case 2:
+          this.$router.push("PageNotFound");
+          break;
+        case 3:
+          this.$message.error("问卷已结束！");
+          setTimeout(() => {
+            this.$router.push("/");
+          }, 1000);
+          break;
+        default:
+          this.$message.error("访问失败！");
+          setTimeout(() => {
+            this.$router.push("/");
+          }, 1000);
+          break;
+      }
+    })
   }
 }
 </script>
