@@ -72,7 +72,7 @@
 
             <!--                  定位-->
             <div class="q-opt" v-if="item.type==='location'">
-              <el-button icon="el-icon-map-location" @click="getLoction">{{ locationInfo }}</el-button>
+              <el-button icon="el-icon-map-location" @click="getLocation">{{ locationInfo }}</el-button>
             </div>
 
             <!--                  评分-->
@@ -278,7 +278,7 @@ export default {
         cancelButtonText: '问卷中心'
       })
           .then(() => {
-            location.href = this.GLOBAL.baseUrl + "/edit?pid=" + this.$route.query.pid;
+            location.href = this.GLOBAL.baseUrl + "/edit_hate?pid=" + this.$route.query.pid;
           })
           .catch(action => {
             if (action === 'cancel') {

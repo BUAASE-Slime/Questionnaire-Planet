@@ -18,6 +18,20 @@
         <h1 v-if="repeat">您已报名成功，请勿重复填写！</h1>
         <el-button type="primary" size="middle" @click="gotoHome">返回首页</el-button>
       </div>
+      <div v-else-if="full" style="padding-bottom: 50px">
+        <div class="tyn-icon">
+          <img src="../../assets/images/survey2.png" alt="">
+        </div>
+        <h1 v-if="full">所选活动报名人数已满，可返回查看！</h1>
+        <el-button type="primary" size="middle" @click="backToSurvey">返回查看</el-button>
+      </div>
+      <div v-else-if="allfull" style="padding-bottom: 50px">
+        <div class="tyn-icon">
+          <img src="../../assets/images/survey2.png" alt="">
+        </div>
+        <h1 v-if="allfull">报名人数已满，感谢参与！</h1>
+        <el-button type="primary" size="middle" @click="gotoHome">返回首页</el-button>
+      </div>
       <div v-else-if="close" style="padding-bottom: 50px">
         <div class="tyn-icon">
           <img src="../../assets/images/survey2.png" alt="">
@@ -102,6 +116,8 @@ export default {
       success: false,
       close: false,
       repeat: false,
+      full: false,
+      allfull: false,
 
       mode: this.$route.query.mode,
       title: '',
@@ -174,6 +190,10 @@ export default {
     },
     backToSurvey() {
       this.success = false;
+      this.full = false;
+      this.allfull = false;
+      this.repeat = false;
+      this.close = false;
     },
     submit: function () {
       // 必选检查
@@ -249,9 +269,17 @@ export default {
               });
               this.success = true;
               break;
-            case 2 || 4 || 5 || 11 || 12:
+            case 2: case 4: case 5:
               this.$message.warning("问卷已结束，感谢您的参与！");
               this.close = true;
+              break;
+            case 11 :
+              this.$message.warning("报名人数已满，感谢您的参与！");
+              this.allfull = true;
+              break;
+            case 12:
+              this.$message.warning("您填报的选项报名人数已满，感谢您的参与！");
+              this.full = true;
               break;
             case 3:
               this.$message.warning("您已报名成功，请勿重复填写！");
@@ -361,6 +389,12 @@ export default {
                 break;
               case 3:
                 this.close = true;
+                break;
+              case 666:
+                this.close = true;
+                break;
+              case 888:
+                this.repeat = true;
                 break;
               default:
                 this.$message.error("访问失败！");
