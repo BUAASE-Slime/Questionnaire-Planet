@@ -957,6 +957,14 @@ export default {
       });
     },
     saveinfo(tag) {
+      // 多选题数据格式转化
+      var new_questions = this.questions;
+      console.log(new_questions);
+      for (var i=0; i<new_questions.length; i++) {
+        if (this.questions[i].type === 'checkbox') {
+          new_questions[i].refer = new_questions[i].refer.join('-<^-^>-');
+        }
+      }
       const userInfo = user.getters.getUser(user.state());
       var param = {
         username: userInfo.user.username,
@@ -965,7 +973,7 @@ export default {
         description: this.description,
         type: this.type,
         qn_id: this.$route.query.pid,
-        questions: this.questions
+        questions: new_questions
       }
       var paramer = JSON.stringify(param, {questions: 'brackets'})
       this.$axios({
@@ -1188,6 +1196,13 @@ export default {
           this.description = res.data.description;
           this.type = res.data.type;
           this.questions = res.data.questions;
+
+          for (var i=0; i<this.questions.length; i++) {
+            if (this.questions[i].type === 'checkbox') {
+              this.questions[i].refer = this.questions[i].refer.split('-<^-^>-');
+            }
+          }
+
           this.isReleased = res.data.is_released;
           console.log(this.questions);
 

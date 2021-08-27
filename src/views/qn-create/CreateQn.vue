@@ -100,11 +100,6 @@ export default {
       formData.append("username", userInfo.user.username);
       formData.append("title", this.surveyTitle);
 
-      console.log(tag);
-
-      console.log(userInfo.user.username);
-      console.log(formData.get('username'));
-
       var editUrlName = '';
 
       switch (tag) {

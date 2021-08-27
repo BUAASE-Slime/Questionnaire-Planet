@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FinishTest v-if="success" :questions="questions" :answers="answers"></FinishTest>
+    <FinishTest v-if="success || repeat" :questions="questions" :answers="answers"></FinishTest>
     <div class="qn-fill" v-else>
       <div class="back-bt" v-if="mode==='0' || mode===0">
         <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
@@ -13,6 +13,13 @@
           <h1 v-if="close">问卷已结束，感谢您的参与！</h1>
           <el-button type="primary" size="middle" @click="gotoHome">返回</el-button>
         </div>
+<!--        <div v-if="repeat" style="padding-bottom: 50px">-->
+<!--          <div class="tyn-icon">-->
+<!--            <img src="../../assets/images/survey2.png" alt="">-->
+<!--          </div>-->
+<!--          <h1 v-if="repeat">您已填写过此问卷！</h1>-->
+<!--          <el-button type="primary" size="middle" @click="gotoHome">返回</el-button>-->
+<!--        </div>-->
         <div class="body" v-else>
 
           <div class="title">
@@ -115,6 +122,7 @@ export default {
 
       success: false,
       close: false,
+      repeat: false,
 
       qn_id: '',
       mode: this.$route.query.mode,
@@ -386,6 +394,7 @@ export default {
             }
             ansl = ansl + anslist[j];
             this.answers[i].answer = ansl;
+            console.log(this.answers[i].answer);
             break;
           case "mark":
             this.answers[i].answer = ans.toString();
@@ -469,40 +478,40 @@ export default {
         url: '/sm/get/qn_detail',
         data: formData,
       })
-          .then(res => {
-            switch (res.data.status_code) {
-              case 0:
-                this.$message.error("您无权访问！");
-                this.$router.push('/');
-                break;
-              case 1:
-                this.title = res.data.title;
-                this.description = res.data.description;
-                this.type = res.data.type;
-                this.questions = res.data.questions;
+      .then(res => {
+        switch (res.data.status_code) {
+          case 0:
+            this.$message.error("您无权访问！");
+            this.$router.push('/');
+            break;
+          case 1:
+            this.title = res.data.title;
+            this.description = res.data.description;
+            this.type = res.data.type;
+            this.questions = res.data.questions;
 
-                console.log(this.questions);
+            console.log(this.questions);
 
-                //建立答案框架
-                for (var i=0; i<this.questions.length; i++) {
-                  this.answers.push({
-                    question_id: this.questions[i].question_id,
-                    type: this.questions[i].type,
-                    ans: null,
-                    ansList: [],
-                    answer: ''
-                  })
-                }
-
-                break;
-              default:
-                this.$message.error("访问失败！");
-                break;
+            //建立答案框架
+            for (var i=0; i<this.questions.length; i++) {
+              this.answers.push({
+                question_id: this.questions[i].question_id,
+                type: this.questions[i].type,
+                ans: null,
+                ansList: [],
+                answer: ''
+              })
             }
-          })
-          .catch(err => {
-            console.log(err);
-          })
+
+            break;
+          default:
+            this.$message.error("访问失败！");
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     }
     else if (this.mode === '1') {
       const formData = new FormData();
@@ -536,6 +545,12 @@ export default {
                     answer: ''
                   })
                 }
+                break;
+              case 666:
+                this.close = true;
+                break;
+              case 888:
+                this.repeat = true;
                 break;
               default:
                 this.$message.error("访问失败！");
