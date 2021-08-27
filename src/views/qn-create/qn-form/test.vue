@@ -4,13 +4,13 @@
       <edit-header
           :title="title"
           :description="description"
+          :isReleased="isReleased"
           v-on:titleChanged="changeTitle($event)"
           v-on:descriptionChanged="changeDescription($event)"
           v-on:advancedSetting="openSetting($event)"
           v-on:publishClicked="publish($event)"
           v-on:saveClicked="save($event)"
           v-on:qnPreview="preview($event)"
-          v-on:publishSuccess="publishSuccess($event)"
           v-on:onConfirm="dialogCancel($event)"
       >
       </edit-header>
@@ -81,7 +81,14 @@
 
           <el-tab-pane label="问卷大纲" name="second">
             <div class="outline">
-              <el-tree :data="outline" :props="defaultProps"></el-tree>
+              <el-tree
+                  :data="outline"
+                  node-key="id"
+                  :props="defaultProps"
+                  @node-drop="handleDrop"
+                  draggable
+                  :allow-drop="allowDrop"
+              ></el-tree>
             </div>
           </el-tab-pane>
 
@@ -324,7 +331,8 @@
       </el-form>
       <span slot="footer" class="dialog-footer" style="text-align: center">
         <el-row>
-          <el-button :span="6" type="primary" @click="dialogConfirm">确定</el-button>&emsp;
+          <el-button :span="6" type="primary" @click="dialogConfirm">确定</el-button>
+          &emsp;
           <el-button :span="6" @click="cancel_pre" >取消</el-button>
         </el-row>
       </span>
@@ -333,7 +341,7 @@
       <el-row>
         <el-col span="8" style="text-align: center">
           <el-row>
-            <img src="../../../assets/images/example.jpg" height="200px" width="200px">
+            <div id="qrcode_2" style="height:200px; width:200px; margin-left: 22px;"></div>
           </el-row>
         </el-col>
         <el-col span="16">
@@ -346,6 +354,7 @@
             <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
           <el-row style="margin-top: 25px">
             <el-button type="primary" plain @click="download">下载二维码</el-button>
+            <el-button type="primary" @click="genCodeAgain" style="margin-left: 30px">重新生成链接</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -375,14 +384,6 @@
                         placeholder="选择结束时间">
         </el-date-picker>
       </div>
-      <div>
-        <span style="margin-right: 15px">是否为问卷评分&emsp;&emsp;&emsp;&emsp;</span>
-        <el-switch
-            v-model="scoringMode"
-            active-text="是"
-            inactive-text="否">
-        </el-switch>
-      </div>
       <span slot="footer" class="dialog-footer" style="text-align: center">
         <el-row>
           <el-button type="primary" style="margin-right: 40px" @click="settingSuccess">完成</el-button>
@@ -395,20 +396,24 @@
 <script>
 import editHeader from "../../../components/header/editHeader";
 import user from "@/store/user";
+import QRCode from "qrcodejs2";
 
 export default {
-  name: "investigation",
+  name: "test",
   data() {
     return {
-      linkShare: 'https://zewan.cc/',
-      scoringMode: true,    // 评分模式（高级设置中开启后可为题目设置得分）
-      timeFrame: '',
-      settingDialogTitle: "高级设置",
-      settingDialogVisible:false,
+      qrcode: null,
+
+      linkShare: '',
       editWrongMsg: "",
       editWrongMsgVisible: false,
       qsLinkDialogVisible: false,
       qsLinkDialogTitle: "发布成功！",
+      scoringMode: true,    // 评分模式（高级设置中开启后可为题目设置得分）
+      timeFrame: '',
+      settingDialogTitle: "高级设置",
+      settingDialogVisible:false,
+      isReleased: false,   // 是否发布
       editIndex: 0,
       selectDisAble: false,
       hoverItem: 0,
@@ -419,7 +424,7 @@ export default {
         children: 'children',
         label: 'label'
       },
-      type: 1,
+      type: "1",
       questions: [],
       outline: [],
       pid: this.$route.query.pid,
@@ -427,6 +432,7 @@ export default {
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
       willAddQuestion: {
+        question_id: 0,
         id: 0,
         type: '',
         title: '',
@@ -588,6 +594,24 @@ export default {
     editHeader,
   },
   methods: {
+    download() {
+      // 获取base64的图片节点
+      var img = document.getElementById('qrcode_2').getElementsByTagName('img')[0];
+      // 构建画布
+      var canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      // 构造url
+      var url = canvas.toDataURL('image/png');
+      console.log(url);
+      // 构造a标签并模拟点击
+      var downloadLink = document.createElement('a');
+      downloadLink.download = '二维码.png';
+      downloadLink.href = url;
+      downloadLink.click();
+      downloadLink.remove();
+    },
     formatTime(time) {
       this.timeFrame = time;
     },
@@ -617,12 +641,54 @@ export default {
       this.qsEditDialogTitle = "编辑题目";
       this.qsEditDialogVisible = true;
     },
+    isExistEmptyOption:function (){
+      for(let i=0;i<this.willAddQuestion.options.length;i++){
+        if(this.willAddQuestion.options[i].title==='') return true;
+      }
+      return false;
+    },
+    isExistSameOption:function (){
+      for(let i=0;i<this.willAddQuestion.options.length;i++){
+        for(let j=0;j<this.willAddQuestion.options.length;j++){
+          if(i!==j&&this.willAddQuestion.options[i].title===this.willAddQuestion.options[j].title) return true;
+        }
+      }
+      return false;
+    },
     dialogConfirm(){
       let index = this.editIndex;
+      this.qsEditDialogVisible = false;
       if(this.qsEditDialogTitle==="编辑题目") {
+        this.questions[index].id = this.willAddQuestion.id;
+        this.questions[index].row = this.willAddQuestion.row;
+        this.questions[index].must = this.willAddQuestion.must;
+        this.questions[index].description = this.willAddQuestion.description;
+        this.questions[index].title = this.willAddQuestion.title;
+        this.questions[index].options = this.willAddQuestion.options;
+        this.questions[index].score = this.willAddQuestion.score;
+        this.qsEditDialogTitle = "";
+        this.qsEditDialogVisible = false;
+        this.questions[index].refer = this.willAddQuestion.refer;
+        this.questions[index].point = this.willAddQuestion.point;
+        // 大纲更新
+        this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
         if (this.willAddQuestion.title === '') {
-          this.editWrongMsg = "标题不能为空！！！";
-          this.editWrongMsgVisible = true;
+          this.$message({
+            type: 'error',
+            message: '标题不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistEmptyOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistSameOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能重复!'
+          });
         }
         else {
           this.questions[index].id = this.willAddQuestion.id;
@@ -632,8 +698,6 @@ export default {
           this.questions[index].title = this.willAddQuestion.title;
           this.questions[index].options = this.willAddQuestion.options;
           this.questions[index].score = this.willAddQuestion.score;
-          this.questions[index].refer = this.willAddQuestion.refer;
-          this.questions[index].point = this.willAddQuestion.point;
           // 大纲更新
           this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
           this.qsEditDialogTitle = "";
@@ -643,42 +707,56 @@ export default {
             message: '修改成功!'
           });
           // 重置
-          this.willAddQuestion = {
-            id: 0,
-            type: '',
-            title: '',
-            must: false,
-            description: '',
-            options: [
-              {
-                title: '', //选项标题
-                id: 0 //选项id
-              }],
-            row: 1,
-            score: 10,
-            refer: '',
-            point: 0,  // 分值
-          };
+          this.resetWillAdd();
           this.selectDisAble = false;
         }
+        // 重置
+        this.willAddQuestion = {
+          id: 0,
+          type: '',
+          title: '',
+          must: false,
+          description: '',
+          options: [
+            {
+              title: '', //选项标题
+              id: 0 //选项id
+            }],
+          row: 1,
+          score: 10,
+          refer: '',
+          point: 0,  // 分值
+        };
+        this.selectDisAble = false;
       }
       else{
-        // 个人信息标题预设
         if (this.willAddQuestion.type==='name') { this.willAddQuestion.title = '姓名'; this.willAddQuestion.refer = ''; }
         if (this.willAddQuestion.type==='stuId') { this.willAddQuestion.title = '学号'; this.willAddQuestion.refer = '';}
         if (this.willAddQuestion.type==='class') { this.willAddQuestion.title = '班级'; this.willAddQuestion.refer = '';}
         if (this.willAddQuestion.type==='school') { this.willAddQuestion.title = '学校'; this.willAddQuestion.refer = '';}
-        // 标题为空检测
         if (this.willAddQuestion.title === '') {
-          this.editWrongMsg = "标题不能为空！！！";
-          this.editWrongMsgVisible = true;
+          this.$message({
+            type: 'error',
+            message: '标题不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistEmptyOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能为空!'
+          });
+        }
+        else if((this.willAddQuestion.type==="radio"||this.willAddQuestion.type==="checkbox")&&this.isExistSameOption()){
+          this.$message({
+            type: 'error',
+            message: '选项名不能重复!'
+          });
         }
         else {
           this.qsEditDialogVisible = false;
           this.willAddQuestion.id = this.questions.length + 1;
           // 大纲更新
           this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-          // 判断答案种类预设
           if (this.willAddQuestion.type==='judge') {
             this.willAddQuestion.options = [{title: '对', id: 1}, {title: '错', id: 2}];
           }
@@ -688,23 +766,27 @@ export default {
             message: '添加成功!'
           });
           // 重置
-          this.willAddQuestion={
-            id: 0,
-            type: '',
-            title: '',
-            must: false,
-            description: '',
-            options:[
-              {
-                title: '', //选项标题
-                id: 0 //选项id
-              }],
-            row: 1,
-            score: 10,
-            refer: '',
-            point: 0,  // 分值
-          };
+          this.resetWillAdd();
         }
+      }
+    },
+    resetWillAdd(){
+      this.willAddQuestion={
+        id: 0,
+        type: '',
+        title: '',
+        must: false, // 是否必填
+        description: '', // 问题描述
+        options:[
+          {
+            title: '', // 选项标题
+            id: 0 // 选项id
+          }
+        ],
+        row: 1, // 填空区域行数
+        score: 10, // 最大评分
+        refer: '', // 参考答案
+        point: 0,  // 分值
       }
     },
     dialogCancel: function() {
@@ -754,7 +836,13 @@ export default {
       });
     },
     deleteOption(index){
-      this.willAddQuestion.options.splice(index,1);
+      if(this.willAddQuestion.options.length===1){
+        this.$message({
+          type:"error",
+          message:"至少需要设置一个选项！"
+        })
+      }
+      else this.willAddQuestion.options.splice(index,1);
     },
     changeTitle: function (value) {
       this.title = value;
@@ -772,24 +860,117 @@ export default {
         message: '设置已生效'
       });
     },
-    publish() {
+    genCodeAgain() {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
+      this.$axios({
+        method: 'post',
+        url: '/qn/change/code',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.linkShare = this.GLOBAL.baseUrl + "/fill_test?mode=1&code=" + res.data.code;
 
+          if (this.qrcode == null) {
+            this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+              width: 200, //生成的二维码的宽度
+              height: 200, //生成的二维码的高度
+              colorDark : "#000000", // 生成的二维码的深色部分
+              colorLight : "#ffffff", //生成二维码的浅色部分
+              correctLevel : QRCode.CorrectLevel.H
+            });
+          }
+          this.qrcode.clear();
+          this.qrcode.makeCode(this.linkShare);
+        } else {
+          this.$message.error("请求失败！");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     },
-    save() {
+    publish() {
+      this.saveinfo('publish');
+
+      if (this.isReleased) {
+        this.$message.info("问卷已发布，无需重复发布");
+        return;
+      }
+
+      this.$confirm('确认发布？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        this.publishSuccess();
+        const formData = new FormData();
+        formData.append("survey_id", this.pid);
+        this.$axios({
+          url: '/qn/get_code',
+          method: 'post',
+          data: formData,
+        })
+        .then(res => {
+          console.log(res.data.status_code);
+          switch (res.data.status_code) {
+            case 200:
+              this.linkShare = this.GLOBAL.baseUrl + '/fill_test?mode=1&code=' + res.data.code;
+
+              if (this.qrcode == null) {
+                this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+                  width: 200, //生成的二维码的宽度
+                  height: 200, //生成的二维码的高度
+                  colorDark : "#000000", // 生成的二维码的深色部分
+                  colorLight : "#ffffff", //生成二维码的浅色部分
+                  correctLevel : QRCode.CorrectLevel.H
+                });
+              }
+              this.qrcode.clear();
+              this.qrcode.makeCode(this.linkShare);
+
+              break;
+            case 402:
+              this.$message.warning("问卷题目为空，无法发布");
+              break;
+            case 403:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            case 406:
+              this.$message.info("问卷已发布，无需重复发布");
+              break;
+            default:
+              this.$message.error("发布失败，请检查登录信息！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消发布'
+        });
+      });
+    },
+    saveinfo(tag) {
       const userInfo = user.getters.getUser(user.state());
       var param = {
         username: userInfo.user.username,
         title: this.title,
+        finished_time: this.timeFrame,
         description: this.description,
         type: this.type,
         qn_id: this.$route.query.pid,
-        questions: this.questions,
-        finish_time: this.timeFrame,
+        questions: this.questions
       }
       var paramer = JSON.stringify(param, {questions: 'brackets'})
       this.$axios({
         method: 'post',
-        url: '/ex/save_qn',
+        url: '/sm/save/qn_keep/history',
         data: paramer,
       })
       .then(res => {
@@ -802,11 +983,27 @@ export default {
             }, 500);
             break;
           case 1:
-            this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
-              distinguishCancelAndClose: true,
-              confirmButtonText: '返回问卷中心',
-              cancelButtonText: '继续编辑'
-            }).then(() => {this.$router.push('/index');});
+            switch (tag) {
+              case 'save':
+                this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+                  distinguishCancelAndClose: true,
+                  confirmButtonText: '返回问卷中心',
+                  cancelButtonText: '继续编辑'
+                })
+                .then(() => {
+                  this.$router.push('/index');
+                });
+                break;
+              case 'preview':
+                this.$message.success("保存成功");
+                setTimeout(() => {
+                  location.href = 'preview_test?mode=0&pid=' + this.$route.query.pid;
+                }, 700);
+                break;
+              case 'publish':
+                this.$message.success("保存成功");
+                break;
+            }
             break;
           default:
             this.$message.error("保存失败！");
@@ -817,8 +1014,11 @@ export default {
         console.log(err);
       })
     },
+    save() {
+      this.saveinfo('save');
+    },
     preview() {
-      location.href = this.GLOBAL.baseUrl + '/preview_test?mode=0&pid=' + this.$route.query.pid;
+      this.saveinfo('preview');
     },
     up: function (index) {
       index--;
@@ -889,7 +1089,9 @@ export default {
       // 问卷更新
       let temp = this.deepClone(questions[index]);
       temp.id = questions.length+1;
+      temp.question_id = 0;
       questions.push(temp);
+      this.$message.success("问题复制成功，已粘贴至问卷末尾");
     },
     deepClone :function(initialObj) {
       let obj = {};
@@ -915,6 +1117,18 @@ export default {
         })
       }
     },
+    updateQuestions: function (start, end) {
+      let offset = end - start;
+      if (offset > 0) {
+        for (let i=0; i<offset; i++) {
+          this.down(start+i);
+        }
+      } else {
+        for (let i=0; i<offset*-1; i++) {
+          this.up(start-i);
+        }
+      }
+    },  // good
     toFillQn: function (value) {
       this.$router.push({
         name: 'FillQn',
@@ -944,38 +1158,51 @@ export default {
       } else{
         this.$message.error("复制失败");
       }
-    }
+    },
+    // 大纲拖拽处理函数
+    handleDrop(draggingNode, dropNode, dropType) {
+      console.log('tree drop: ', draggingNode.key, dropNode.key, dropType);
+      this.updateQuestions(draggingNode.key, dropNode.key);
+    },
+    allowDrop(draggingNode, dropNode, type) {
+      if (draggingNode.key > dropNode.key) return type==='prev';
+      else return type==='next';
+    },
   },
   created() {
     const formData = new FormData();
-    formData.append("qn_id", this.$route.query.pid)
+    formData.append("qn_id", this.$route.query.pid);
     this.$axios({
       method: 'post',
       url: '/sm/get/qn_detail',
       data: formData,
     })
-        .then(res => {
-          switch (res.data.status_code) {
-            case 0:
-              this.$message.error("您无权访问！");
-              this.$router.push('/');
-              break;
-            case 1:
-              this.title = res.data.title;
-              this.description = res.data.description;
-              this.type = res.data.type;
-              this.questions = res.data.questions;
+    .then(res => {
+      switch (res.data.status_code) {
+        case 0:
+          this.$message.error("您无权访问！");
+          this.$router.push('/');
+          break;
+        case 1:
+          this.title = res.data.title;
+          this.description = res.data.description;
+          this.type = res.data.type;
+          this.questions = res.data.questions;
+          this.isReleased = res.data.is_released;
+          console.log(this.questions);
 
-              this.InitOutline();
-              break;
-            default:
-              this.$message.error("访问失败！");
-              break;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        })
+          this.InitOutline();
+          console.log(this.questions);  // 调试
+          console.log(this.outline);  // 调试
+          break;
+        default:
+          this.$message.error("访问失败！");
+          break;
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
   },
 }
 </script>

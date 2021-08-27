@@ -47,7 +47,7 @@
                             <el-button type="text" class="el-icon-delete op" style="color: red" @click="delSubmit(scope.row.submit_id, scope.row.num)">删除</el-button>
                           </div>
                           <div style="display:inline">
-                            <el-button type="text" class="el-icon-document op" style="color: black " @click="openBox(scope.row.num)">预览</el-button>
+                            <el-button type="text" class="el-icon-document op" style="color: black " @click="openBox(scope.row.num, scope.row.submit_id)">预览</el-button>
                           </div>
                         </template>
                     </el-table-column>
@@ -69,6 +69,7 @@
         <el-dialog
           :title='"答卷序号："+indexnum'
           :visible.sync="dialogVisible"
+          class="dialog"
           width="50%"
           >
           <div id="dia">
@@ -97,7 +98,7 @@
 
             <div v-if="item.type==='radio'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
-                <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].answer" :label="opt.title">
+                <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].ans" :label="opt.title">
                   {{ opt.title }}
                 </el-radio>
               </div>
@@ -382,7 +383,7 @@
         // submit_time:'2021/4/7 19:34:42',
         // answer_num:10,
         // answer_percent:'70%',
-        // },       
+        // },
         // {
         // num: 5,
         // submit_time:'2021/4/7 19:34:42',
@@ -406,7 +407,7 @@
         // submit_time:'2021/4/7 19:34:42',
         // answer_num:10,
         // answer_percent:'70%',
-        // },   
+        // },
         // {
         // num: 9,
         // submit_time:'2021/4/7 19:34:42',
@@ -418,7 +419,7 @@
         // submit_time:'2021/4/7 19:34:42',
         // answer_num:10,
         // answer_percent:'70%',
-        // }, 
+        // },
         // {
         // num: 11,
         // submit_time:'2021/4/7 19:34:42',
@@ -442,7 +443,7 @@
         // submit_time:'2021/4/7 19:34:42',
         // answer_num:10,
         // answer_percent:'70%',
-        // },       
+        // },
         // {
         // num: 15,
         // submit_time:'2021/4/7 19:34:42',
@@ -454,7 +455,7 @@
         // submit_time:'2021/4/7 19:34:42',
         // answer_num:10,
         // answer_percent:'70%',
-        // },     
+        // },
         ],
 
       }
@@ -480,23 +481,87 @@
       })
       .catch(err => {
         console.log(err);
-      })
+      });
     },
 
     methods: {
+      getSidFromNum(num) {
+        for (var i=0; i<this.tableData.length; i++) {
+          if (this.tableData[i].num === num) {
+            return this.tableData[i].submit_id;
+          }
+        }
+      },
       nextpage(){
         let ele=document.getElementById('dia');
         ele.scrollTop = 0;
         this.indexnum=this.indexnum+1;
+        this.getDataBySid(this.getSidFromNum(this.indexnum));
       },
       frontpage(){
         let ele=document.getElementById('dia');
         ele.scrollTop = 0;
         this.indexnum=this.indexnum-1;
+        this.getDataBySid(this.getSidFromNum(this.indexnum));
       },
-      openBox(index) {
+      getDataBySid(sid) {
+        var data = [];
+        const formData1 = new FormData();
+        formData1.append("submit_id", sid);
+        this.$axios({
+          method: 'post',
+          url: '/sm/get/submit_answers',
+          data: formData1,
+        })
+        .then(res => {
+          if (res.data.status_code === 1) {
+            data = res.data.answers;
+            console.log(data);
+            this.questions = res.data.questions;
+
+            this.answers = [];
+            //建立答案框架
+            for (var i=0; i<this.questions.length; i++) {
+              this.answers.push({
+                question_id: this.questions[i].question_id,
+                type: this.questions[i].type,
+                ans: null,
+                ansList: [],
+                answer: ''
+              });
+            }
+            for (var j=0; j<this.answers.length; j++) {
+              for (var k=0; k<data.length; k++) {
+                console.log("enter");
+                if (this.answers[j].question_id === data[k].question_id) {
+                  console.log("enter");
+                  switch (this.answers[j].type) {
+                    case 'checkbox':
+                      this.answers[j].ansList = data[k].answer.split('-<^-^>-');
+                      break;
+                    case 'mark':
+                      this.answers[j].ans = parseInt(data[k].answer);
+                      this.answers[j].answer = data[k].answer;
+                      break;
+                    case 'radio':
+                      this.answers[j].ans = data[k].answer;
+                      this.answers[j].answer = data[k].answer;
+                      break;
+                  }
+                }
+              }
+            }
+          } else {
+            this.$message.error("请求失败！");
+            this.dialogVisible = false;
+          }
+        });
+      },
+      openBox(index, sid) {
         this.indexnum=index;
         this.dialogVisible = true;
+        this.getDataBySid(sid);
+        console.log(this.indexnum);
       },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
@@ -599,6 +664,10 @@
   height: 500px;
   overflow: auto;
 }
+
+ .dialog .el-divider--horizontal {
+   margin: 15px 0;
+ }
 
 .q-title {
   text-align: left;

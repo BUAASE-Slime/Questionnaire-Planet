@@ -188,6 +188,13 @@ export default {
     }
   },
   methods:{
+    getTypeFormPid(pid) {
+      for (var i=0; i<this.QnList.length; i++) {
+        if (this.QnList[i].survey_id === pid) {
+          return this.QnList[i].type;
+        }
+      }
+    },
     genCodeAgain() {
       const formData = new FormData();
       formData.append("qn_id", this.share_surveyId);
@@ -198,7 +205,23 @@ export default {
       })
       .then(res => {
         if (res.data.status_code === 1) {
-          this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+          switch (this.getTypeFormPid(this.share_surveyId)) {
+            case "1":
+              this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+              break;
+            case "2":
+              this.linkShare = this.GLOBAL.baseUrl + "/fill_test?mode=1&code=" + res.data.code;
+              break;
+            case "3":
+              this.linkShare = this.GLOBAL.baseUrl + "/fill_vote?mode=1&code=" + res.data.code;
+              break;
+            case "4":
+              this.linkShare = this.GLOBAL.baseUrl + "/fill_form?mode=1&code=" + res.data.code;
+              break;
+            case "5":
+              this.linkShare = this.GLOBAL.baseUrl + "/fill_hate?mode=1&code=" + res.data.code;
+              break;
+          }
 
           if (this.qrcode == null) {
             this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
@@ -360,10 +383,10 @@ export default {
     },
 
     statUrl(index) {
-      if (this.QnList[index].is_released && this.QnList[index].recycling_num !== 0) {
+      if (this.QnList[index].recycling_num > 0) {
         location.href = this.GLOBAL.baseUrl + "/recyconcept?pid=" + this.QnList[index].survey_id;
       } else {
-        this.$alert('问卷未发布或暂无回收答卷，无统计信息', '问题提示', {
+        this.$alert('问卷暂无回收答卷，无统计信息', '问题提示', {
           confirmButtonText: '确定',
         });
       }
@@ -386,7 +409,23 @@ export default {
               this.$message.warning("您无权执行此操作！");
               break;
             case 1:
-              this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+              switch (this.QnList[index].type) {
+                case "1":
+                  this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+                  break;
+                case "2":
+                  this.linkShare = this.GLOBAL.baseUrl + "/fill_test?mode=1&code=" + res.data.code;
+                  break;
+                case "3":
+                  this.linkShare = this.GLOBAL.baseUrl + "/fill_vote?mode=1&code=" + res.data.code;
+                  break;
+                case "4":
+                  this.linkShare = this.GLOBAL.baseUrl + "/fill_form?mode=1&code=" + res.data.code;
+                  break;
+                case "5":
+                  this.linkShare = this.GLOBAL.baseUrl + "/fill_hate?mode=1&code=" + res.data.code;
+                  break;
+              }
 
               if (this.qrcode == null) {
                 this.qrcode = new QRCode(document.getElementById("qrcode_1"), {
@@ -563,6 +602,26 @@ export default {
       })
     },
 
+    linkEditUrl(index) {
+      switch (this.QnList[index].type) {
+        case "1":
+          location.href = 'edit?pid=' + this.QnList[index].survey_id;
+          break;
+        case "2":
+          location.href = 'edit_test?pid=' + this.QnList[index].survey_id;
+          break;
+        case "3":
+          location.href = 'edit_vote?pid=' + this.QnList[index].survey_id;
+          break;
+        case "4":
+          location.href = 'edit_form?pid=' + this.QnList[index].survey_id;
+          break;
+        case "5":
+          location.href = 'edit_hate?pid=' + this.QnList[index].survey_id;
+          break;
+      }
+    },
+
     editUrl(index) {
       if (this.QnList[index].is_released) {
         this.$confirm('检测到问卷已发布，编辑可能影响已回收答卷数据，请确认是否编辑？', '提示', {
@@ -570,16 +629,27 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          location.href = 'edit?pid=' + this.QnList[index].survey_id;
+          this.linkEditUrl(index);
         }).catch(() => {
         });
       } else {
-        location.href = 'edit?pid=' + this.QnList[index].survey_id;
+        this.linkEditUrl(index);
       }
     },
 
     previewUrl(index) {
-      return 'preview?pid=' + index.survey_id + '&mode=0';
+      switch (index.type) {
+        case "1":
+          return 'preview?pid=' + index.survey_id + '&mode=0';
+        case "2":
+          return 'preview_test?pid=' + index.survey_id + '&mode=0';
+        case "3":
+          return 'preview_vote?pid=' + index.survey_id + '&mode=0';
+        case "4":
+          return 'preview_form?pid=' + index.survey_id + '&mode=0';
+        case "5":
+          return 'preview_hate?pid=' + index.survey_id + '&mode=0';
+      }
     },
 
     handleOpen(key, keyPath) {

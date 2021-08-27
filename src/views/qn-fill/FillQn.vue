@@ -16,7 +16,7 @@
           <img src="../../assets/images/survey2.png" alt="">
         </div>
         <h1 v-if="close">问卷已结束，感谢您的参与！</h1>
-        <el-button type="primary" size="middle">返回</el-button>
+        <el-button type="primary" size="middle" @click="gotoHome">返回</el-button>
       </div>
       <div class="body" v-else>
 
@@ -110,6 +110,9 @@ export default {
     }
   },
   methods: {
+    gotoHome() {
+      this.$router.push('/');
+    },
     backToSurvey() {
       this.success = false;
     },
@@ -188,9 +191,16 @@ export default {
                     message: '问卷提交成功'
                   });
                   this.success = true;
+                  console.log(this.questions);
+                  console.log(this.answers);
                   break;
                 case 2:
-                  this.$message.success("问卷已结束，感谢您的参与！");
+                  this.$message.warning("问卷已结束，感谢您的参与！");
+                  this.close = true;
+                  break;
+                case 3:
+                  this.$message.warning("问卷已结束，感谢参与！");
+                  this.close = true;
                   break;
                 default:
                   this.$message.error("操作失败！");
@@ -294,9 +304,6 @@ export default {
                     answer: ''
                   })
                 }
-                break;
-              case 3:
-                this.close = true;
                 break;
               default:
                 this.$message.error("访问失败！");
