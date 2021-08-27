@@ -89,16 +89,21 @@ export default {
       isHoverForm: false,
       isHoverVote: false,
       dialogVisible :false,
-      quesType: "",
+      quesType: 1,
       surveyTitle: "",
     }
   },
   methods: {
     createSurvey(tag) {
-      const formData = new FormData();
-      const userInfo = user.getters.getUser(user.state())
+      var formData = new FormData();
+      const userInfo = user.getters.getUser(user.state());
       formData.append("username", userInfo.user.username);
       formData.append("title", this.surveyTitle);
+
+      console.log(tag);
+
+      console.log(userInfo.user.username);
+      console.log(formData.get('username'));
 
       var editUrlName = '';
 
@@ -113,11 +118,11 @@ export default {
           break;
         case 3:
           formData.append("type", "3");
-          editUrlName = 'Edit';
+          editUrlName = 'EditVote';
           break;
         case 4:
           formData.append("type", "4");
-          editUrlName = 'Edit';
+          editUrlName = 'SignUpForm';
           break;
       }
 
