@@ -249,7 +249,7 @@ export default {
               });
               this.success = true;
               break;
-            case 2 || 4 || 5:
+            case 2 || 4 || 5 || 11 || 12:
               this.$message.warning("问卷已结束，感谢您的参与！");
               this.close = true;
               break;
