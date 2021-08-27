@@ -160,6 +160,14 @@ const routes = [
         }
     },
     {
+        path: '/preview_hate',
+        name: 'PreviewHate',
+        component: () => import('../views/qn-fill/FillQnPunch'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
         path: '/test_result',
         name: 'TestResult',
         component: () => import('../views/qn-fill/FinishTest'),
@@ -221,6 +229,11 @@ const routes = [
         name: 'account',
         
         component: () => import('../views/account-set/account.vue')              
+    },
+    {
+        path: '/location',
+        name: 'Location',
+        component: () => import('../components/location')
     },
     {
         path: '/*',

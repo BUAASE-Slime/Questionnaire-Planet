@@ -154,7 +154,6 @@
                   </div>
                 </div>
 
-
                 <div class="block-choice" v-if="item.type==='mark'">
                   <!--                  评分-->
                   <el-rate value="0" :max="item.score"></el-rate>
@@ -162,7 +161,7 @@
 
                 <div class="block-location" v-if="item.type==='location'">
                   <!--                  定位-->
-                  <location></location>
+                  <el-button icon="el-icon-map-location" plain class="locabtn" @click="alertGetLocation">点击获取地理位置</el-button>
                 </div>
               </el-col>
 
@@ -278,6 +277,7 @@
             <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
           <el-row style="margin-top: 25px">
             <el-button type="primary" plain @click="download">下载二维码</el-button>
+            <el-button type="primary" @click="genCodeAgain" style="margin-left: 30px">重新生成链接</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -296,7 +296,7 @@
       </span>
     </el-dialog>
     <!--    高级设置弹框-->
-    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" >
+    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="30%">
       <div class="timeBlock" style="margin-bottom: 30px">
         <span class="demonstration" style="margin-right: 15px">截止时间</span>
         <el-date-picker style="margin-left: 100px"
@@ -319,17 +319,19 @@ import editHeader from "../../../components/header/editHeader";
 import location from "../../../components/location";
 import user from "@/store/user";
 import QRCode from "qrcodejs2";
-import Location from "../../../components/location";
 
 export default {
   name: "punch",
   data() {
     return {
+      value:'',
       qrcode: null,
+      timeFrame: '',
       linkShare: '',
       editWrongMsg: "",
       editWrongMsgVisible: false,
       qsLinkDialogVisible: false,
+      dialogVisibleAsso: false,
       qsLinkDialogTitle: "发布成功！",
       settingDialogTitle: "高级设置",   // 高级设置弹框的标题
       settingDialogVisible:false,     // 高级设置对话框可见性
@@ -349,7 +351,6 @@ export default {
       questions: [],
       outline: [],
       pid: this.$route.query.pid,
-
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
       willAddQuestion: {
@@ -497,10 +498,40 @@ export default {
     }
   },
   components: {
-    Location,
     editHeader,
   },
   methods: {
+    genCodeAgain() {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
+      this.$axios({
+        method: 'post',
+        url: '/qn/change/code',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+
+          if (this.qrcode == null) {
+            this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+              width: 200, //生成的二维码的宽度
+              height: 200, //生成的二维码的高度
+              colorDark : "#000000", // 生成的二维码的深色部分
+              colorLight : "#ffffff", //生成二维码的浅色部分
+              correctLevel : QRCode.CorrectLevel.H
+            });
+          }
+          this.qrcode.clear();
+          this.qrcode.makeCode(this.linkShare);
+        } else {
+          this.$message.error("请求失败！");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
     addName(){
       this.willAddQuestion={
         id: this.questions.length+1,
@@ -679,6 +710,9 @@ export default {
     formatTime(time) {
       this.timeFrame = time;
     },
+    alertGetLocation() {
+      this.$message.success("用户点击将自动获取地理位置");
+    },
     finish(){
       this.qsLinkDialogVisible = false;
       this.$router.push('/index') // 跳转到问卷中心？
@@ -689,6 +723,7 @@ export default {
     edit:function (index){
       index--;
       this.willAddQuestion = {
+        question_id:this.questions[index].question_id,
         id: this.questions[index].id,
         type: this.questions[index].type,
         title: this.questions[index].title,
@@ -755,7 +790,7 @@ export default {
             message: '修改成功!'
           });
           // 重置
-          this.resetWillAdd()
+          this.resetWillAdd();
           this.selectDisAble = false;
         }
       }
@@ -874,6 +909,7 @@ export default {
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
+        this.publishSuccess();
         const formData = new FormData();
         formData.append("survey_id", this.pid);
         this.$axios({
@@ -885,8 +921,7 @@ export default {
           console.log(res.data.status_code);
           switch (res.data.status_code) {
             case 200:
-              this.linkShare = this.GLOBAL.baseUrl + '/fill?mode=1&code=' + res.data.code;
-              this.publishSuccess();
+              this.linkShare = this.GLOBAL.baseUrl + '/fill_hate?mode=1&code=' + res.data.code;
 
               if (this.qrcode == null) {
                 this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
@@ -931,6 +966,7 @@ export default {
       var param = {
         username: userInfo.user.username,
         title: this.title,
+        finished_time: this.timeFrame,
         description: this.description,
         type: this.type,
         qn_id: this.$route.query.pid,
@@ -959,14 +995,14 @@ export default {
                       confirmButtonText: '返回问卷中心',
                       cancelButtonText: '继续编辑'
                     })
-                    .then(() => {
-                      this.$router.push('/index');
-                    });
+                        .then(() => {
+                          this.$router.push('/index');
+                        });
                     break;
                   case 'preview':
                     this.$message.success("保存成功");
                     setTimeout(() => {
-                      location.href = 'preview?mode=0&pid=' + this.$route.query.pid;
+                      location.href = 'preview_hate?mode=0&pid=' + this.$route.query.pid;
                     }, 700);
                     break;
                   case 'publish':
@@ -983,6 +1019,64 @@ export default {
             console.log(err);
           })
     },
+    // saveinfo(tag) {
+    //   const userInfo = user.getters.getUser(user.state());
+    //   var param = {
+    //     username: userInfo.user.username,
+    //     title: this.title,
+    //     finished_time: this.timeFrame,
+    //     description: this.description,
+    //     type: this.type,
+    //     qn_id: this.$route.query.pid,
+    //     questions: this.questions
+    //   }
+    //   var paramer = JSON.stringify(param, {questions: 'brackets'})
+    //   this.$axios({
+    //     method: 'post',
+    //     url: '/sp/save_qn',
+    //     data: paramer,
+    //   })
+    //       .then(res => {
+    //         switch (res.data.status_code) {
+    //           case 0:
+    //             this.$message.warning("登录信息失效，请重新登录！");
+    //             setTimeout(() => {
+    //               this.$store.dispatch('clear');
+    //               location.reload();
+    //             }, 500);
+    //             break;
+    //           case 1:
+    //             switch (tag) {
+    //               case 'save':
+    //                 this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+    //                   distinguishCancelAndClose: true,
+    //                   confirmButtonText: '返回问卷中心',
+    //                   cancelButtonText: '继续编辑'
+    //                 })
+    //                 .then(() => {
+    //                   this.$router.push('/index');
+    //                 });
+    //                 break;
+    //               case 'preview':
+    //                 this.$message.success("保存成功");
+    //                 setTimeout(() => {
+    //                   location.href = 'preview_hate?mode=0&pid=' + this.$route.query.pid;
+    //                 }, 700);
+    //                 break;
+    //               case 'publish':
+    //                 this.$message.success("保存成功");
+    //                 break;
+    //             }
+    //             break;
+    //           default:
+    //             this.$message.error("保存失败！");
+    //             break;
+    //         }
+    //       })
+    //       .catch(err => {
+    //         console.log(err);
+    //       })
+    // },
     save() {
       this.saveinfo('save');
     },
@@ -1138,9 +1232,6 @@ export default {
       else return type==='next';
     },
   },
-  mounted() {
-    this.getLocation(); // 调用获取地理位置
-  },
   created() {
     const formData = new FormData();
     formData.append("qn_id", this.$route.query.pid);
@@ -1161,11 +1252,7 @@ export default {
           this.type = res.data.type;
           this.questions = res.data.questions;
           this.isReleased = res.data.is_released;
-          console.log(this.questions);
-
           this.InitOutline();
-          console.log(this.questions);  // 调试
-          console.log(this.outline);  // 调试
           break;
         default:
           this.$message.error("访问失败！");
@@ -1177,7 +1264,6 @@ export default {
     })
   },
 }
-
 </script>
 
 <style>
@@ -1396,6 +1482,16 @@ export default {
 .punch .chooseLabel{
   margin-right: 10px;
   margin-left: 5px;
+}
+
+.locabtn{
+  text-align: center;
+  /*border: solid 1px black;*/
+  font-size: 14px;
+  padding: 12px 20px;
+  height: 40px;
+  width: 300px;
+  line-height: 1;
 }
 
 
