@@ -26,6 +26,16 @@
               <div class="edit">
                 <div class="ques-type">
                   <i class="el-icon-check"></i>
+                  <span> 投票单选&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="addVoteRadio"></i>
+                </div>
+                <div class="ques-type">
+                  <i class="el-icon-finished"></i>
+                  <span> 投票多选&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="addVoteCheckbox"></i>
+                </div>
+                <div class="ques-type">
+                  <i class="el-icon-check"></i>
                   <span> 单选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='radio';qsEditDialogVisible=true"></i>
                 </div>
@@ -44,21 +54,21 @@
                   <span> 评分题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='mark';qsEditDialogVisible=true"></i>
                 </div>
-                <div>
-                  <el-row class="sideTitle">添加投票问题</el-row>
-                  <el-row class="easyChoose">
-                    <el-col :span="12">
-                      <i class="el-icon-check"></i>
-                      <span class="chooseLabel">投票单选</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addVoteRadio"></i>
-                    </el-col>
-                    <el-col :span="12">
-                      <i class="el-icon-finished"></i>
-                      <span class="chooseLabel">投票多选</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addVoteCheckbox"></i>
-                    </el-col>
-                  </el-row>
-                </div>
+<!--                <div>-->
+<!--                  <el-row class="sideTitle">添加投票问题</el-row>-->
+<!--                  <el-row class="easyChoose">-->
+<!--                    <el-col :span="12">-->
+<!--                      <i class="el-icon-check"></i>-->
+<!--                      <span class="chooseLabel">投票单选</span>-->
+<!--                      <i class="el-icon-circle-plus type-icon" @click="addVoteRadio"></i>-->
+<!--                    </el-col>-->
+<!--                    <el-col :span="12">-->
+<!--                      <i class="el-icon-finished"></i>-->
+<!--                      <span class="chooseLabel">投票多选</span>-->
+<!--                      <i class="el-icon-circle-plus type-icon" @click="addVoteCheckbox"></i>-->
+<!--                    </el-col>-->
+<!--                  </el-row>-->
+<!--                </div>-->
               </div>
             </el-tab-pane>
 
@@ -241,6 +251,7 @@
             <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
           <el-row style="margin-top: 25px">
             <el-button type="primary" plain @click="download">下载二维码</el-button>
+            <el-button type="primary" @click="genCodeAgain" style="margin-left: 30px">重新生成链接</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -448,6 +459,37 @@ export default {
     editHeader,
   },
   methods: {
+    genCodeAgain() {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
+      this.$axios({
+        method: 'post',
+        url: '/qn/change/code',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.linkShare = this.GLOBAL.baseUrl + "/fill_vote?mode=1&code=" + res.data.code;
+
+          if (this.qrcode == null) {
+            this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+              width: 200, //生成的二维码的宽度
+              height: 200, //生成的二维码的高度
+              colorDark : "#000000", // 生成的二维码的深色部分
+              colorLight : "#ffffff", //生成二维码的浅色部分
+              correctLevel : QRCode.CorrectLevel.H
+            });
+          }
+          this.qrcode.clear();
+          this.qrcode.makeCode(this.linkShare);
+        } else {
+          this.$message.error("请求失败！");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
     download() {
       // 获取base64的图片节点
       var img = document.getElementById('qrcode_2').getElementsByTagName('img')[0];
@@ -466,9 +508,12 @@ export default {
       downloadLink.click();
       downloadLink.remove();
     },
+    formatTime(time) {
+      this.timeFrame = time;
+    },
     finish(){
-      this.qsLinkDialogVisible=false;
-      this.$router.push('/index')// 跳转到问卷中心？
+      this.qsLinkDialogVisible = false;
+      this.$router.push('/index') // 跳转到问卷中心？
     },
     publishSuccess:function (){
       this.qsLinkDialogVisible=true;
@@ -542,7 +587,7 @@ export default {
             message: '修改成功!'
           });
           // 重置
-          this.resetWillAdd()
+          this.resetWillAdd();
           this.selectDisAble = false;
         }
       }
@@ -662,11 +707,19 @@ export default {
       });
     },
     publish() {
+      this.saveinfo('publish');
+
+      if (this.isReleased) {
+        this.$message.info("问卷已发布，无需重复发布");
+        return;
+      }
+
       this.$confirm('确认发布？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
+        this.publishSuccess();
         const formData = new FormData();
         formData.append("survey_id", this.pid);
         this.$axios({
@@ -678,8 +731,7 @@ export default {
           console.log(res.data.status_code);
           switch (res.data.status_code) {
             case 200:
-              this.linkShare = this.GLOBAL.baseUrl + '/fill?mode=1&code=' + res.data.code;
-              this.publishSuccess();
+              this.linkShare = this.GLOBAL.baseUrl + '/fill_vote?mode=1&code=' + res.data.code;
 
               if (this.qrcode == null) {
                 this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
@@ -693,6 +745,9 @@ export default {
               this.qrcode.clear();
               this.qrcode.makeCode(this.linkShare);
 
+              break;
+            case 402:
+              this.$message.warning("问卷题目为空，无法发布");
               break;
             case 403:
               this.$message.warning("您无权执行此操作！");
@@ -716,51 +771,7 @@ export default {
         });
       });
     },
-    save() {
-      const userInfo = user.getters.getUser(user.state());
-      var param = {
-        username: userInfo.user.username,
-        title: this.title,
-        description: this.description,
-        type: this.type,
-        qn_id: this.$route.query.pid,
-        questions: this.questions
-      }
-      var paramer = JSON.stringify(param, {questions: 'brackets'})
-      this.$axios({
-        method: 'post',
-        url: '/sm/save/qn_keep/history',
-        data: paramer,
-      })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 0:
-            this.$message.warning("登录信息失效，请重新登录！");
-            setTimeout(() => {
-              this.$store.dispatch('clear');
-              location.reload();
-            }, 500);
-            break;
-          case 1:
-            this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
-              distinguishCancelAndClose: true,
-              confirmButtonText: '返回问卷中心',
-              cancelButtonText: '继续编辑'
-            })
-            .then(() => {
-              this.$router.push('/index');
-            });
-            break;
-          default:
-            this.$message.error("保存失败！");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    },
-    preview() {
+    saveinfo(tag) {
       const userInfo = user.getters.getUser(user.state());
       var param = {
         username: userInfo.user.username,
@@ -786,10 +797,27 @@ export default {
                 }, 500);
                 break;
               case 1:
-                this.$message.success("保存成功");
-                setTimeout(() => {
-                  location.href = 'preview?mode=0&pid=' + this.$route.query.pid;
-                }, 700);
+                switch (tag) {
+                  case 'save':
+                    this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+                      distinguishCancelAndClose: true,
+                      confirmButtonText: '返回问卷中心',
+                      cancelButtonText: '继续编辑'
+                    })
+                    .then(() => {
+                      this.$router.push('/index');
+                    });
+                    break;
+                  case 'preview':
+                    this.$message.success("保存成功");
+                    setTimeout(() => {
+                      location.href = 'preview_vote?mode=0&pid=' + this.$route.query.pid;
+                    }, 700);
+                    break;
+                  case 'publish':
+                    this.$message.success("保存成功");
+                    break;
+                }
                 break;
               default:
                 this.$message.error("保存失败！");
@@ -799,6 +827,12 @@ export default {
           .catch(err => {
             console.log(err);
           })
+    },
+    save() {
+      this.saveinfo('save');
+    },
+    preview() {
+      this.saveinfo('preview');
     },
     up: function (index) {
       index--;
