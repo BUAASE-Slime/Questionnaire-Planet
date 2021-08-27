@@ -119,6 +119,10 @@ export default {
           formData.append("type", "4");
           editUrlName = 'SignUpForm';
           break;
+        case 5:
+          formData.append("type", "5");
+          editUrlName = 'EditHate';
+          break;
       }
 
       this.$axios({

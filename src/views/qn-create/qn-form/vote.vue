@@ -262,13 +262,15 @@
       </span>
     </el-dialog>
     <!--    高级设置弹框-->
-    <el-dialog custom-class="setting" :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="25%">
-      <div class="setting-item">
-        <span class="item-title">回收截止时间</span>
-        <el-date-picker
-            v-model="closingDate"
-            type="datetime"
-            placeholder="选择日期时间">
+    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="30%">
+      <div class="timeBlock" style="margin-bottom: 30px">
+        <span class="demonstration" style="margin-right: 15px">截止时间</span>
+        <el-date-picker style="margin-left: 100px"
+                        v-model="timeFrame"
+                        @change="formatTime"
+                        type="datetime"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        placeholder="选择结束时间">
         </el-date-picker>
       </div>
       <div class="setting-bt">
@@ -287,6 +289,7 @@ export default {
   name: "vote",
   data() {
     return {
+      timeFrame: '',
       qrcode: null,
       linkShare: '',
       editWrongMsg:"",
@@ -776,6 +779,7 @@ export default {
       var param = {
         username: userInfo.user.username,
         title: this.title,
+        finished_time: this.timeFrame,
         description: this.description,
         type: this.type,
         qn_id: this.$route.query.pid,
