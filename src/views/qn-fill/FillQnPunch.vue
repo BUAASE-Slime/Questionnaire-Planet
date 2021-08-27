@@ -8,7 +8,7 @@
         <div class="tyn-icon">
           <img src="../../assets/images/survey2.png" alt="">
         </div>
-        <h1 v-if="success">提交成功，感谢您的参与！</h1>
+        <h1 v-if="success">打卡成功！</h1>
         <el-button type="primary" size="middle" @click="backToSurvey">继续查看问卷信息</el-button>
       </div>
       <div v-else-if="close" style="padding-bottom: 50px">
@@ -17,6 +17,13 @@
         </div>
         <h1 v-if="close">问卷已结束，感谢您的参与！</h1>
         <el-button type="primary" size="middle" @click="gotoHome">返回</el-button>
+      </div>
+      <div v-else-if="repeat" style="padding-bottom: 50px">
+        <div class="tyn-icon">
+          <img src="../../assets/images/survey2.png" alt="">
+        </div>
+        <h1 v-if="repeat">今日已打卡，无需重复提交！</h1>
+        <el-button type="primary" size="middle" @click="gotoHome">返回首页</el-button>
       </div>
       <div class="body" v-else>
 
@@ -72,7 +79,7 @@
 
             <!--                  定位-->
             <div class="q-opt" v-if="item.type==='location'">
-              <el-button icon="el-icon-map-location" @click="getLocation">{{ locationInfo }}</el-button>
+              <Location v-on:loadLoc="loadLoc"></Location>
             </div>
 
             <!--                  评分-->
@@ -98,75 +105,81 @@
 
 
 <script>
+import Location from "@/components/location";
 export default {
   name: "FillQnPunch",
+  components: {Location},
   data() {
     return {
       rootUrl: this.GLOBAL.baseUrl,
 
       success: false,
       close: false,
+      repeat: false,
 
       mode: this.$route.query.mode,
       open: 1,
 
-      locationInfo: "点击获取地理位置",
+      locationInfo: '',
       title: '疫情填报',
-      description: '以下数据均为预设数据，未与后端进行交互',
+      description: '',
       questions: [
-        {
-          id: 1,
-          type: 'location',
-          title: '地理位置填报',
-          must: true, // 是否必填
-          description: '', // 问题描述
-          options: [
-            {
-              title: '', // 选项标题
-              id: 0 // 选项id
-            }
-          ],
-          row: 1, // 填空区域行数
-          score: 10, // 最大评分
-        },
-        {
-          id: 2,
-          type: 'radio',
-          title: '昨天有没有加班？',
-          must: true, // 是否必填
-          description: '谨慎填写', // 问题描述
-          options: [
-            {
-              title: '是', // 选项标题
-              id: 1 // 选项id
-            },
-            {
-              title: '否', // 选项标题
-              id: 2 // 选项id
-            },
-          ],
-          row: 1, // 填空区域行数
-          score: 10, // 最大评分
-        }
+        // {
+        //   id: 1,
+        //   type: 'location',
+        //   title: '地理位置填报',
+        //   must: true, // 是否必填
+        //   description: '', // 问题描述
+        //   options: [
+        //     {
+        //       title: '', // 选项标题
+        //       id: 0 // 选项id
+        //     }
+        //   ],
+        //   row: 1, // 填空区域行数
+        //   score: 10, // 最大评分
+        // },
+        // {
+        //   id: 2,
+        //   type: 'radio',
+        //   title: '昨天有没有加班？',
+        //   must: true, // 是否必填
+        //   description: '谨慎填写', // 问题描述
+        //   options: [
+        //     {
+        //       title: '是', // 选项标题
+        //       id: 1 // 选项id
+        //     },
+        //     {
+        //       title: '否', // 选项标题
+        //       id: 2 // 选项id
+        //     },
+        //   ],
+        //   row: 1, // 填空区域行数
+        //   score: 10, // 最大评分
+        // }
       ],
       answers: [
-        {
-          question_id: '1',
-          type: 'location',
-          ans: null,
-          ansList: [],
-        },
-        {
-          question_id: '2',
-          type: 'radio',
-          ans: null,
-          ansList: [],
-        },
+        // {
+        //   question_id: '1',
+        //   type: 'location',
+        //   ans: null,
+        //   ansList: [],
+        // },
+        // {
+        //   question_id: '2',
+        //   type: 'radio',
+        //   ans: null,
+        //   ansList: [],
+        // },
     ],
       type: ''
     }
   },
   methods: {
+    loadLoc(value) {
+      this.locationInfo = value;
+    },
     gotoHome() {
       this.$router.push('/');
     },
@@ -180,7 +193,14 @@ export default {
       let bool = false;
       let num = '';
       for (let i=0; i<answers.length; i++) {
-        if (questions[i].must
+        if (answers[i].type === 'location') {
+          if (questions[i].must && this.locationInfo === '') {
+            console.log(this.locationInfo);
+            num += (i+1).toString() + ' ';
+            bool = true;
+          }
+        }
+        else if (questions[i].must
             && (answers[i].ans===null || answers[i].ans==='' || (answers[i].ans===0 && answers[i].type==='mark'))
             && answers[i].ansList.length===0) {
           num += (i+1).toString() + ' ';
@@ -201,26 +221,19 @@ export default {
       }
       // 数据转换
       for (var i=0; i<this.answers.length; i++) {
-        var ans = this.answers[i].ans;
-        var anslist = this.answers[i].ansList;
         this.answers[i].question_id = this.questions[i].question_id;
         switch (this.answers[i].type) {
-          case "radio":
-            this.answers[i].answer = this.answers[i].ans;
-            break;
           case "checkbox":
-            var ansl = '';
-            for (var j=0; j<anslist.length-1; j++) {
-              ansl = ansl + anslist[j] + '-<^-^>-';
-            }
-            ansl = ansl + anslist[j];
-            this.answers[i].answer = ansl;
-            break;
-          case "text":
-            this.answers[i].answer = ans;
+            this.answers[i].answer = this.answers[i].ansList.join('-<^-^>-');
             break;
           case "mark":
-            this.answers[i].answer = ans.toString();
+            this.answers[i].answer = this.answers[i].ans.toString();
+            break;
+          case "text": case "radio":
+            this.answers[i].answer = this.answers[i].ans;
+            break;
+          case 'location':
+            this.answers[i].answer = this.locationInfo;
             break;
         }
       }
@@ -237,7 +250,7 @@ export default {
         var paramer = JSON.stringify(param, {answers: 'brackets'})
         this.$axios({
           method: 'post',
-          url: '/qn/save_ans',
+          url: '/ep/save_ans_by_code',
           data: paramer,
         })
             .then(res => {
@@ -251,13 +264,13 @@ export default {
                   console.log(this.questions);
                   console.log(this.answers);
                   break;
-                case 2:
+                case 2: case 3: case 4:
                   this.$message.warning("问卷已结束，感谢您的参与！");
                   this.close = true;
                   break;
-                case 3:
-                  this.$message.warning("问卷已结束，感谢参与！");
-                  this.close = true;
+                case 999:
+                  this.$message.warning("今日已打卡，无需重复提交！");
+                  this.repeat = true;
                   break;
                 default:
                   this.$message.error("操作失败！");
@@ -287,20 +300,95 @@ export default {
           });
 
     },
-    getLocation: function () {
-      // let geolocation = new BMap.Geolocation();
-      // geolocation.getCurrentPosition(function(e){
-      //   if(this.getStatus() === BMAP_STATUS_SUCCESS){
-      //     // 百度 geolocation 的经纬度属性不同，此处是 point.lat 而不是 coords.latitude
-      //     let LocationProvince = e.address.province
-      //     let LocationCity = e.address.city
-      //     console.log(LocationCity, LocationProvince)
-      //   }else{
-      //     this.getStatus();
-      //   }
-      // })
-    }
   },
+  created() {
+    if (this.mode === '0') {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
+      this.$axios({
+        method: 'post',
+        url: '/sm/get/qn_detail',
+        data: formData,
+      })
+          .then(res => {
+            switch (res.data.status_code) {
+              case 0:
+                this.$message.error("您无权访问！");
+                this.$router.push('/');
+                break;
+              case 1:
+                this.title = res.data.title;
+                this.description = res.data.description;
+                this.type = res.data.type;
+                this.questions = res.data.questions;
+
+                //建立答案框架
+                for (var i=0; i<this.questions.length; i++) {
+                  this.answers.push({
+                    question_id: this.questions[i].question_id,
+                    type: this.questions[i].type,
+                    ans: null,
+                    ansList: [],
+                    answer: ''
+                  })
+                }
+
+                break;
+              default:
+                this.$message.error("访问失败！");
+                break;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+    }
+    else if (this.mode === '1') {
+      const formData = new FormData();
+      formData.append("code", this.$route.query.code);
+      this.$axios({
+        method: 'post',
+        url: '/sm/get/qn_for_fill',
+        data: formData,
+      })
+          .then(res => {
+            switch (res.data.status_code) {
+              case 2:
+                this.$router.push('PageNotFound');
+                break;
+              case 1:
+                this.title = res.data.title;
+                this.description = res.data.description;
+                this.type = res.data.type;
+                this.questions = res.data.questions;
+
+                //建立答案框架
+                for (var i=0; i<this.questions.length; i++) {
+                  this.answers.push({
+                    question_id: this.questions[i].question_id,
+                    type: this.questions[i].type,
+                    ans: null,
+                    ansList: [],
+                    answer: ''
+                  })
+                }
+                break;
+              case 3: case 666:
+                this.close = true;
+                break;
+              case 999:
+                this.repeat = true;
+                break;
+              default:
+                this.$message.error("访问失败！");
+                break;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+    }
+  }
 }
 </script>
 

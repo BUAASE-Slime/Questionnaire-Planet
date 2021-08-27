@@ -194,6 +194,7 @@ export default {
       this.allfull = false;
       this.repeat = false;
       this.close = false;
+      location.reload();
     },
     submit: function () {
       // 必选检查

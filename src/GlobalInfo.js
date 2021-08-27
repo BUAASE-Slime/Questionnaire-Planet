@@ -8,4 +8,6 @@ export default class GlobalInfo {
     // static backUrl = 'http://localhost:8000/api/qs';
     static backUrl = 'http://localhost:8080/api/api/qs/';
     static domain = 'zewan.cc';                     //底边栏显示的域名
+    static publicDomain = 'https://zewan.cc/';
+    static publicBackUrl = 'https://zewan.cc/api/qs/';
 }
