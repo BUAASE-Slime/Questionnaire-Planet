@@ -1,5 +1,5 @@
 <template>
-  <div class="form">
+  <div class="punch">
     <el-header class="header">
       <edit-header
           :title="title"
@@ -17,9 +17,9 @@
     </el-header>
 
     <el-container class="container">
+
       <el-aside class="side">
         <el-tabs v-model="activeName" @tab-click="initOutline">
-
 
             <el-tab-pane label="题目类型" name="first">
               <div class="edit">
@@ -43,8 +43,13 @@
                   <span> 评分题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='mark';qsEditDialogVisible=true"></i>
                 </div>
+                <div class="ques-type">
+                  <i class="el-icon-location-outline"></i>
+                  <span> 定位题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='location';willAddQuestion.title='所在地理位置';qsEditDialogVisible=true"></i>
+                </div>
                 <div>
-                  <el-row class="sideTitle">个人信息模板</el-row>
+                  <el-row class="sideTitle">问题模板</el-row>
                   <el-row class="easyChoose">
                     <el-col :span="12">
                       <i class="el-icon-user"></i>
@@ -52,33 +57,35 @@
                       <i class="el-icon-circle-plus type-icon" @click="addName"></i>
                     </el-col>
                     <el-col :span="12">
-                      <i class="el-icon-male"></i>
-                      <span class="chooseLabel">性别</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addSex"></i>
+                      <i class="el-icon-tickets"></i>
+                      <span class="chooseLabel">学号</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addStuID"></i>
                     </el-col>
                   </el-row>
                   <el-row class="easyChoose">
                     <el-col :span="12">
-                      <i class="el-icon-house"></i>
-                      <span class="chooseLabel">住址</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addHome"></i>
+                      <i class="el-icon-tickets"></i>
+                      <span class="chooseLabel">体温</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addTem"></i>
                     </el-col>
-                    <el-col :span="12">
-                      <i class="el-icon-school"></i>
-                      <span class="chooseLabel">学校</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addSchool"></i>
-                    </el-col>
-                  </el-row>
-                  <el-row class="easyChoose">
                     <el-col :span="12">
                       <i class="el-icon-phone-outline"></i>
-                      <span class="chooseLabel">电话</span>
+                      <span class="chooseLabel">手机</span>
                       <i class="el-icon-circle-plus type-icon" @click="addPhone"></i>
                     </el-col>
-                    <el-col :span="12">
-                      <i class="el-icon-message"></i>
-                      <span class="chooseLabel">邮箱</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addEmail"></i>
+                  </el-row>
+                  <el-row class="easyChoose" style="text-align: left;margin-left: 35px">
+                    <el-col :span="24">
+                      <i class="el-icon-tickets"></i>
+                      <span class="chooseLabel">本人情况是否正常</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addHealthy"></i>
+                    </el-col>
+                  </el-row>
+                  <el-row class="easyChoose" style="text-align: left;margin-left: 35px">
+                    <el-col :span="24">
+                      <i class="el-icon-tickets"></i>
+                      <span class="chooseLabel">14日内环境安全</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addEnvironment"></i>
                     </el-col>
                   </el-row>
                 </div>
@@ -124,34 +131,39 @@
                 >
                   {{ item.description }}
                 </div>
+                <div v-if="item.type==='radio'||item.type==='checkbox'||item.type==='text'">
+                  <div class="block-choice" v-for="ans in item.options" :key="ans.id" >
 
-                <div class="block-choice" v-for="ans in item.options" :key="ans.id">
+                    <!--                  单选-->
+                    <el-radio v-if="item.type==='radio'" value="0">
+                      {{ ans.title }}
+                    </el-radio>
 
-                  <!--                  单选-->
-                  <el-radio v-if="item.type==='radio'" value="0">
-                    {{ ans.title }}<span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="ans.hasNumLimit">剩余{{ans.supply-ans.consume}}&emsp;总计{{ans.supply}}</span>
-                  </el-radio>
+                    <!--                  多选-->
+                    <el-checkbox v-if="item.type==='checkbox'" value="0">
+                      {{ ans.title }}
+                    </el-checkbox>
 
-                  <!--                  多选-->
-                  <el-checkbox v-if="item.type==='checkbox'" value="0">
-                    {{ ans.title }}
-                    <span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="ans.hasNumLimit">剩余{{ans.supply-ans.consume}}&emsp;总计{{ans.supply}}</span>
-                  </el-checkbox>
-
-                  <!--                  填空-->
-                  <el-input
-                      v-if="item.type==='text'"
-                      type="textarea"
-                      placeholder="请输入内容"
-                      v-bind="ans.title">
-                  </el-input>
+                    <!--                  填空-->
+                    <el-input
+                        v-if="item.type==='text'"
+                        type="textarea"
+                        placeholder="请输入内容"
+                        v-bind="ans.title">
+                    </el-input>
+                  </div>
                 </div>
+
 
                 <div class="block-choice" v-if="item.type==='mark'">
                   <!--                  评分-->
                   <el-rate value="0" :max="item.score"></el-rate>
                 </div>
 
+                <div class="block-location" v-if="item.type==='location'">
+                  <!--                  定位-->
+                  <location></location>
+                </div>
               </el-col>
 
               <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
@@ -182,7 +194,7 @@
 
     </el-container>
 
-    <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible"  :before-close="cancel_pre" class="dialog" width="1100px">
+    <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible"  :before-close="cancel_pre" class="dialog" >
       <el-form ref="form" :model="willAddQuestion" label-width="100px">
         <el-form-item label="题目类型" >
           <el-select :disabled="selectDisAble" v-model="willAddQuestion.type" placeholder="请选择题目类型" @change="typeChange">
@@ -195,12 +207,12 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="题目标题" style="width: 100%;">
-          <el-input v-model="willAddQuestion.title" placeholder="请输入标题" style="width: 800px" ></el-input>
+        <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type!=='location'">
+          <el-input v-model="willAddQuestion.title" placeholder="请输入标题" ></el-input>
         </el-form-item>
 
         <el-form-item label="题目描述" style="width: 100%;">
-          <el-input v-model="willAddQuestion.description" placeholder="请输入题目描述" style="width: 800px"></el-input>
+          <el-input v-model="willAddQuestion.description" placeholder="请输入题目描述"></el-input>
         </el-form-item>
 
         <el-form-item label="是否必填" >
@@ -210,14 +222,11 @@
         <template v-if="willAddQuestion.type==='radio'||willAddQuestion.type==='checkbox'">
           <el-form-item :label="'选项'+(index+1)" v-for="(item,index) in willAddQuestion.options" :key="index">
             <el-row>
-              <el-col :span="12">
+              <el-col :span="16">
                 <el-input  v-model="item.title" placeholder="请输入选项名" ></el-input>
               </el-col>
-              <el-col :span="12">
-                <el-button type="danger" plain class="deleteOptionButton"  @click="deleteOption(index)" >删除选项</el-button>
-                <el-button type="success" plain style="margin-right: 8px" v-if="!item.hasNumLimit" @click="item.hasNumLimit=true">添加库存限制</el-button>
-                <el-button type="info" plain style="margin-right: 8px" v-if="item.hasNumLimit" @click="item.hasNumLimit=false">取消库存限制</el-button>
-                <el-input-number v-model="item.supply" v-if="item.hasNumLimit"></el-input-number>
+              <el-col :span="8">
+                <el-button type="danger" plain class="deleteOptionButton" @click="deleteOption(index)" >删除选项</el-button>
               </el-col>
             </el-row>
 
@@ -229,7 +238,6 @@
           <el-form-item label="填空">
             <el-input
                 type="textarea"
-                class="my-input"
                 :rows="willAddQuestion.row"
                 resize="none">
             </el-input>
@@ -270,7 +278,6 @@
             <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
           <el-row style="margin-top: 25px">
             <el-button type="primary" plain @click="download">下载二维码</el-button>
-            <el-button type="primary" @click="genCodeAgain" style="margin-left: 30px">重新生成链接</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -289,7 +296,7 @@
       </span>
     </el-dialog>
     <!--    高级设置弹框-->
-    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="30%">
+    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" >
       <div class="timeBlock" style="margin-bottom: 30px">
         <span class="demonstration" style="margin-right: 15px">截止时间</span>
         <el-date-picker style="margin-left: 100px"
@@ -309,28 +316,28 @@
 
 <script>
 import editHeader from "../../../components/header/editHeader";
+import location from "../../../components/location";
 import user from "@/store/user";
 import QRCode from "qrcodejs2";
+import Location from "../../../components/location";
 
 export default {
-  name: "form",
+  name: "punch",
   data() {
     return {
       qrcode: null,
-      timeFrame: '',
       linkShare: '',
+      editWrongMsg: "",
+      editWrongMsgVisible: false,
+      qsLinkDialogVisible: false,
+      qsLinkDialogTitle: "发布成功！",
       settingDialogTitle: "高级设置",   // 高级设置弹框的标题
-      settingDialogVisible: false,     // 高级设置对话框可见性
+      settingDialogVisible:false,     // 高级设置对话框可见性
       closingDate: null,   // 高级设置中问卷回收的截止日期
       isReleased: false,   // 是否发布
-      max_recycling: 0,
-      editWrongMsg:"",
-      editWrongMsgVisible:false,
-      qsLinkDialogVisible:false,
-      qsLinkDialogTitle:"发布成功！",
-      editIndex:0,
-      selectDisAble:false,
-      hoverItem:0,
+      editIndex: 0,
+      selectDisAble: false,
+      hoverItem: 0,
       activeName: 'first',
       title: '',
       description: '',
@@ -342,26 +349,24 @@ export default {
       questions: [],
       outline: [],
       pid: this.$route.query.pid,
+
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
       willAddQuestion: {
         question_id: 0,
         id: 0,
-        type:'',
-        title:'',
-        must: false, // 是否必填
+        type: '',
+        title: '',
+        must: true, // 是否必填
         description: '', // 问题描述
         options:[
           {
-            hasNumLimit:false,  // 是否添加库存限制
-            title:'', // 选项标题
-            id: 0 , // 选项id
-            supply: 1,  // 库存
-            consume: 0, // 已消耗库存（已选）
+            title: '', // 选项标题
+            id: 0 // 选项id
           }
         ],
-        row: 1, // 填空题区域显示行数
-        score: 5, // 评分题的最大评分
+        row: 1, // 填空区域行数
+        score: 5, // 最大评分
       },
       allType:[
         {
@@ -378,6 +383,10 @@ export default {
         },{
           value: 'mark',
           label: '评分题',
+        },
+        {
+          value: 'location',
+          label: '定位题',
         }
       ],
 
@@ -488,40 +497,167 @@ export default {
     }
   },
   components: {
+    Location,
     editHeader,
   },
   methods: {
-    genCodeAgain() {
-      const formData = new FormData();
-      formData.append("qn_id", this.$route.query.pid);
-      this.$axios({
-        method: 'post',
-        url: '/qn/change/code',
-        data: formData,
-      })
-      .then(res => {
-        if (res.data.status_code === 1) {
-          this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
-
-          if (this.qrcode == null) {
-            this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
-              width: 200, //生成的二维码的宽度
-              height: 200, //生成的二维码的高度
-              colorDark : "#000000", // 生成的二维码的深色部分
-              colorLight : "#ffffff", //生成二维码的浅色部分
-              correctLevel : QRCode.CorrectLevel.H
-            });
-          }
-          this.qrcode.clear();
-          this.qrcode.makeCode(this.linkShare);
-        } else {
-          this.$message.error("请求失败！");
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+    addName(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'text',
+        title: '姓名：',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 0,
+          title: '',
+        }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
     },
+    addStuID(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'text',
+        title: '学号：',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 0,
+          title: '',
+        }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+    addPhone(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'text',
+        title: '手机号：',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 0,
+          title: '',
+        }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+    addTem(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'radio',
+        title: '体温：',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 1,
+          title: '36.0℃以下',
+        },
+          {
+            id: 2,
+            title: '36.0℃~36.5℃',
+          },
+          {
+            id: 3,
+            title: '36.5℃~37.0℃',
+          },
+          {
+            id: 4,
+            title: '37.0℃~37.5℃',
+          },
+          {
+            id: 5,
+            title: '37.5℃以上',
+          }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+    addEnvironment(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'radio',
+        title: '近14日内，所接触环境和人员是否一切正常？',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 1,
+          title: '是（未接触风险地区和人员、无入境共居人员且社区无确诊）',
+        },
+          {
+            id: 2,
+            title: '否',
+          }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+    addHealthy(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'radio',
+        title: '今日本人情况是否正常？',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 1,
+          title: '是（本人健康且未处于隔离期）',
+        },
+          {
+            id: 2,
+            title: '否',
+          }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+
     download() {
       // 获取base64的图片节点
       var img = document.getElementById('qrcode_2').getElementsByTagName('img')[0];
@@ -543,208 +679,29 @@ export default {
     formatTime(time) {
       this.timeFrame = time;
     },
-    addName(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '姓名：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd();
-    },
-    addSex(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'radio',
-        title: '性别：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 1,
-          title: '男',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        },{
-          id:2,
-          title:'女',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
-    },
-    addHome(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '住址：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
-    },
-    addSchool(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '学校',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
-    },
-    addPhone(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '电话：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
-    },
-    addEmail(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '邮箱：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      // 重置
-      this.resetWillAdd()
-    },
     finish(){
-      this.qsLinkDialogVisible=false;
-      this.$router.push('/index')// 跳转到问卷中心？
-    },
-    resetWillAdd(){
-      this.willAddQuestion={
-        question_id: 0,
-        id: 0,
-        type:'',
-        title:'',
-        must: false, // 是否必填
-        description: '', // 问题描述
-        options:[
-          {
-            title:'', // 选项标题
-            id: 0 ,// 选项id
-            hasNumLimit:false,
-            supply:1,
-            consume:0,
-          }
-        ],
-        row:1, // 填空区域行数
-        score: 5, // 最大评分
-      }
+      this.qsLinkDialogVisible = false;
+      this.$router.push('/index') // 跳转到问卷中心？
     },
     publishSuccess:function (){
       this.qsLinkDialogVisible=true;
     },
     edit:function (index){
       index--;
-      this.willAddQuestion={
-        question_id:this.questions[index].question_id,
-        id:this.questions[index].id,
-        type:this.questions[index].type,
-        title:this.questions[index].title,
-        must:this.questions[index].must,
+      this.willAddQuestion = {
+        id: this.questions[index].id,
+        type: this.questions[index].type,
+        title: this.questions[index].title,
+        must: this.questions[index].must,
         description: this.questions[index].description,
-        options:this.questions[index].options,
-        row:this.questions[index].row,
-        score:this.questions[index].score,
+        options: this.questions[index].options,
+        row: this.questions[index].row,
+        score: this.questions[index].score,
       };
-      this.editIndex=index;
-      this.selectDisAble=true;
-      this.qsEditDialogTitle="编辑题目";
-      this.qsEditDialogVisible=true;
+      this.editIndex = index;
+      this.selectDisAble = true;
+      this.qsEditDialogTitle = "编辑题目";
+      this.qsEditDialogVisible = true;
     },
     isExistEmptyOption:function (){
       for(let i=0;i<this.willAddQuestion.options.length;i++){
@@ -798,7 +755,7 @@ export default {
             message: '修改成功!'
           });
           // 重置
-          this.resetWillAdd();
+          this.resetWillAdd()
           this.selectDisAble = false;
         }
       }
@@ -836,6 +793,24 @@ export default {
         }
       }
     },
+    resetWillAdd(){
+      this.willAddQuestion={
+        question_id: 0,
+        id: 0,
+        type:'',
+        title:'',
+        must: true, // 是否必填
+        description: '', // 问题描述
+        options:[
+          {
+            title: '', // 选项标题
+            id: 0 // 选项id
+          }
+        ],
+        row: 1, // 填空区域行数
+        score: 5, // 最大评分
+    }
+    },
     dialogCancel: function(){
       this.qsEditDialogTitle="";
       this.resetWillAdd();
@@ -852,16 +827,13 @@ export default {
       }).catch(() => {
       });
     },
-    typeChange(value){
+    typeChange(value) {
       this.willAddQuestion.type = value;
     },
     addOption(){
       this.willAddQuestion.options.push({
-        hasNumLimit:false,
-        title:'', // 选项标题
-        id: 0 ,// 选项id
-        supply:1,
-        consume:0,
+        title: '',
+        id: 0,
       });
     },
     deleteOption(index){
@@ -902,7 +874,6 @@ export default {
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
-        this.publishSuccess();
         const formData = new FormData();
         formData.append("survey_id", this.pid);
         this.$axios({
@@ -914,7 +885,8 @@ export default {
           console.log(res.data.status_code);
           switch (res.data.status_code) {
             case 200:
-              this.linkShare = this.GLOBAL.baseUrl + '/fill_form?mode=1&code=' + res.data.code;
+              this.linkShare = this.GLOBAL.baseUrl + '/fill?mode=1&code=' + res.data.code;
+              this.publishSuccess();
 
               if (this.qrcode == null) {
                 this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
@@ -959,7 +931,6 @@ export default {
       var param = {
         username: userInfo.user.username,
         title: this.title,
-        finished_time: this.timeFrame,
         description: this.description,
         type: this.type,
         qn_id: this.$route.query.pid,
@@ -968,7 +939,7 @@ export default {
       var paramer = JSON.stringify(param, {questions: 'brackets'})
       this.$axios({
         method: 'post',
-        url: '/sp/save_qn',
+        url: '/sm/save/qn_keep/history',
         data: paramer,
       })
           .then(res => {
@@ -995,7 +966,7 @@ export default {
                   case 'preview':
                     this.$message.success("保存成功");
                     setTimeout(() => {
-                      location.href = 'preview_form?mode=0&pid=' + this.$route.query.pid;
+                      location.href = 'preview?mode=0&pid=' + this.$route.query.pid;
                     }, 700);
                     break;
                   case 'publish':
@@ -1167,6 +1138,9 @@ export default {
       else return type==='next';
     },
   },
+  mounted() {
+    this.getLocation(); // 调用获取地理位置
+  },
   created() {
     const formData = new FormData();
     formData.append("qn_id", this.$route.query.pid);
@@ -1187,10 +1161,11 @@ export default {
           this.type = res.data.type;
           this.questions = res.data.questions;
           this.isReleased = res.data.is_released;
-          if (res.data.max_recycling !== undefined) {
-            this.max_recycling = res.data.max_recycling;
-          }
+          console.log(this.questions);
+
           this.InitOutline();
+          console.log(this.questions);  // 调试
+          console.log(this.outline);  // 调试
           break;
         default:
           this.$message.error("访问失败！");
@@ -1202,71 +1177,72 @@ export default {
     })
   },
 }
+
 </script>
 
 <style>
-.form .linkDialog{
+.punch .linkDialog{
   text-align: left;
 }
-.form .container {
+.punch .container {
   padding: 0;
   height: auto;
   min-height: 610px;
 }
 
-.form header {
+.punch header {
   padding: 0 100px;
 }
 
-.form .el-container {
+.punch .el-container {
   padding: 0 100px;
 }
 
-.form .side {
+.punch .side {
   border-top: solid 1px #e3e3e3;
   border-right: solid 1px #e3e3e3;
   background: #FFFFFF;
 }
 
-.form .main {
+.punch .main {
   border-top: solid 1px #e3e3e3;
   background: #FFFFFF;
 }
 
-.form .edit {
+.punch .edit {
   margin-top: 0;
   overflow: auto;
   height: 550px;
 }
 
-.form .outline {
+.punch .outline {
   overflow: auto;
   height: 550px;
 }
 
-.form .ques-type {
+.punch .ques-type {
   padding: 15px 0;
   font-size: 16px;
   border-bottom: dashed #e3e3e3 1px;
 }
 
-.form .type-icon {
+.punch .type-icon {
   color: #1687fd;
   display: inline-block;
 }
 
-.form .type-icon:hover {
+.punch .type-icon:hover {
   color: #409EFF;
   cursor: pointer;
 }
 
-.form .el-tabs__nav-scroll {
+.punch .el-tabs__nav-scroll {
   text-align: center;
   height: 60px;
   margin: 0 60px;
 }
 
-.form .el-tabs__item {
+.punch .el-tabs__item {
   font-weight: bold;
   padding: 0 20px;
   height: 60px;
@@ -1279,50 +1255,50 @@ export default {
   position: relative;
 }
 
-.form .el-tabs__header {
+.punch .el-tabs__header {
   margin: 0;
 }
 
-.form .el-tree-node__content {
+.punch .el-tree-node__content {
   padding-left: 10px !important;
   height: 40px;
 }
 
-.form .main {
+.punch .main {
   max-height: 610px;
 }
 
-.form .ques .title {
+.punch .ques .title {
   font-size: 28px;
   font-weight: bold;
   padding-top: 10px;
   padding-bottom: 26px;
 }
 
-.form .ques .description {
+.punch .ques .description {
   text-align: left;
-  font-size: 18px;
+  font-size: 16px;
   padding-bottom: 30px;
   color: black;
   line-height: 30px;
 }
 
-.form .ques-block {
+.punch .ques-block {
   padding-bottom: 15px;
   border-top: solid #e3e3e3 1px;
 }
 
-.form .ques-block:hover {
+.punch .ques-block:hover {
   background: #f5f5f5;
   transition: .3s;
 }
 
-.form .ques-block .must {
+.punch .ques-block .must {
   font-weight: normal;
   color: crimson;
 }
 
-.form .block-title {
+.punch .block-title {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
@@ -1330,7 +1306,7 @@ export default {
   font-weight: bold;
 }
 
-.form .block-description {
+.punch .block-description {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 14px;
@@ -1340,83 +1316,87 @@ export default {
   color: #969696;
 }
 
-.form .block-choice {
+.punch .block-choice {
+  text-align: left;
+  /*border: solid 1px black;*/
+  font-size: 16px;
+  padding: 5px 10px 10px;
+}
+.punch .block-location {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
   padding: 5px 10px 10px;
 }
 
-.form .el-button-group>.el-button:first-child {
+.punch .el-button-group>.el-button:first-child {
   border-radius: 0 0 0 8px;
 }
 
-.form .el-button-group>.el-button:last-child {
+.punch .el-button-group>.el-button:last-child {
   border-radius: 0 0 8px 0;
 }
 
-.form .block-button .el-button {
+.punch .block-button .el-button {
   background: #b9b9b9;
   border: transparent;
 }
 
-.form .block-button .el-button:hover {
+.punch .block-button .el-button:hover {
   background: #989898;
   border: transparent;
 }
 
-.form .bt {
+.punch .bt {
   color: white;
   font-size: 14px;
   font-weight: bold;
 }
 
-.form .block-choice .el-textarea__inner {
+.punch .block-choice .el-textarea__inner {
   max-height: 100px;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 8633e48d79d9a020ac1a93db1b6e7d707a0d4f0c
-.form .dialog{
+.punch .dialog{
   text-align: left;
   font-size: large;
 }
-.form .addOptionButton{
+.punch .addOptionButton{
   display: inline-block;
   margin-left: 100px;
 }
-.form .deleteOptionButton{
+.punch .deleteOptionButton{
   margin-left: 20px;
 }
 
-.form .sideTitle{
+.punch .setting-item {
+  text-align: left;
+}
+
+.punch .setting-bt {
+  margin-top: 28px;
+}
+
+.punch .setting .el-dialog__header {
+  text-align: left;
+}
+
+.punch .setting .item-title {
+  padding-right: 20px;
+}
+.punch .sideTitle{
   font-size: 18px;
   font-weight: bold;
-  margin: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
-.form .easyChoose{
+.punch .easyChoose{
   font-size: medium;
   margin-top: 10px;
 }
-.form .chooseLabel{
+.punch .chooseLabel{
   margin-right: 10px;
   margin-left: 5px;
 }
 
-.form .setting-item {
-  text-align: left;
-}
 
-.form .setting-bt {
-  margin-top: 28px;
-}
-
-.form .setting .el-dialog__header {
-  text-align: left;
-}
-
-.form .setting .item-title {
-  padding-right: 20px;
-}
 </style>
