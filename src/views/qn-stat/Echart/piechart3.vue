@@ -44,7 +44,7 @@ export default {
   mounted(){
     //页面加载完成后,才执行
     setTimeout(() => {
-      this.showChart2();
+    this.showChart2();
     }, 500);
   },
   methods: {

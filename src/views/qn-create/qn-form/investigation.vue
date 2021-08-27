@@ -179,6 +179,7 @@
 
           </el-form-item>
           <el-button type="primary" plain class="addOptionButton" @click="addOption">新增选项</el-button>
+          <el-button type="primary" plain class="addOptionButton" @click="dialogVisibleAsso=true">添加关联</el-button>
         </template>
 
         <template v-if="willAddQuestion.type==='text'" >
@@ -259,6 +260,28 @@
         <el-button type="primary" @click="settingSuccess">完成</el-button>
       </div>
     </el-dialog>
+    <!-- 关联题目 -->
+    <!-- <el-dialog
+      title="题目关联"
+      :visible.sync="dialogVisibleAsso"
+      width="30%"
+      :before-close="handleClose">
+      <span>当前题目：</span><br>
+      <span>关联题目:</span>
+      <el-select v-model="value" placeholder="请选择">
+        <div v-for="item in questions" :key="item.id">
+        <el-option
+          v-if=""
+          :label="item.title"
+          :value="item.id">
+        </el-option>
+        </div>
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisibleAsso = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisibleAsso = false">确 定</el-button>
+      </span>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -271,12 +294,14 @@ export default {
   name: "investigation",
   data() {
     return {
+      value:'',
       qrcode: null,
       timeFrame: '',
       linkShare: '',
       editWrongMsg: "",
       editWrongMsgVisible: false,
       qsLinkDialogVisible: false,
+      dialogVisibleAsso: false,
       qsLinkDialogTitle: "发布成功！",
       settingDialogTitle: "高级设置",   // 高级设置弹框的标题
       settingDialogVisible:false,     // 高级设置对话框可见性
@@ -332,110 +357,110 @@ export default {
         }
       ],
 
-      xiaoxueqi_questions: [
-        {
-          id: 1,
-          type: 'radio',
-          title: '这是一个什么网站？',
-          description: '请考虑妥当后填写',
-          must: true,
-          options: [{
-            id: 1,
-            title: '问卷系统',
-          }, {
-            id: 2,
-            title: '出版系统',
-          }],
-          row: 0,
-          score: 0,
-        },
-        {
-          id: 2,
-          type: 'checkbox',
-          title: '软工小学期助教都有谁？',
-          description: '请考虑妥当后填写',
-          must: false,
-          options: [{
-            id: 1,
-            title: 'ZYH',
-          }, {
-            id: 2,
-            title: 'LKW',
-          },{
-            id: 3,
-            title: 'ZXH',
-          }, {
-            id: 4,
-            title: 'HZH',
-          }],
-          row: 0,
-          score: 0,
-        },
-        {
-          id: 3,
-          type: 'radio',
-          title: '软工小学期累不累',
-          description: '请考虑妥当后填写',
-          must: false,
-          options: [{
-            id: 1,
-            title: '累',
-          }, {
-            id: 2,
-            title: '非常累',
-          }],
-          row: 0,
-          score: 0,
-        },
-        {
-          id: 4,
-          type: 'text',
-          title: '您对小学期的评价如何？',
-          description: '请考虑妥当后填写',
-          must: false,
-          options: [{
-            id: 0,
-            title: '',
-          }],
-          row: 3,
-          score: 0,
-        },
-        {
-          id: 5,
-          type: 'mark',
-          title: '给小学期打个分吧~',
-          description: '请考虑妥当后填写',
-          must: true,
-          options: [{
-            id: 0,
-            title: '',
-          }],
-          row: 0,
-          score: 10,
-        },
-      ],
-      xiaoxueqi_outline: [
-      {
-        id: 1,
-        label: '1. 这是一个什么网站？',
-      },
-      {
-        id: 2,
-        label: '2. 软工小学期助教都有谁？',
-      },
-      {
-        id: 3,
-        label: '3. 软工小学期累不累',
-      },
-      {
-        id: 4,
-        label: '4. 您对小学期的评价如何？',
-      },
-      {
-        id: 5,
-        label: '5. 给小学期打个分吧~',
-      },
-    ],
+    //   questions: [
+    //     {
+    //       id: 1,
+    //       type: 'radio',
+    //       title: '这是一个什么网站？',
+    //       description: '请考虑妥当后填写',
+    //       must: true,
+    //       options: [{
+    //         id: 1,
+    //         title: '问卷系统',
+    //       }, {
+    //         id: 2,
+    //         title: '出版系统',
+    //       }],
+    //       row: 0,
+    //       score: 0,
+    //     },
+    //     {
+    //       id: 2,
+    //       type: 'checkbox',
+    //       title: '软工小学期助教都有谁？',
+    //       description: '请考虑妥当后填写',
+    //       must: false,
+    //       options: [{
+    //         id: 1,
+    //         title: 'ZYH',
+    //       }, {
+    //         id: 2,
+    //         title: 'LKW',
+    //       },{
+    //         id: 3,
+    //         title: 'ZXH',
+    //       }, {
+    //         id: 4,
+    //         title: 'HZH',
+    //       }],
+    //       row: 0,
+    //       score: 0,
+    //     },
+    //     {
+    //       id: 3,
+    //       type: 'radio',
+    //       title: '软工小学期累不累',
+    //       description: '请考虑妥当后填写',
+    //       must: false,
+    //       options: [{
+    //         id: 1,
+    //         title: '累',
+    //       }, {
+    //         id: 2,
+    //         title: '非常累',
+    //       }],
+    //       row: 0,
+    //       score: 0,
+    //     },
+    //     {
+    //       id: 4,
+    //       type: 'text',
+    //       title: '您对小学期的评价如何？',
+    //       description: '请考虑妥当后填写',
+    //       must: false,
+    //       options: [{
+    //         id: 0,
+    //         title: '',
+    //       }],
+    //       row: 3,
+    //       score: 0,
+    //     },
+    //     {
+    //       id: 5,
+    //       type: 'mark',
+    //       title: '给小学期打个分吧~',
+    //       description: '请考虑妥当后填写',
+    //       must: true,
+    //       options: [{
+    //         id: 0,
+    //         title: '',
+    //       }],
+    //       row: 0,
+    //       score: 10,
+    //     },
+    //   ],
+    //   outline: [
+    //   {
+    //     id: 1,
+    //     label: '1. 这是一个什么网站？',
+    //   },
+    //   {
+    //     id: 2,
+    //     label: '2. 软工小学期助教都有谁？',
+    //   },
+    //   {
+    //     id: 3,
+    //     label: '3. 软工小学期累不累',
+    //   },
+    //   {
+    //     id: 4,
+    //     label: '4. 您对小学期的评价如何？',
+    //   },
+    //   {
+    //     id: 5,
+    //     label: '5. 给小学期打个分吧~',
+    //   },
+    // ],
     }
   },
   components: {
