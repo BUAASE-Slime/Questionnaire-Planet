@@ -83,6 +83,11 @@ const routes = [
         component: () => import('../views/qn-create/qn-form/vote'),
     },
     {
+        path: '/edit_hate',
+        name: 'EditHate',
+        component: () => import('../views/qn-create/qn-form/punch'),
+    },
+    {
         path: '/fill',
         name: 'FillQn',
         component: () => import('../views/qn-fill/FillQn'),
@@ -102,6 +107,14 @@ const routes = [
         path: '/fill_test',
         name: 'FillTest',
         component: () => import('../views/qn-fill/FillQnTest'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
+        path: '/fill_hate',
+        name: 'FillPunch',
+        component: () => import('../views/qn-fill/FillQnPunch'),
         meta: {
             noNav: true
         }
@@ -142,6 +155,14 @@ const routes = [
         path: '/preview',
         name: 'Preview',
         component: () => import('../views/qn-fill/FillQn'),
+        meta: {
+            noNav: true
+        }
+    },
+    {
+        path: '/preview_hate',
+        name: 'PreviewHate',
+        component: () => import('../views/qn-fill/FillQnPunch'),
         meta: {
             noNav: true
         }
@@ -208,6 +229,11 @@ const routes = [
         name: 'account',
         
         component: () => import('../views/account-set/account.vue')              
+    },
+    {
+        path: '/location',
+        name: 'Location',
+        component: () => import('../components/location')
     },
     {
         path: '/*',

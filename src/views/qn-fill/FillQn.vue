@@ -102,7 +102,6 @@ export default {
       close: false,
 
       mode: this.$route.query.mode,
-      open: 1,
       title: '',
       description: '',
       // questions: [],
@@ -444,7 +443,6 @@ export default {
   mounted() {
   },
   created() {
-
     if (this.mode === '0') {
       const formData = new FormData();
       formData.append("qn_id", this.$route.query.pid);
