@@ -121,13 +121,20 @@
               </el-checkbox>
             </el-checkbox-group>
 
-            <div class="q-opt" v-if="item.type==='text'">
+            <div class="q-opt" v-if="item.type==='text'||item.type==='name'||item.type==='stuId'||item.type==='class'||item.type==='school'">
               <el-input
                   type="textarea"
+                  v-if="item.row>1"
                   :autosize="{ minRows: 2, maxRows: item.row}"
                   placeholder="请输入内容"
                   v-model="answers[item.id-1].ans"
                   readonly="true">
+              </el-input>
+              <el-input
+                  v-if="item.row===1"
+                  placeholder="请输入内容"
+                  v-model="answers[item.id-1].ans"
+                  >
               </el-input>
             </div>
 
