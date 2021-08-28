@@ -14,19 +14,19 @@ export default {
   },
   data () {
     return {
-        chart1_title: '',
-        chart1_dataName:'填写人数',
-        dimensions_data:['choice', 'a', 'b', 'c','d'],
+        dimensions_data:['choice', 'a', 'b', 'c','d'],//['choice', 列选项]
         source_data:[
-            {choice: 'd', 'a': 0, 'b': 2, 'c': 1 , 'd': 0},
-            {choice: 'b', 'a': 1, 'b': 0, 'c': 2, 'd': 0},
-            {choice: 'c', 'a': 1, 'b': 0, 'c': 1, 'd': 3},
+            {choice: 'd', 'a': 0, 'b': 66.66, 'c': 33.33 , 'd': 0},
+            {choice: 'b', 'a': 33.33, 'b': 0, 'c': 66.66, 'd': 0},
+            {choice: 'c', 'a': 20, 'b': 0, 'c': 20, 'd': 60},
+            // {choice: 行选项, 每个列选项在该行选项中所占百分比},
         ],
         series_data:[
             {type: 'bar'},
             {type: 'bar'},
             {type: 'bar'},
             {type: 'bar'}
+            //有几个列选项就有几个这玩意：{type: 'bar'}
         ]
     }
   },
@@ -44,13 +44,19 @@ export default {
         // 绘制图表
         myChart1.setOption({
             legend: {},
-            tooltip: {},
+            tooltip: {
+              // formatter:'{a} {b}: {d} %'
+            },
             dataset: {
                 dimensions: this.dimensions_data,
                 source: this.source_data,
             },
             xAxis: {type: 'category'},
-            yAxis: {},
+            yAxis: {
+              axisLabel: {
+                  formatter: '{value} %'
+              }
+            },
             // Declare several bar series, each will be mapped
             // to a column of dataset.source by default.
             series: this.series_data

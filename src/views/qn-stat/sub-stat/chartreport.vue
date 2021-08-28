@@ -85,7 +85,6 @@
                   :current-page="currentPage" 
                   :page-size="pageSize"
                   :total="item.options.length" 
-                  @size-change="handleSizeChange" 
                   @current-change="handleCurrentChange"
                   style="margin: 20px"
                   v-if="item.options.length>5">
@@ -117,7 +116,7 @@
 
           <div v-else>
               <el-table
-                  :data="item.tableData"
+                  :data="item.tableData.slice((currentPage2-1)*pageSize2,currentPage2*pageSize2)"
                   border
                   style="width: 100%">
                   <el-table-column
@@ -130,6 +129,17 @@
                   label="文本答案">
                   </el-table-column>
               </el-table>
+              <el-pagination layout="sizes, prev, pager, next, jumper" 
+                background
+                :current-page="currentPage2" 
+                :page-size="pageSize2"
+                :page-sizes="pageSizes2" 
+                :total="item.tableData.length" 
+                @size-change="handleSizeChange2" 
+                @current-change="handleCurrentChange2"
+                style="margin: 20px"
+                v-if="!loading">
+                </el-pagination>
           </div>
 
 
@@ -150,6 +160,9 @@ export default{
     },
     data() {
         return{
+        currentPage2: 1,
+        pageSize2: 7,
+        pageSizes2:[5,7,10],
         currentPage: 1,
         pageSize: 5,
         nowid: 1,
@@ -331,10 +344,14 @@ export default{
       //     }
       //     return cellValue
       //   },
-        handleSizeChange(val) {
+        handleSizeChange2(val) {
           console.log(`每页 ${val} 条`);
-          this.currentPage = 1;
-          this.pageSize = val;
+          this.currentPage2 = 1;
+          this.pageSize2 = val;
+        },
+        handleCurrentChange2(val) {
+          console.log(`当前页: ${val}`);
+          this.currentPage2 = val;
         },
         handleCurrentChange(val) {
           console.log(`当前页: ${val}`);
