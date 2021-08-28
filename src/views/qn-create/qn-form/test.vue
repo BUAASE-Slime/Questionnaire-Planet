@@ -1393,6 +1393,6 @@ export default {
 }
 
 .test .settingDialog .el-dialog__body {
-  padding-left: 140px;
+  padding-left: 30px;
 }
 </style>

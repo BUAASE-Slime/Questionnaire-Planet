@@ -185,9 +185,13 @@ export default {
                                         confirmButtonText: '返回问卷中心',
                                         cancelButtonText: '继续编辑'
                                     })
-                                        .then(() => {
-                                            this.$router.push('/index');
-                                        });
+                                    .then(() => {
+                                        this.$router.push('/index');
+                                    })
+                                        .catch(action => {
+                                            console.log(action);
+                                            this.getQnDataSelf();
+                                        })
                                     break;
                                 case 'preview':
                                     this.$message.success("保存成功");
