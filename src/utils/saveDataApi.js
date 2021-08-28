@@ -192,7 +192,7 @@ export default {
                                 case 'preview':
                                     this.$message.success("保存成功");
                                     setTimeout(() => {
-                                        location.href = 'preview_form?mode=0&pid=' + this.$route.query.pid;
+                                        location.href = this.GLOBAL.previewUrl[parseInt(surveyType)-1] + '?mode=0&pid=' + this.$route.query.pid;
                                     }, 700);
                                     break;
                                 case 'publish':
