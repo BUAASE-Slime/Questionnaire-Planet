@@ -108,11 +108,13 @@
                 </div>
               </el-card>
               
-              <el-pagination layout=" prev, pager, next, jumper" 
+              <el-pagination layout="sizes, prev, pager, next, jumper" 
                 background
                 :current-page="currentPage" 
-                :page-size="pageSize" 
+                :page-size="pageSize"
+                :page-sizes="pageSizes" 
                 :total="QnList.length" 
+                @size-change="handleSizeChange" 
                 @current-change="handleCurrentChange"
                 style="margin: 20px">
                 </el-pagination>
@@ -169,7 +171,8 @@ export default {
   data() {
     return {
       currentPage: 1,
-      pageSize: 4,
+      pageSize: 5,
+      pageSizes:[4,5,7],
 
       image_url: '',
       qrcode: null,
