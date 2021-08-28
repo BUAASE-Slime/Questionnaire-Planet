@@ -128,7 +128,7 @@ export default {
             });
         },
         saveQnInfo(tag, surveyType) {
-            var new_questions = this.questions;
+            var new_questions = JSON.parse(JSON.stringify(this.questions));
             let url;
             switch (surveyType) {
                 case "1":
@@ -137,7 +137,7 @@ export default {
                 case "2":
                     url = '/sm/save/qn_keep/history';
                     for (var i=0; i<new_questions.length; i++) {
-                        if (this.questions[i].type === 'checkbox') {
+                        if (new_questions[i].type === 'checkbox') {
                             new_questions[i].refer = new_questions[i].refer.join('-<^-^>-');
                         }
                     }
@@ -190,7 +190,6 @@ export default {
                                     })
                                         .catch(action => {
                                             console.log(action);
-                                            this.getQnDataSelf();
                                         })
                                     break;
                                 case 'preview':
