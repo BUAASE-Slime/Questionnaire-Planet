@@ -13,35 +13,38 @@ export default {
     data: [],
     type: {
       type: String
-    }
+    },
+    legend_data: [],
+    indecatior_data: [],
+    series_data: [],
   },
   data () {
     return {
-      legend_data:['a','b','c','d'],//列选项
-      indecatior_data:[
-          { name: 'd',max: 100, axisLabel: {show: true, textStyle: {fontSize: 18, color: '#333'},formatter: '{value} %'}},
-          { name: 'b',max: 100},
-          { name: 'c',max: 100},
-          //{ name: 行选项, max: 100},第一个行选项要加：axisLabel: {show: true, textStyle: {fontSize: 18, color: '#333'},formatter: '{value} %'}
-      ],
-      series_data:[
-          {
-              value: [0,33.33,20],//该列选项在每个行选项中所占的百分比
-              name: 'a'//列选项
-          },
-          {
-              value: [66.66,0,0],
-              name: 'b'
-          },
-          {
-              value: [33.33,66.66,20],
-              name: 'c'
-          },
-          {
-              value: [0,0,60],
-              name: 'd'
-          },
-      ]
+      // legend_data:['a','b','c','d'],//列选项
+      // indecatior_data:[
+      //     { name: 'd',max: 100, axisLabel: {show: true, textStyle: {fontSize: 18, color: '#333'},formatter: '{value} %'}},
+      //     { name: 'b',max: 100},
+      //     { name: 'c',max: 100},
+      //     //{ name: 行选项, max: 100},第一个行选项要加：axisLabel: {show: true, textStyle: {fontSize: 18, color: '#333'},formatter: '{value} %'}
+      // ],
+      // series_data:[
+      //     {
+      //         value: [0,33.33,20],//该列选项在每个行选项中所占的百分比
+      //         name: 'a'//列选项
+      //     },
+      //     {
+      //         value: [66.66,0,0],
+      //         name: 'b'
+      //     },
+      //     {
+      //         value: [33.33,66.66,20],
+      //         name: 'c'
+      //     },
+      //     {
+      //         value: [0,0,60],
+      //         name: 'd'
+      //     },
+      // ]
     }
   },
   watch: {
@@ -62,9 +65,6 @@ export default {
       }
     }
   },
-  created () {
-    this.getData();
-  },
   mounted(){
     //页面加载完成后,才执行
     setTimeout(() => {
@@ -72,26 +72,6 @@ export default {
     }, 500);
   },
   methods: {
-    getData() {
-      console.log(this.data);
-      var title;
-      var choosed;
-      for (var i=0; i<this.data.length; i++) {
-        title = this.data[i].title;
-        choosed = this.data[i].choosed;
-        if (this.type === 'mark') {
-          title = (i+1).toString();
-        } else if (this.data.length > 5 ||(title.length > 5 && this.data.length >= 4)) {
-          title = "选项" + (i+1).toString();
-        }
-        this.chart2_data.push({
-          value: choosed,
-          name: title
-        });
-      }
-      console.log('chart2_data');
-      console.log(this.chart2_data);
-    },
     showChart2()
     {
       console.log("showChart2")
