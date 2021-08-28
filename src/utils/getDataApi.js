@@ -20,6 +20,16 @@ export default {
                             this.type = res.data.type;
                             this.questions = res.data.questions;
                             this.isReleased = res.data.is_released;
+
+                            // 多选题标准答案数据格式转换
+                            if (this.type === '2') {
+                                for (var i=0; i<this.questions.length; i++) {
+                                    if (this.questions[i].type === 'checkbox') {
+                                        this.questions[i].refer = this.questions[i].refer.split('-<^-^>-');
+                                    }
+                                }
+                            }
+
                             this.InitOutline();
                             break;
                         default:
