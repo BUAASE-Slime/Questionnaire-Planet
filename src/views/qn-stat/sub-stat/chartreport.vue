@@ -42,6 +42,15 @@
                       placeholder="请输入内容"
                       v-bind="ans.title">
                   </el-input>
+                  <!--               个人信息-->
+                  <el-input
+                      v-if="item.type==='name' || item.type==='stuId' || item.type==='class' || item.type==='school'"
+                      v-bind="ans.title">
+                  </el-input>
+                  <!--                  判断-->
+                  <el-radio v-if="item.type==='judge'" value="0">
+                    {{ ans.title }}
+                  </el-radio>
                 </div>
               </div>
               <div v-else class="block-choice">
@@ -53,7 +62,7 @@
             </el-col>
           </div>
 
-          <el-row :gutter="20" style="clear:both" v-if="item.type!=='text'">
+          <el-row :gutter="20" style="clear:both" v-if="item.type!=='text'&&item.type!=='name'&&item.type!=='class'&&item.type!=='stuId'&&item.type!=='school'&&item.type!=='location'">
 
             <el-col :span="6">
               <h3 style="float:left; margin: 30px 0 60px;">数据统计</h3>
@@ -341,12 +350,12 @@ export default{
           this.currentPage = val;
         },
         frontpage: function(){
-            this.nowid-=1,
-            this.item=this.questions[this.nowid-1]
+            this.nowid-=1;
+            this.item=this.questions[this.nowid-1];
         },
         nextpage: function(){
-            this.nowid+=1,
-            this.item=this.questions[this.nowid-1]
+            this.nowid+=1;
+            this.item=this.questions[this.nowid-1];
         },
         pieswi: function(){
             this.choose=1

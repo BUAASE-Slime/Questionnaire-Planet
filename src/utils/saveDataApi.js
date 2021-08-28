@@ -3,6 +3,7 @@ import user from "@/store/user";
 export default {
     methods: {
         submitAns(surveyType) {
+            console.log('must');
             let url;
             switch (surveyType) {
                 case '1': case '3':
@@ -23,6 +24,8 @@ export default {
             let questions = this.questions;
             let bool = false;
             let num = '';
+            console.log(questions);
+            console.log(answers.length);
             for (let i=0; i<answers.length; i++) {
                 if (answers[i].type === 'location') {
                     if (questions[i].must && this.locationInfo === '') {
