@@ -46,42 +46,30 @@
                 </div>
                 <div>
                   <el-row class="sideTitle">个人信息模板</el-row>
-                  <el-row class="easyChoose">
-                    <el-col :span="12">
-                      <i class="el-icon-user"></i>
-                      <span class="chooseLabel">姓名</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addName"></i>
-                    </el-col>
-                    <el-col :span="12">
-                      <i class="el-icon-male"></i>
-                      <span class="chooseLabel">性别</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addSex"></i>
-                    </el-col>
-                  </el-row>
-                  <el-row class="easyChoose">
-                    <el-col :span="12">
-                      <i class="el-icon-house"></i>
-                      <span class="chooseLabel">住址</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addHome"></i>
-                    </el-col>
-                    <el-col :span="12">
-                      <i class="el-icon-school"></i>
-                      <span class="chooseLabel">学校</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addSchool"></i>
-                    </el-col>
-                  </el-row>
-                  <el-row class="easyChoose">
-                    <el-col :span="12">
-                      <i class="el-icon-phone-outline"></i>
-                      <span class="chooseLabel">电话</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addPhone"></i>
-                    </el-col>
-                    <el-col :span="12">
-                      <i class="el-icon-message"></i>
-                      <span class="chooseLabel">邮箱</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addEmail"></i>
-                    </el-col>
-                  </el-row>
+                  <div class="ques-type">
+                    <i class="el-icon-user"></i>
+                    <span class="chooseLabel">姓名 </span>
+                    <i class="el-icon-circle-plus type-icon" @click="addName"></i>&emsp;&emsp;
+                    <i class="el-icon-male"></i>
+                    <span class="chooseLabel">性别 </span>
+                    <i class="el-icon-circle-plus type-icon" @click="addSex"></i>
+                  </div>
+                  <div class="ques-type">
+                    <i class="el-icon-discount"></i>
+                    <span class="chooseLabel">学号 </span>
+                    <i class="el-icon-circle-plus type-icon" @click="addStuID"></i>&emsp;&emsp;
+                    <i class="el-icon-school"></i>
+                    <span class="chooseLabel">学校 </span>
+                    <i class="el-icon-circle-plus type-icon" @click="addSchool"></i>
+                  </div>
+                  <div class="ques-type">
+                    <i class="el-icon-phone-outline"></i>
+                    <span class="chooseLabel">电话 </span>
+                    <i class="el-icon-circle-plus type-icon" @click="addPhone"></i>&emsp;&emsp;
+                    <i class="el-icon-message"></i>
+                    <span class="chooseLabel">邮箱 </span>
+                    <i class="el-icon-circle-plus type-icon" @click="addEmail"></i>
+                  </div>
                 </div>
               </div>
             </el-tab-pane>
@@ -119,6 +107,19 @@
                   {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
                 </div>
 
+                <div class="block-info" v-if="item.type==='name' || item.type==='stuId' || item.type==='class' || item.type==='school'
+                          ||item.type==='phone' || item.type==='email' ">
+                  <el-input placeholder="请输入内容" style="margin-left: 10px"
+                      >
+                  </el-input>
+                </div>
+
+                <div class="block-sex" v-if="item.type==='sex'">
+                  <el-radio>男</el-radio>
+                  <el-radio>女</el-radio>
+                </div>
+
+
                 <div
                     class="block-description"
                     v-if="item.description!=='' && item.description!==null && item.description!==undefined"
@@ -141,8 +142,13 @@
 
                   <!--                  填空-->
                   <el-input
-                      v-if="item.type==='text'"
+                      v-if="item.type==='text'&&item.row>1"
                       type="textarea"
+                      placeholder="请输入内容"
+                      v-bind="ans.title">
+                  </el-input>
+                  <el-input
+                      v-if="item.type==='text'&&item.row===1"
                       placeholder="请输入内容"
                       v-bind="ans.title">
                   </el-input>
@@ -195,7 +201,39 @@
             </el-option>
           </el-select>
         </el-form-item>
-
+        <div
+            class="is-info"
+            v-if="willAddQuestion.type==='name'
+            || willAddQuestion.type==='stuId'
+            || willAddQuestion.type==='class'
+            || willAddQuestion.type==='school'
+            || willAddQuestion.type==='phone'
+            || willAddQuestion.type==='email'
+            || willAddQuestion.type==='sex'"
+        >
+          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='name'">
+            <el-input value="姓名" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='stuId'">
+            <el-input value="学号" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='school'">
+            <el-input value="学校" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='sex'">
+            <el-input value="性别" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='phone'">
+            <el-input value="手机号" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='email'">
+            <el-input value="邮箱" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="是否必填" >
+            <el-checkbox v-model="willAddQuestion.must">必填</el-checkbox>
+          </el-form-item>
+        </div>
+        <div v-else class="non-pre">
         <el-form-item label="题目标题" style="width: 100%;">
           <el-input v-model="willAddQuestion.title" placeholder="请输入标题" style="width: 800px" ></el-input>
         </el-form-item>
@@ -245,6 +283,8 @@
             <el-input-number v-model="willAddQuestion.score" :min="3" :max="10" ></el-input-number>
           </el-form-item>
         </template>
+
+      </div>
       </el-form>
       <span slot="footer" class="dialog-footer" style="text-align: center">
         <el-row>
@@ -270,7 +310,7 @@
             </el-col>
             <el-button type="info" plain id="copyBtn" @click="copyToClip">复制链接</el-button></el-row>
           <el-row style="margin-top: 25px">
-            <el-button type="primary" plain @click="download">下载二维码</el-button>
+            <el-button type="primary" plain @click="downloadQrcode">下载二维码</el-button>
             <el-button type="primary" @click="genCodeAgain" style="margin-left: 30px">重新生成链接</el-button>
           </el-row>
         </el-col>
@@ -291,19 +331,36 @@
     </el-dialog>
     <!--    高级设置弹框-->
     <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="30%">
-      <div class="timeBlock" style="margin-bottom: 30px">
-        <span class="demonstration" style="margin-right: 15px">截止时间</span>
-        <el-date-picker style="margin-left: 100px"
-                        v-model="timeFrame"
-                        @change="formatTime"
-                        type="datetime"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                        placeholder="选择结束时间">
-        </el-date-picker>
-      </div>
+      <el-form>
+        <el-form-item class="timeBlock" label="截止时间">
+          <el-date-picker style="margin-left: 100px"
+                          v-model="timeFrame"
+                          @change="formatTime"
+                          type="datetime"
+                          value-format="yyyy-MM-dd HH:mm:ss"
+                          placeholder="选择结束时间">
+          </el-date-picker>
+        </el-form-item>
+      <el-form-item label="是否限制回收量" class="recycleBlock">
+          <el-row>
+            <el-switch
+                v-model="hasRecycleLimit"
+                active-color="#13ce66"
+                inactive-color="grey"
+                active-text="是"
+                inactive-text="否"
+            >
+            </el-switch>
+          </el-row>
+          <el-row>
+            <el-input-number v-model="max_recycling" :min="1" v-if="hasRecycleLimit" style="margin-left: 120px;height: 40px;margin-top: 10px">
+            </el-input-number>
+          </el-row>
+        </el-form-item>
       <div class="setting-bt">
         <el-button type="primary" @click="settingSuccess">完成</el-button>
       </div>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -313,10 +370,11 @@ import editHeader from "../../../components/header/editHeader";
 import QRCode from "qrcodejs2";
 import getDataApi from "@/utils/getDataApi";
 import saveDataApi from "@/utils/saveDataApi";
+import qrcodeApi from "@/utils/qrcodeApi";
 
 export default {
   name: "form",
-  mixins: [getDataApi, saveDataApi],
+  mixins: [getDataApi, saveDataApi, qrcodeApi],
   data() {
     return {
       timer: '',
@@ -327,6 +385,7 @@ export default {
       settingDialogVisible: false,     // 高级设置对话框可见性
       closingDate: null,   // 高级设置中问卷回收的截止日期
       isReleased: false,   // 是否发布
+      hasRecycleLimit:false,
       max_recycling: 0,
       editWrongMsg:"",
       editWrongMsgVisible:false,
@@ -382,7 +441,30 @@ export default {
         },{
           value: 'mark',
           label: '评分题',
-        }
+        },{
+          value: 'name',
+          label: '姓名'
+        },
+        {
+          value: 'stuId',
+          label: '学号'
+        },
+        {
+          value: 'phone',
+          label: '手机号'
+        },
+        {
+          value: 'school',
+          label: '学校'
+        },
+        {
+          value: 'sex',
+          label: '性别'
+        },
+        {
+          value: 'email',
+          label: '邮箱'
+        },
       ],
 
       xiaoxueqi_questions: [
@@ -495,6 +577,9 @@ export default {
     editHeader,
   },
   methods: {
+    recycleLimit(){
+      if (this.hasRecycleLimit===false) this.max_recycling=0;
+    },
     autoSave() {
       this.saveQnInfo('autosave', '4');
     },
@@ -543,213 +628,40 @@ export default {
       }
     },
     genCodeAgain() {
-      const formData = new FormData();
-      formData.append("qn_id", this.$route.query.pid);
-      this.$axios({
-        method: 'post',
-        url: '/qn/change/code',
-        data: formData,
-      })
-      .then(res => {
-        if (res.data.status_code === 1) {
-          this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
-
-          if (this.qrcode == null) {
-            this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
-              width: 200, //生成的二维码的宽度
-              height: 200, //生成的二维码的高度
-              colorDark : "#000000", // 生成的二维码的深色部分
-              colorLight : "#ffffff", //生成二维码的浅色部分
-              correctLevel : QRCode.CorrectLevel.H
-            });
-          }
-          this.qrcode.clear();
-          this.qrcode.makeCode(this.linkShare);
-        } else {
-          this.$message.error("请求失败！");
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    },
-    download() {
-      // 获取base64的图片节点
-      var img = document.getElementById('qrcode_2').getElementsByTagName('img')[0];
-      // 构建画布
-      var canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      canvas.getContext('2d').drawImage(img, 0, 0);
-      // 构造url
-      var url = canvas.toDataURL('image/png');
-      console.log(url);
-      // 构造a标签并模拟点击
-      var downloadLink = document.createElement('a');
-      downloadLink.download = '二维码.png';
-      downloadLink.href = url;
-      downloadLink.click();
-      downloadLink.remove();
+      this.makeCodeAgain("4");
     },
     formatTime(time) {
       this.timeFrame = time;
     },
     addName(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '姓名：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd();
+      this.willAddQuestion.type="name";
+      this.willAddQuestion.title="姓名";
+      this.qsEditDialogVisible=true;
     },
     addSex(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'radio',
-        title: '性别：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 1,
-          title: '男',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        },{
-          id:2,
-          title:'女',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
+      this.willAddQuestion.type="sex";
+      this.willAddQuestion.title="性别";
+      this.qsEditDialogVisible=true;
     },
-    addHome(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '住址：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
+    addStuID(){
+      this.willAddQuestion.type="stuId";
+      this.willAddQuestion.title="学号";
+      this.qsEditDialogVisible=true;
     },
     addSchool(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '学校',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
+      this.willAddQuestion.type="school";
+      this.willAddQuestion.title="学校";
+      this.qsEditDialogVisible=true;
     },
     addPhone(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '电话：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      this.resetWillAdd()
+      this.willAddQuestion.type="phone";
+      this.willAddQuestion.title="手机号";
+      this.qsEditDialogVisible=true;
     },
     addEmail(){
-      this.willAddQuestion={
-        id: this.questions.length+1,
-        type: 'text',
-        title: '邮箱：',
-        description: '请考虑妥当后填写',
-        must: true,
-        options: [{
-          id: 0,
-          title: '',
-          hasNumLimit:false,
-          supply:1,
-          consume:0,
-        }],
-        row: 1,
-        score: 10,
-      };
-      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-      this.questions.push(this.willAddQuestion);
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
-      // 重置
-      this.resetWillAdd()
+      this.willAddQuestion.type="email";
+      this.willAddQuestion.title="邮箱";
+      this.qsEditDialogVisible=true;
     },
     finish(){
       this.qsLinkDialogVisible=false;
@@ -1171,6 +1083,9 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.timer);
+  },
+  watch:{
+    hasRecycleLimit:"recycleLimit",
   }
 }
 </script>
@@ -1362,6 +1277,7 @@ export default {
   font-size: 18px;
   font-weight: bold;
   margin: 10px;
+  margin-top: 20px;
 }
 .form .easyChoose{
   font-size: medium;
@@ -1380,11 +1296,11 @@ export default {
   margin-top: 28px;
 }
 
-.form .setting .el-dialog__header {
+.form .settingDialog .el-dialog__header {
   text-align: left;
 }
 
-.form .setting .item-title {
+.form .settingDialog .item-title {
   padding-right: 20px;
 }
 </style>
