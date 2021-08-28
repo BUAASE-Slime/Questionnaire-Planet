@@ -1044,6 +1044,7 @@ export default {
             break;
           case 404:
             this.hasQn = false;
+            loadingInstance.close();
             console.log('成功但未查询到问卷！');
             break;
           default:
