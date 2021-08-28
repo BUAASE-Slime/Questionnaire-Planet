@@ -17,7 +17,31 @@ export default {
   },
   data () {
     return {
-      chart2_data: [],
+      legend_data:['a','b','c','d'],//列选项
+      indecatior_data:[
+          { name: 'd',max: 100, axisLabel: {show: true, textStyle: {fontSize: 18, color: '#333'},formatter: '{value} %'}},
+          { name: 'b',max: 100},
+          { name: 'c',max: 100},
+          //{ name: 行选项, max: 100},第一个行选项要加：axisLabel: {show: true, textStyle: {fontSize: 18, color: '#333'},formatter: '{value} %'}
+      ],
+      series_data:[
+          {
+              value: [0,33.33,20],//该列选项在每个行选项中所占的百分比
+              name: 'a'//列选项
+          },
+          {
+              value: [66.66,0,0],
+              name: 'b'
+          },
+          {
+              value: [33.33,66.66,20],
+              name: 'c'
+          },
+          {
+              value: [0,0,60],
+              name: 'd'
+          },
+      ]
     }
   },
   watch: {
@@ -83,36 +107,27 @@ export default {
             containLabel: true
         },
         legend: {
-            data: ['a','b','c','d']
+            data: this.legend_data,
         },
         radar: {
             // shape: 'circle',
-            indicator: [
-                { name: 'd', max: 100},
-                { name: 'b', max: 100},
-                { name: 'c', max: 100},
-            ]
+            indicator: this.indecatior_data
         },
         series: [{
             type: 'radar',
-            data: [
-                {
-                    value: [0,33.33,20],
-                    name: 'a'
-                },
-                {
-                    value: [66.66,0,0],
-                    name: 'b'
-                },
-                {
-                    value: [33.33,66.66,20],
-                    name: 'c'
-                },
-                {
-                    value: [0,0,60],
-                    name: 'd'
-                },
-            ]
+            data: this.series_data,
+            emphasis: {       
+                label: {
+                  show: true,
+                  color: '#fff',
+                  fontSize: 12,
+                  formatter: '{c}%',       // 鼠标悬浮时展示数据加上单位
+                  backgroundColor: '#0D1B42',
+                  borderRadius: 5,
+                  padding: 3,
+                  shadowBlur: 3
+                }
+              }
         }]
       };
 

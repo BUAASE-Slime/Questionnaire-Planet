@@ -14,13 +14,13 @@ export default {
   },
   data () {
     return {
-      legend_data:['a','b','c','d'],
-      x_data:['d','b','c'],
+      legend_data:['a','b','c','d'],//列选项
+      x_data:['d','b','c'],//行选项
       series_data:[
             {
-                name: 'a',
+                name: 'a',//列选项
                 type: 'line',
-                data: [0,33.33,20]
+                data: [0,33.33,20]//该列选项在每个行选项中所占的百分比
             },
             {
                 name: 'b',
@@ -53,7 +53,7 @@ export default {
       var myChart4= this.$echarts.init(document.getElementById('myChart4'));
       let option4 = {
                 tooltip: {
-                    trigger: 'axis'
+                    trigger: 'axis',
                 },
                 legend: {
                     data: this.legend_data
