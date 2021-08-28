@@ -107,9 +107,10 @@
 <script>
 import Location from "@/components/location";
 import getDataApi from "@/utils/getDataApi";
+import saveAnsApi from "@/utils/saveDataApi";
 export default {
   name: "FillQnPunch",
-  mixins: [getDataApi],
+  mixins: [getDataApi, saveAnsApi],
   components: {Location},
   data() {
     return {
@@ -189,102 +190,7 @@ export default {
       this.success = false;
     },
     submit: function () {
-      // 必选检查
-      let answers = this.answers;
-      let questions = this.questions;
-      let bool = false;
-      let num = '';
-      for (let i=0; i<answers.length; i++) {
-        if (answers[i].type === 'location') {
-          if (questions[i].must && this.locationInfo === '') {
-            console.log(this.locationInfo);
-            num += (i+1).toString() + ' ';
-            bool = true;
-          }
-        }
-        else if (questions[i].must
-            && (answers[i].ans===null || answers[i].ans==='' || (answers[i].ans===0 && answers[i].type==='mark'))
-            && answers[i].ansList.length===0) {
-          num += (i+1).toString() + ' ';
-          bool = true;
-        }
-      }
-      if (bool) {
-        this.$message.warning('必填问题 ' + num + ' 尚未作答完毕，无法提交');
-        return;
-      }
-      // 预览mode判断
-      if (this.mode==='0' || this.mode===0) {
-        this.$message({
-          type: 'warning',
-          message: '预览模式下无法提交问卷'
-        });
-        return;
-      }
-      // 数据转换
-      for (var i=0; i<this.answers.length; i++) {
-        this.answers[i].question_id = this.questions[i].question_id;
-        switch (this.answers[i].type) {
-          case "checkbox":
-            this.answers[i].answer = this.answers[i].ansList.join('-<^-^>-');
-            break;
-          case "mark":
-            this.answers[i].answer = this.answers[i].ans.toString();
-            break;
-          case "text": case "radio":
-            this.answers[i].answer = this.answers[i].ans;
-            break;
-          case 'location':
-            this.answers[i].answer = this.locationInfo;
-            break;
-        }
-      }
-      // 提交确认
-      this.$confirm('确认提交问卷？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        var param = {
-          code: this.$route.query.code,
-          answers: this.answers,
-        };
-        var paramer = JSON.stringify(param, {answers: 'brackets'})
-        this.$axios({
-          method: 'post',
-          url: '/ep/save_ans_by_code',
-          data: paramer,
-        })
-            .then(res => {
-              switch (res.data.status_code) {
-                case 1:
-                  this.$message({
-                    type: 'success',
-                    message: '问卷提交成功'
-                  });
-                  this.success = true;
-                  console.log(this.questions);
-                  console.log(this.answers);
-                  break;
-                case 2: case 3: case 4:
-                  this.$message.warning("问卷已结束，感谢您的参与！");
-                  this.close = true;
-                  break;
-                case 999:
-                  this.$message.warning("今日已打卡，无需重复提交！");
-                  this.repeat = true;
-                  break;
-                default:
-                  this.$message.error("操作失败！");
-                  break;
-              }
-            })
-            .catch(err => {
-              console.log(err);
-            })
-      }).catch(() => {
-
-      });
+      this.submitAns('5');
     },
     quit: function () {
       this.$confirm('请选择返回问卷编辑页面或问卷中心？', '确认信息', {
