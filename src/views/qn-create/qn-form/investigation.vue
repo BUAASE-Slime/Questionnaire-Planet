@@ -87,6 +87,36 @@
                   {{ item.description }}
                 </div>
 
+                <!--                  图片-->
+                <el-row class="block-img" v-for="(i,index) in item.imgList" :key="i.index">
+                  <el-col :offset="2" :span="10" class="demo-image__preview" v-if="index%2===0">
+                    <el-image
+                        style="width: 200px; height: 200px"
+                        :src="i.url"
+                        :preview-src-list="[i.url]">
+                    </el-image>
+                  </el-col>
+                  <el-col :span="10" class="demo-image__preview" v-if="index%2===0&&index<=item.imgList.length-1">
+                    <el-image
+                        style="width: 200px; height: 200px"
+                        :src="item.imgList[index+1].url"
+                        :preview-src-list="[item.imgList[index+1].url]">
+                    </el-image>
+                  </el-col>
+                </el-row>
+                <span style="color: #9b9ea0;font-size: x-small" v-if="item.imgList.length!==0">（点击图片查看大图）</span>
+
+
+                <!--                视频-->
+                <el-row class="block-img" v-for="i in item.videoList" :key="i.index">
+                  <embed width=400 height=230 transparentatstart=true
+                         animationatstart=false autostart=true autosize=false volume=100
+                         displaysize=0 showdisplay=true showstatusbar=true showcontrols=true
+                         showaudiocontrols=true showtracker=true showpositioncontrols=true
+                         balance=true :src="i.url">
+                </el-row>
+
+
                 <div class="block-choice" v-for="ans in item.options" :key="ans.id">
 
                   <!--                  单选-->
@@ -101,12 +131,17 @@
 
                   <!--                  填空-->
                   <el-input
-                      v-if="item.type==='text'"
+                      v-if="item.type==='text'&&item.row>1"
                       type="textarea"
                       placeholder="请输入内容"
                       v-bind="ans.title">
                   </el-input>
-                </div>
+                  <el-input
+                      v-if="item.type==='text'&&item.row===1"
+                      placeholder="请输入内容"
+                      v-bind="ans.title">
+                  </el-input>                
+                  </div>
 
                 <div class="block-choice" v-if="item.type==='mark'">
                   <!--                  评分-->
@@ -179,9 +214,10 @@
             </el-row>
 
           </el-form-item>
-          <el-button type="primary" plain class="addOptionButton" @click="addOption">新增选项</el-button>
-          <el-button type="primary" plain class="addOptionButton" @click="dialogVisibleAsso=true">添加关联</el-button>
+          <el-button type="primary" plain class="addOptionButton" @click="addOption" style="margin-bottom: 20px">新增选项</el-button>
+          <!-- <el-button type="primary" plain class="addOptionButton" @click="dialogVisibleAsso=true">添加关联</el-button> -->
         </template>
+
 
         <template v-if="willAddQuestion.type==='text'" >
           <el-form-item label="填空">
@@ -201,6 +237,30 @@
             <el-input-number v-model="willAddQuestion.score" :min="3" :max="10" ></el-input-number>
           </el-form-item>
         </template>
+
+        <el-form-item label="上传图片">
+          <el-upload
+              class="upload-img"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+              :file-list="willAddQuestion.imgList">
+            <el-button size="small" plain style="width: 150px">点击上传</el-button>
+            <!--            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+          </el-upload>
+        </el-form-item>
+
+        <el-form-item label="上传视频">
+          <el-upload
+              class="upload-video"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+              :file-list="willAddQuestion.videoList">
+            <el-button size="small" plain style="width: 150px">点击上传</el-button>
+            <!--            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+          </el-upload>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer" style="text-align: center">
         <el-row>
@@ -301,6 +361,53 @@ export default {
       },
       type: 1,
       questions: [],
+      // questions: [{
+      //   question_id: 123,
+      //   id: 1,
+      //   type: 'text',
+      //   title: '图片测试',
+      //   must: false, // 是否必填
+      //   description: '', // 问题描述
+      //   options: [
+      //     {
+      //       title: '', // 选项标题
+      //       id: 0 // 选项id
+      //     }
+      //   ],
+      //   row: 1, // 填空区域行数
+      //   score: 5, // 最大评分
+      //   imgList: [{
+      //     name: '1.jpg',
+      //     url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+      //   },{
+      //     name: '2.jpg',
+      //     url: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg'
+      //   }],
+      //   videoList: [
+      //   ]
+      // },{
+      //   question_id: 123,
+      //   id: 2,
+      //   type: 'mark',
+      //   title: '视频测试',
+      //   must: false, // 是否必填
+      //   description: '', // 问题描述
+      //   options: [
+      //     {
+      //       title: '', // 选项标题
+      //       id: 0 // 选项id
+      //     }
+      //   ],
+      //   row: 1, // 填空区域行数
+      //   score: 5, // 最大评分
+      //   imgList: [],
+      //   videoList: [
+      //     {
+      //       name:"1.mp4",
+      //       url: "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+      //     }
+      //   ]
+      // }],
       outline: [],
       pid: this.$route.query.pid,
       qsEditDialogVisible:false,
@@ -320,6 +427,14 @@ export default {
         ],
         row: 1, // 填空区域行数
         score: 5, // 最大评分
+        imgList:[{
+          name:'1.jpg',
+          url:"https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.616pic.com%2Fbg_w1180%2F00%2F22%2F20%2F2F89KQ0UnA.jpg&refer=http%3A%2F%2Fpic.616pic.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1632713364&t=82be18770c43c56fd28895cc938f6a0b"
+        },],
+        videoList:[{
+          name: "1.mp4",
+          url: "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+        }]
       },
       allType:[
         {
@@ -449,6 +564,14 @@ export default {
     editHeader,
   },
   methods: {
+    beforeRemove(file, fileList) {
+      console.log(file, fileList);
+      return this.$confirm(`确定移除 ${ file.name }？`);
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+      this.$message("移除成功")
+    },
     autoSave() {
       this.saveQnInfo('autosave', '1');
     },
@@ -520,7 +643,7 @@ export default {
         title: this.questions[index].title,
         must: this.questions[index].must,
         description: this.questions[index].description,
-        options: this.questions[index].options,
+        options: JSON.parse(JSON.stringify(this.questions[index].options)),
         row: this.questions[index].row,
         score: this.questions[index].score,
       };
@@ -635,10 +758,12 @@ export default {
         ],
         row: 1, // 填空区域行数
         score: 5, // 最大评分
+        imgList:[],
+        videoList:[]
       }
     },
     dialogCancel: function(){
-      this.qsEditDialogTitle="";
+      this.qsEditDialogTitle="新建题目";
       this.resetWillAdd();
       this.qsEditDialogVisible=false;
       this.selectDisAble=false;
@@ -796,7 +921,6 @@ export default {
         })
       }
     },
-
     save() {
       this.saveQnInfo('save', "1");
     },
@@ -1160,5 +1284,9 @@ export default {
 
 .investigation .setting .item-title {
   padding-right: 20px;
+}
+.investigation .block-img{
+  text-align: center;
+  margin: 5px;
 }
 </style>

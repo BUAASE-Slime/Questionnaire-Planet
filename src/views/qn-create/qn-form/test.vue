@@ -637,7 +637,7 @@ export default {
         title: this.questions[index].title,
         must: this.questions[index].must,
         description: this.questions[index].description,
-        options: this.questions[index].options,
+        options: JSON.parse(JSON.stringify(this.questions[index].options)),
         row: this.questions[index].row,
         score: this.questions[index].score,
         refer: this.questions[index].refer,
@@ -797,7 +797,7 @@ export default {
       }
     },
     dialogCancel: function() {
-      this.qsEditDialogTitle="";
+      this.qsEditDialogTitle="新建题目";
       this.willAddQuestion={
         id: 0,
         type: '',

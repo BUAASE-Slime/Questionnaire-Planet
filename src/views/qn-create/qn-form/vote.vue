@@ -577,7 +577,7 @@ export default {
         title:this.questions[index].title,
         must:this.questions[index].must,
         description: this.questions[index].description,
-        options:this.questions[index].options,
+        options: JSON.parse(JSON.stringify(this.questions[index].options)),
         row:this.questions[index].row,
         score:this.questions[index].score,
       };
@@ -708,7 +708,7 @@ export default {
     }
     },
     dialogCancel: function(){
-      this.qsEditDialogTitle="";
+      this.qsEditDialogTitle="新建题目";
       this.resetWillAdd();
       this.qsEditDialogVisible=false;
       this.selectDisAble=false;

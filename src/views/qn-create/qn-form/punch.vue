@@ -51,44 +51,32 @@
                 </div>
                 <div>
                   <el-row class="sideTitle">问题模板</el-row>
-                  <el-row class="easyChoose">
-                    <el-col :span="12">
-                      <i class="el-icon-user"></i>
-                      <span class="chooseLabel">姓名</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addName"></i>
-                    </el-col>
-                    <el-col :span="12">
-                      <i class="el-icon-tickets"></i>
-                      <span class="chooseLabel">学号</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addStuID"></i>
-                    </el-col>
-                  </el-row>
-                  <el-row class="easyChoose">
-                    <el-col :span="12">
-                      <i class="el-icon-tickets"></i>
-                      <span class="chooseLabel">体温</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addTem"></i>
-                    </el-col>
-                    <el-col :span="12">
-                      <i class="el-icon-phone-outline"></i>
-                      <span class="chooseLabel">手机</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addPhone"></i>
-                    </el-col>
-                  </el-row>
-                  <el-row class="easyChoose" style="text-align: left;margin-left: 35px">
-                    <el-col :span="24">
-                      <i class="el-icon-tickets"></i>
-                      <span class="chooseLabel">本人情况是否正常</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addHealthy"></i>
-                    </el-col>
-                  </el-row>
-                  <el-row class="easyChoose" style="text-align: left;margin-left: 35px">
-                    <el-col :span="24">
-                      <i class="el-icon-tickets"></i>
-                      <span class="chooseLabel">14日内环境安全</span>
-                      <i class="el-icon-circle-plus type-icon" @click="addEnvironment"></i>
-                    </el-col>
-                  </el-row>
+                  <div class="ques-type">
+                    <i class="el-icon-user"></i>
+                    <span class="chooseLabel">姓名 </span>
+                    <i class="el-icon-circle-plus type-icon" @click="addName"></i>&emsp;&emsp;
+                    <i class="el-icon-tickets"></i>
+                    <span class="chooseLabel">学号 </span>
+                    <i class="el-icon-circle-plus type-icon" @click="addStuID"></i>
+                  </div>
+                  <div class="ques-type">
+                    <i class="el-icon-tickets"></i>
+                    <span class="chooseLabel">体温 </span>
+                    <i class="el-icon-circle-plus type-icon" @click="addTem"></i>&emsp;&emsp;
+                    <i class="el-icon-phone-outline"></i>
+                    <span class="chooseLabel">手机 </span>
+                    <i class="el-icon-circle-plus type-icon" @click="addPhone"></i>
+                  </div>
+                  <div class="ques-type">
+                    <i class="el-icon-tickets"></i>
+                    <span class="chooseLabel">本人情况是否正常&emsp;&emsp;&emsp;</span>
+                    <i class="el-icon-circle-plus type-icon" @click="addHealthy"></i>
+                  </div>
+                  <div class="ques-type">
+                    <i class="el-icon-tickets"></i>
+                    <span class="chooseLabel">14日内环境安全&emsp;&emsp;&emsp;&emsp;</span>
+                    <i class="el-icon-circle-plus type-icon" @click="addEnvironment"></i>
+                  </div>
                 </div>
               </div>
             </el-tab-pane>
@@ -147,8 +135,13 @@
 
                     <!--                  填空-->
                     <el-input
-                        v-if="item.type==='text'"
+                        v-if="item.type==='text'&&item.row>1"
                         type="textarea"
+                        placeholder="请输入内容"
+                        v-bind="ans.title">
+                    </el-input>
+                    <el-input
+                        v-if="item.type==='text'&&item.row===1"
                         placeholder="请输入内容"
                         v-bind="ans.title">
                     </el-input>
@@ -735,7 +728,7 @@ export default {
         title: this.questions[index].title,
         must: this.questions[index].must,
         description: this.questions[index].description,
-        options: this.questions[index].options,
+        options: JSON.parse(JSON.stringify(this.questions[index].options)),
         row: this.questions[index].row,
         score: this.questions[index].score,
       };
@@ -853,7 +846,7 @@ export default {
     }
     },
     dialogCancel: function(){
-      this.qsEditDialogTitle="";
+      this.qsEditDialogTitle="新建题目";
       this.resetWillAdd();
       this.qsEditDialogVisible=false;
       this.selectDisAble=false;
