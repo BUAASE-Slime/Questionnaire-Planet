@@ -120,12 +120,18 @@ export default {
       .then(res => {
         switch (res.data.status_code) {
           case 1:
-            location.reload();
+            // location.reload();
             // 前端保存用户信息
             this.$store.dispatch('saveUserInfo', {user: {
               'username': this.form.username,
               'confirmed': true,
             }});
+            var curr = localStorage.getItem('preRoute');
+            if (curr == null) {
+              this.$router.push('/index');
+            } else {
+              this.$router.push({ path: curr });
+            }
             break;
           case -1:
             this.$message.error('请检查填写的内容！');

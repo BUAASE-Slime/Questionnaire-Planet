@@ -252,6 +252,10 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+    if (to.path === '/login') {
+        localStorage.setItem("preRoute", router.currentRoute.fullPath);
+    }
+
     const userInfo = user.getters.getUser(user.state())
 
     // require sign in

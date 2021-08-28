@@ -376,7 +376,7 @@ export default {
       this.getQnDataForPreview();
     }
     else if (this.mode === '1') {
-      this.getQnDataForFill();
+      this.getQnDataForFill(false,false);
     }
   },
 }
