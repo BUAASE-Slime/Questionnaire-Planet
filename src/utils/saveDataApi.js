@@ -10,7 +10,7 @@ export default {
                     url = '/qn/save_ans';
                     break;
                 case '2':
-                    url = '/sm/save/exam/paper';
+                    url = '/sm/save/exam/paper/by/code';
                     break;
                 case '4':
                     url = '/sp/save_answer_by_code';
