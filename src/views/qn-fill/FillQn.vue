@@ -44,6 +44,35 @@
               {{ item.description }}
             </div>
 
+            <!--                  图片-->
+              <el-row class="block-img" v-for="(i,index) in item.imgList" :key="i.index">
+                <el-col :offset="4" :span="8" class="demo-image__preview" v-if="index%2===0">
+                  <el-image
+                      style="width: 200px; height: 200px"
+                      :src="i.url"
+                      :preview-src-list="[i.url]">
+                  </el-image>
+                </el-col>
+                <el-col :span="8" class="demo-image__preview" v-if="index%2===0&&index<=item.imgList.length-1">
+                  <el-image
+                      style="width: 200px; height: 200px"
+                      :src="item.imgList[index+1].url"
+                      :preview-src-list="[item.imgList[index+1].url]">
+                  </el-image>
+                </el-col>
+              </el-row>
+              <span style="color: #9b9ea0;font-size: x-small;margin: 5px" v-if="item.imgList.length!==0">（点击图片查看大图）</span>
+
+
+              <!--                视频-->
+              <el-row class="block-img" v-for="i in item.videoList" :key="i.index">
+                <embed width=400 height=230 transparentatstart=true
+                       animationatstart=false autostart=true autosize=false volume=100
+                       displaysize=0 showdisplay=true showstatusbar=true showcontrols=true
+                       showaudiocontrols=true showtracker=true showpositioncontrols=true
+                       balance=true :src="i.url">
+              </el-row>
+
             <!--                  单选-->
             <div v-if="item.type==='radio'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
@@ -173,7 +202,16 @@ export default {
                       title: "出版系统"
                   }
               ],
-              answer: ""
+              answer: "",
+              imgList: [{
+                name: '1.jpg',
+                url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+              },{
+                name: '2.jpg',
+                url: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg'
+              }],
+              videoList: [
+              ]
           },
           {
               last_question: 222,
@@ -211,7 +249,14 @@ export default {
                       title: "LKW"
                   }
               ],
-              answer: ""
+              answer: "",
+              imgList: [],
+              videoList: [
+                {
+                  name:"1.mp4",
+                  url: "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+                }
+              ]
           },
           {
               last_question: 223,
