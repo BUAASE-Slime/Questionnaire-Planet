@@ -81,8 +81,19 @@
           <div class="description" v-if="this.description!==''">
             &emsp;&emsp;{{ description }}
           </div>
-
           <el-divider></el-divider>
+
+          <div v-if="is_test">
+            <el-row :gutter="10">
+            <el-col :span="8"><div ><h2>用户: {{user_name}}</h2></div></el-col>
+            <el-col :span="8"><div ><h2>得分: {{score}}/{{sum_score}}</h2></div></el-col>
+            <el-col :span="8"><div ><h2>排名: {{rank}}</h2></div></el-col>
+            
+            </el-row>
+            <el-divider></el-divider>
+          </div>
+
+          
           <div class="ques-block" v-for="item in questions" :key="item.id">
 
             <div class="q-title">
@@ -96,9 +107,9 @@
               {{ item.description }}
             </div>
 
-            <div v-if="item.type==='radio'">
+            <div v-if="item.type==='radio'||item.type==='judge'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
-                <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].ans" :label="opt.title">
+                <el-radio  v-model="answers[item.id-1].ans" :label="opt.title">
                   {{ opt.title }}
                 </el-radio>
               </div>
@@ -124,13 +135,28 @@
               <el-rate disabled show-score text-color="#ff9900" v-model="answers[item.id-1].ans" :max="item.score"></el-rate>
             </div>
 
+            <div v-if="is_test&&item.is_exam_question">
+              <div class="block-point">
+                <div v-if="answers[item.id-1].correct" style="color: #51c215;">得分：{{ item.point }}</div>
+                <div v-else style="color:red;">得分：0</div>
+              </div>
+              <div class="block-refer" >
+                <div v-if="item.right_answer===''">参考答案：无</div>
+                <div v-else-if="item.type!='checkbox'">参考答案：{{ item.right_answer }}</div>
+                <div v-else>
+                  <span>参考答案：</span>
+                    <span v-for="(one,index) in item.right_answerList" :key="index">{{one}}; </span>
+                </div>
+              </div>
+            </div>
+            <el-divider></el-divider>
           </div>
 
           </div>
-          <span slot="footer" class="dialog-footer">
-            <el-button v-if="indexnum>1"  @click="frontpage">上一页</el-button>
-            <el-button v-if="indexnum<tableData.length"  @click="nextpage">下一页</el-button>
-            <el-button type="primary" @click="dialogVisible = false">返 回</el-button>
+          <span slot="footer" class="dialog-footer" >
+            <el-button v-if="indexnum>1"  @click="frontpage" style="margin:10px">上一页</el-button>
+            <el-button v-if="indexnum<tableData.length"  @click="nextpage" style="margin:10px">下一页</el-button>
+            <el-button type="primary" @click="dialogVisible = false" style="margin:10px">返 回</el-button>
           </span>
           </div>
         </el-dialog>
@@ -151,311 +177,376 @@
         pageSize: 5,
         pageSizes:[3,5,7],
         loading: true,
+
+        is_test: true,//是考试问卷
+        user_name: 'MissTong',//填写人
+        rank:3,//排名
+        score: 6,//个人得分
+        sum_score: 21,//总分
         answers:[
-            // {
-            //     question_id: 66,
-            //     type: "radio",
-            //     ans: "问卷星球",
-            //     ansList: [],
-            //     answer: "问卷星球"
-            // },
-            // {
-            //     question_id: 67,
-            //     type: "checkbox",
-            //     ans: null,
-            //     ansList: [
-            //         "ZXH",
-            //         "ZYH",
-            //         "HZY"
-            //     ],
-            //     answer: "ZXH-<^-^>-ZYH-<^-^>-HZY"
-            // },
-            // {
-            //     question_id: 68,
-            //     type: "radio",
-            //     ans: "感受不到",
-            //     ansList: [],
-            //     answer: "感受不到"
-            // },
-            // {
-            //     question_id: 69,
-            //     type: "radio",
-            //     ans: "1-3小时",
-            //     ansList: [],
-            //     answer: "1-3小时"
-            // },
-            // {
-            //     question_id: 70,
-            //     type: "mark",
-            //     ans: 9,
-            //     ansList: [],
-            //     answer: "9"
-            // },
-            // {
-            //     question_id: 230,
-            //     type: "text",
-            //     ans: "填空题回答",
-            //     ansList: [],
-            //     answer: "填空题回答"
-            // }
+            {
+                question_id: 66,
+                type: "radio",
+                ans: "问卷星球",
+                ansList: [],
+                answer: "问卷星球",
+                correct: true,
+            },
+            {
+                question_id: 67,
+                type: "checkbox",
+                ans: null,
+                ansList: [
+                    "ZXH",
+                    "ZYH",
+                    "HZY"
+                ],
+                answer: "ZXH-<^-^>-ZYH-<^-^>-HZY",
+                correct: false,
+            },
+            {
+                question_id: 68,
+                type: "radio",
+                ans: "感受不到",
+                ansList: [],
+                answer: "感受不到",
+                correct: false,
+            },
+            {
+                question_id: 69,
+                type: "radio",
+                ans: "1-3小时",
+                ansList: [],
+                answer: "1-3小时",
+                correct: false,
+            },
+            {
+                question_id: 70,
+                type: "mark",
+                ans: 9,
+                ansList: [],
+                answer: "9",
+                correct: false,
+            },
+            {
+                question_id: 230,
+                type: "text",
+                ans: "填空题回答",
+                ansList: [],
+                answer: "填空题回答",
+                correct: false,
+            },
+            {
+                question_id:231,
+                type: "judge",
+                ans: "对",
+                ansList: [],
+                answer: "对",
+                correct: true,
+            },
         ],
         questions: [
-            // {
-            //     question_id: 66,
-            //     row: 1,
-            //     score: 10,
-            //     title: "小学期开发的内容是？",
-            //     description: "看看你们是不是还没看需求",
-            //     must: true,
-            //     type: "radio",
-            //     qn_id: 18,
-            //     sequence: 1,
-            //     option_num: 14,
-            //     refer: "",
-            //     point: 0,
-            //     id: 1,
-            //     options: [
-            //         {
-            //             id: 762,
-            //             title: "问卷星球"
-            //         },
-            //         {
-            //             id: 763,
-            //             title: "出版系统"
-            //         }
-            //     ],
-            //     answer: ""
-            // },
-            // {
-            //     question_id: 67,
-            //     row: 1,
-            //     score: 10,
-            //     title: "本次小学期的助教有？",
-            //     description: "不会吧不会吧，不会有人真以为助教只是助教吧？",
-            //     must: true,
-            //     type: "checkbox",
-            //     qn_id: 18,
-            //     sequence: 2,
-            //     option_num: 35,
-            //     refer: "",
-            //     point: 0,
-            //     id: 2,
-            //     options: [
-            //         {
-            //             id: 764,
-            //             title: "ZXH"
-            //         },
-            //         {
-            //             id: 765,
-            //             title: "ZYH"
-            //         },
-            //         {
-            //             id: 766,
-            //             title: "HZY"
-            //         },
-            //         {
-            //             id: 767,
-            //             title: "ZHT"
-            //         },
-            //         {
-            //             id: 768,
-            //             title: "LKW"
-            //         }
-            //     ],
-            //     answer: ""
-            // },
-            // {
-            //     question_id: 68,
-            //     row: 1,
-            //     score: 10,
-            //     title: "敏捷开发中你感受得到一丝丝快乐吗？",
-            //     description: "",
-            //     must: false,
-            //     type: "radio",
-            //     qn_id: 18,
-            //     sequence: 3,
-            //     option_num: 14,
-            //     refer: "",
-            //     point: 0,
-            //     id: 3,
-            //     options: [
-            //         {
-            //             id: 769,
-            //             title: "感受不到"
-            //         },
-            //         {
-            //             id: 770,
-            //             title: "一丝丝都感受不到"
-            //         }
-            //     ],
-            //     answer: ""
-            // },
-            // {
-            //     question_id: 69,
-            //     row: 1,
-            //     score: 10,
-            //     title: "第一次迭代验收前每天平均睡眠时间",
-            //     description: "有人在第一次验收前夜通宵了吗，我看到 JBW 鏖战了20多小时",
-            //     must: true,
-            //     type: "radio",
-            //     qn_id: 18,
-            //     sequence: 4,
-            //     option_num: 28,
-            //     refer: "",
-            //     point: 0,
-            //     id: 4,
-            //     options: [
-            //         {
-            //             id: 771,
-            //             title: "1-3小时"
-            //         },
-            //         {
-            //             id: 772,
-            //             title: "3-5小时"
-            //         },
-            //         {
-            //             id: 773,
-            //             title: "5-7小时"
-            //         },
-            //         {
-            //             id: 774,
-            //             title: "睡啥觉，起来敲代码"
-            //         }
-            //     ],
-            //     answer: ""
-            // },
-            // {
-            //     question_id: 70,
-            //     row: 1,
-            //     score: 10,
-            //     title: "小学期作为乙方的感受",
-            //     description: "请谨慎回答",
-            //     must: true,
-            //     type: "mark",
-            //     qn_id: 18,
-            //     sequence: 5,
-            //     option_num: 1,
-            //     refer: "",
-            //     point: 0,
-            //     id: 5,
-            //     options: [],
-            //     answer: ""
-            // },
-            // {
-            //     question_id: 230,
-            //     row: 2,
-            //     score: 5,
-            //     title: "这是一道填空题",
-            //     description: "这是描述",
-            //     must: false,
-            //     type: "text",
-            //     qn_id: 18,
-            //     sequence: 6,
-            //     option_num: 1,
-            //     refer: "",
-            //     point: 0,
-            //     id: 6,
-            //     options: [],
-            //     answer: ""
-            // }
+            {
+                question_id: 66,
+                row: 1,
+                score: 10,
+                title: "小学期开发的内容是？",
+                description: "看看你们是不是还没看需求",
+                must: true,
+                right_answer: "问卷系统",
+                point: 5,
+                is_exam_question: true,
+                correct_people: 1,
+                answer_sum: 3,
+                accuracy: 0.33333333,
+                type: "radio",
+                qn_id: 18,
+                sequence: 1,
+                option_num: 14,
+                id: 1,
+                options: [
+                    {
+                        id: 762,
+                        title: "问卷星球"
+                    },
+                    {
+                        id: 763,
+                        title: "出版系统"
+                    }
+                ],
+                answer: ""
+            },
+            {
+                question_id: 67,
+                row: 1,
+                score: 10,
+                title: "本次小学期的助教有？",
+                description: "不会吧不会吧，不会有人真以为助教只是助教吧？",
+                must: true,
+                point: 10,
+                is_exam_question: true,
+                correct_people: 1,
+                answer_sum: 3,
+                accuracy: 0.3333,
+                right_answerList: [
+                    "LKW",
+                    "ZXH"
+                ],
+                type: "checkbox",
+                qn_id: 18,
+                sequence: 2,
+                option_num: 35,
+                id: 2,
+                options: [
+                    {
+                        id: 764,
+                        title: "ZXH"
+                    },
+                    {
+                        id: 765,
+                        title: "ZYH"
+                    },
+                    {
+                        id: 766,
+                        title: "HZY"
+                    },
+                    {
+                        id: 767,
+                        title: "ZHT"
+                    },
+                    {
+                        id: 768,
+                        title: "LKW"
+                    }
+                ],
+                answer: ""
+            },
+            {
+                question_id: 68,
+                row: 1,
+                score: 10,
+                title: "敏捷开发中你感受得到一丝丝快乐吗？",
+                description: "",
+                must: false,
+                type: "radio",
+                qn_id: 18,
+                sequence: 3,
+                option_num: 14,
+                refer: "",
+                point: 0,
+                id: 3,
+                options: [
+                    {
+                        id: 769,
+                        title: "感受不到"
+                    },
+                    {
+                        id: 770,
+                        title: "一丝丝都感受不到"
+                    }
+                ],
+                answer: ""
+            },
+            {
+                question_id: 69,
+                row: 1,
+                score: 10,
+                title: "第一次迭代验收前每天平均睡眠时间",
+                description: "有人在第一次验收前夜通宵了吗，我看到 JBW 鏖战了20多小时",
+                must: true,
+                type: "radio",
+                qn_id: 18,
+                sequence: 4,
+                option_num: 28,
+                refer: "",
+                point: 0,
+                id: 4,
+                options: [
+                    {
+                        id: 771,
+                        title: "1-3小时"
+                    },
+                    {
+                        id: 772,
+                        title: "3-5小时"
+                    },
+                    {
+                        id: 773,
+                        title: "5-7小时"
+                    },
+                    {
+                        id: 774,
+                        title: "睡啥觉，起来敲代码"
+                    }
+                ],
+                answer: ""
+            },
+            {
+                question_id: 70,
+                row: 1,
+                score: 10,
+                title: "小学期作为乙方的感受",
+                description: "请谨慎回答",
+                must: true,
+                type: "mark",
+                qn_id: 18,
+                sequence: 5,
+                option_num: 1,
+                refer: "",
+                point: 0,
+                id: 5,
+                options: [],
+                answer: ""
+            },
+            {
+                question_id: 230,
+                row: 2,
+                score: 5,
+                title: "这是一道填空题",
+                description: "这是描述",
+                must: false,
+                right_answer: "好",
+                point: 5,
+                is_exam_question: true,
+                correct_people: 1,
+                answer_sum: 3,
+                accuracy: 0.7096,
+                type: "text",
+                qn_id: 18,
+                sequence: 6,
+                option_num: 1,
+                id: 6,
+                options: [],
+                answer: ""
+            },
+            {
+                question_id: 231,
+                row: 1,
+                score: 1,
+                title: "小学期开发的内容是这个吗？",
+                description: "看看你们是不是还没看需求",
+                must: true,
+                right_answer: "对",
+                point: 1,
+                is_exam_question: true,
+                correct_people: 1,
+                answer_sum: 3,
+                accuracy: 0.33333333,
+                type: "judge",
+                qn_id: 18,
+                sequence: 1,
+                option_num: 24,
+                id: 7,
+                options: [
+                    {
+                        id: 775,
+                        title: "对"
+                    },
+                    {
+                        id: 776,
+                        title: "错"
+                    }
+                ],
+                answer: ""
+            },
         ],
         tableData: [
-        // {
-        // num: 1,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 2,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 3,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 4,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 5,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 6,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 7,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 8,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 9,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 10,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 11,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 12,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 13,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 14,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 15,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
-        // {
-        // num: 16,
-        // submit_time:'2021/4/7 19:34:42',
-        // answer_num:10,
-        // answer_percent:'70%',
-        // },
+        {
+        num: 1,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 2,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 3,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 4,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 5,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 6,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 7,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 8,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 9,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 10,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 11,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 12,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 13,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 14,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 15,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
+        {
+        num: 16,
+        submit_time:'2021/4/7 19:34:42',
+        answer_num:10,
+        answer_percent:'70%',
+        },
         ],
 
       }
@@ -712,4 +803,24 @@
   padding-bottom: 10px;
 }
 
+.block-refer {
+  text-align: right;
+  /*border: solid 1px black;*/
+  font-size: 14px;
+  padding-top: 8px;
+  padding-left: 10px;
+  color: #969696;
+  padding-right: 60px;
+  margin-bottom: 20px;
+}
+
+.block-point {
+  text-align: right;
+  /*border: solid 1px black;*/
+  font-size: 16px;
+  padding-top: 8px;
+  padding-left: 10px;
+  /* color: #e59824; */
+  padding-right: 60px;
+}
 </style>
