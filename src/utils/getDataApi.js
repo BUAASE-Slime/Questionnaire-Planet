@@ -1,3 +1,5 @@
+import user from "@/store/user";
+
 export default {
     methods: {
         getQnDataSelf() {
@@ -85,7 +87,14 @@ export default {
                     console.log(err);
                 })
         },
-        getQnDataForFill(_autoSave=false) {
+        getQnDataForFill(_autoSave=false, _requireAuth=true) {
+            const userInfo = user.getters.getUser(user.state());
+            if (_requireAuth && !userInfo) {
+                this.$message.warning("请先登录");
+                this.$router.push('/login');
+                return;
+            }
+
             const formData = new FormData();
             formData.append("code", this.$route.query.code);
             this.$axios({
