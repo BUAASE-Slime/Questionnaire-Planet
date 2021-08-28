@@ -28,19 +28,22 @@
               <div v-if="item.type!=='mark'" >
                 <div class="block-choice" v-for="ans in item.options" :key="ans.id">
                   <!--                  单选-->
-                  <el-radio v-if="item.type==='radio'" value="0">
-                    {{ ans.title }}
+                  <el-radio v-if="item.type==='radio'||item.type==='judge'" value="0">
+                    <span>{{ ans.title }} </span>
+                    <span v-if="item.is_exam_question&&ans.title==item.right_answer" style="color: #51c215;">（正确答案）</span>
                   </el-radio>
                   <!--                  多选-->
                   <el-checkbox v-if="item.type==='checkbox'" value="0">
-                    {{ ans.title }}
+                    <span>{{ ans.title }} </span>
+                    <span v-if="item.is_exam_question&&comp(ans.title,item.right_answerList)" style="color: #51c215;">（正确答案）</span>
                   </el-checkbox>
                   <!--                  填空-->
                   <el-input
                       v-if="item.type==='text'"
                       type="textarea"
                       placeholder="请输入内容"
-                      v-bind="ans.title">
+                      v-bind="ans.title"
+                      style="width:80%">
                   </el-input>
                   <!--               个人信息-->
                   <el-input
@@ -58,6 +61,24 @@
                 <el-rate v-if="item.type==='mark'"
                          :max="item.score">
                 </el-rate>
+              </div>
+
+              <div v-if="item.is_exam_question">
+                  <div class="block-point">
+                    <div v-if="item.point===''">分值：0</div>
+                    <div v-else>分值：{{ item.point }}</div>
+                  </div>
+                  <div id="correctrate">
+                    <span style="color:red;">正确率：{{(item.accuracy*100).toFixed(2)}}%</span>
+                  </div>
+                  <div class="block-refer" >
+                    <div v-if="item.right_answer===''">参考答案：无</div>
+                    <div v-else-if="item.type!='checkbox'">参考答案：{{ item.right_answer }}</div>
+                    <div v-else>
+                      <span>参考答案：</span>
+                       <span v-for="(one,index) in item.right_answerList" :key="index">{{one}}; </span>
+                    </div>
+                  </div>
               </div>
             </el-col>
           </div>
@@ -98,6 +119,11 @@
                   style="margin: 20px"
                   v-if="item.options.length>5">
                 </el-pagination>
+
+                <!-- <div id="correctrate" v-if="item.is_exam_question">
+                  <span>正确率：</span>
+                  <span style="color:red;">{{(item.accuracy*100).toFixed(2)}}%</span>
+                </div> -->
               </div>
               <div class="grid-content bg-purple"></div>
             </el-col>
@@ -179,146 +205,197 @@ export default{
         radio2: '饼图',
         choose: 1,
         tableData:[
-        // {
-        //     num: 1,
-        //     answer: '千呼万唤的泡泡玛特壁纸合集来惹！想要第一时间收获泡泡高清壁纸吗？添加【宇宙观察员1号】为好友回复关键词【dimoo】或【molly】即可轻松get！PS:注意字母大小写哦~不定期更新，更多IP壁纸等你解锁！添加宇宙观察员为好友的小可爱们，有可能收到来自泡泡星球的小礼物哦~数量有限，先到先得！',
-        // },
-        // {
-        //     num:2,
-        //     answer:'tired'
-        // }
+        {
+            num: 1,
+            answer: '千呼万唤的泡泡玛特壁纸合集来惹！想要第一时间收获泡泡高清壁纸吗？添加【宇宙观察员1号】为好友回复关键词【dimoo】或【molly】即可轻松get！PS:注意字母大小写哦~不定期更新，更多IP壁纸等你解锁！添加宇宙观察员为好友的小可爱们，有可能收到来自泡泡星球的小礼物哦~数量有限，先到先得！',
+        },
+        {
+            num:2,
+            answer:'tired'
+        }
         ],
         questions:[
-        //     {
-        //     id: '1',
-        //     type: 'radio',
-        //     title: '这是一个什么网站？',
-        //     must: true,
-        //     options: [{
-        //         id: '1',
-        //         title: '问卷系统',
-        //         choosed: 15
-        //     }, {
-        //         id: '2',
-        //         title: '出版系统',
-        //         choosed: 13
-        //     }],
-        //     row: '',
-        //     score: '',
-        //     },
-        //     {
-        //     id: '2',
-        //     type: 'checkbox',
-        //     title: '软工小学期助教都有谁？',
-        //     must: false,
-        //     options: [{
-        //         id: '1',
-        //         title: 'ZYH',
-        //         choosed: 15
-        //     }, {
-        //         id: '2',
-        //         title: 'LKW',
-        //         choosed: 153
-        //     },{
-        //         id: '3',
-        //         title: 'ZXH',
-        //         choosed: 151
-        //     }, {
-        //         id: '4',
-        //         title: 'HZH',
-        //         choosed: 153
-        //     }
-        //     ],
-        //     row: '',
-        //     score: '',
-        //     },
-        //     {
-        //   id: '3',
-        //   type: 'radio',
-        //   title: '软工小学期累不累',
-        //   must: false,
-        //   options: [{
-        //     id: '1',
-        //     title: '累',
-        //     choosed: 10
-        //   }, {
-        //     id: '2',
-        //     title: '非常累',
-        //     choosed: 11
-        //   }],
-        //   row: '',
-        //   score: '',
-        // },
-        // {
-        //   id: '4',
-        //   type: 'text',
-        //   title: '您对小学期的评价如何？',
-        //   must: false,
-        //   options: [{
-        //     id: '',
-        //     title: '',
-        //   }],
-        //   row: 3,
-        //   score: '',
-        // },
-        // {
-        //   id: '5',
-        //   type: 'mark',
-        //   title: '给小学期打个分吧~',
-        //   must: true,
-        //   options: [{
-        //     id: '1',
-        //     title: '1',
-        //     choosed: 1,
-        //   },
-        //   {
-        //     id: '2',
-        //     title: '2',
-        //     choosed: 8,
-        //   },
-        //   {
-        //     id: '3',
-        //     title: '3',
-        //     choosed: 12,
-        //   },
-        //   {
-        //     id: '4',
-        //     title: '4',
-        //     choosed: 1,
-        //   },
-        //   {
-        //     id: '5',
-        //     title: '5',
-        //     choosed: 5,
-        //   },
-        //   {
-        //     id: '6',
-        //     title: '6',
-        //     choosed: 1,
-        //   },
-        //   {
-        //     id: '7',
-        //     title: '7',
-        //     choosed: 1,
-        //   },
-        //   {
-        //     id: '8',
-        //     title: '8',
-        //     choosed: 10,
-        //   },
-        //   {
-        //     id: '9',
-        //     title: '9',
-        //     choosed: 6,
-        //   },
-        //   {
-        //     id: '10',
-        //     title: '10',
-        //     choosed: 10,
-        //   },],
-        //   row: 1,
-        //   score: 10,
-        // },
+            {
+            id: '1',
+            type: 'radio',
+            title: '这是一个什么网站？',
+            must: true,
+            right_answer: "问卷系统",
+            point: 5,
+            is_exam_question: true,
+            correct_people: 1,
+            answer_sum: 3,
+            accuracy: 0.33333333,
+            options: [{
+                id: '1',
+                title: '问卷系统',
+                choosed: 15
+            }, {
+                id: '2',
+                title: '出版系统',
+                choosed: 13
+            }],
+            row: '',
+            score: '',
+            },
+            {
+            id: '2',
+            type: 'checkbox',
+            title: '软工小学期助教都有谁？',
+            must: false,
+            right_answer: "a-<^-^>-b",
+            point: 10,
+            is_exam_question: true,
+            correct_people: 1,
+            answer_sum: 3,
+            accuracy: 0.3333,
+            right_answerList: [
+                "LKW",
+                "ZXH"
+            ],
+            options: [{
+                id: '1',
+                title: 'ZYH',
+                choosed: 15
+            }, {
+                id: '2',
+                title: 'LKW',
+                choosed: 153
+            },{
+                id: '3',
+                title: 'ZXH',
+                choosed: 151
+            }, {
+                id: '4',
+                title: 'HZH',
+                choosed: 153
+            }
+            ],
+            row: '',
+            score: '',
+            },
+            {
+          id: '3',
+          type: 'radio',
+          title: '软工小学期累不累',
+          must: false,
+          options: [{
+            id: '1',
+            title: '累',
+            choosed: 10
+          }, {
+            id: '2',
+            title: '非常累',
+            choosed: 11
+          }],
+          row: '',
+          score: '',
+        },
+        {
+          id: '4',
+          type: 'text',
+          title: '您对小学期的评价如何？',
+          must: false,
+          right_answer: "好",
+          point: 5,
+          is_exam_question: true,
+          correct_people: 1,
+          answer_sum: 3,
+          accuracy: 0.7096,
+          options: [{
+            id: '',
+            title: '',
+          }],
+          row: 3,
+          score: '',
+        },
+        {
+          id: '5',
+          type: 'mark',
+          title: '给小学期打个分吧~',
+          must: true,
+          options: [{
+            id: '1',
+            title: '1',
+            choosed: 1,
+          },
+          {
+            id: '2',
+            title: '2',
+            choosed: 8,
+          },
+          {
+            id: '3',
+            title: '3',
+            choosed: 12,
+          },
+          {
+            id: '4',
+            title: '4',
+            choosed: 1,
+          },
+          {
+            id: '5',
+            title: '5',
+            choosed: 5,
+          },
+          {
+            id: '6',
+            title: '6',
+            choosed: 1,
+          },
+          {
+            id: '7',
+            title: '7',
+            choosed: 1,
+          },
+          {
+            id: '8',
+            title: '8',
+            choosed: 10,
+          },
+          {
+            id: '9',
+            title: '9',
+            choosed: 6,
+          },
+          {
+            id: '10',
+            title: '10',
+            choosed: 10,
+          },],
+          row: 1,
+          score: 10,
+        },
+        {
+            id: 6,
+            title: "问卷星球比问卷星好用吗",
+            type: "judge",
+            row: 1,
+            score: 10,
+            must: false,
+            right_answer: "对",
+            right_answerList: [
+                "对"
+            ],
+            point: 1,
+            is_exam_question: true,
+            correct_people: 2,
+            answer_sum: 3,
+            accuracy: "0.6667",
+            options: [
+                {
+                    id: 1,
+                    title: "对",
+                    choosed: 2
+                },
+                {
+                    id: 2,
+                    title: "错",
+                    choosed: 1
+                }
+            ]
+        }
         ]
         }
     },
@@ -353,6 +430,12 @@ export default{
       //     }
       //     return cellValue
       //   },
+      comp(title,list){
+        for(let i=0;i<list.length;i++){
+          if(title==list[i]) return true;
+        }
+        return false;
+      },
         handleSizeChange2(val) {
           console.log(`每页 ${val} 条`);
           this.currentPage2 = 1;
@@ -436,6 +519,8 @@ export default{
 
 .el-col-17 {
     margin-bottom: 50px;
+    width: 95% !important;
+    padding-left: 20px;
 }
 
 .el-col-6 {
@@ -443,6 +528,33 @@ export default{
     height: 535px;
     padding: 20px 50px !important;
     padding-top: 0 !important;
+}
+
+.block-refer {
+  text-align: right;
+  /*border: solid 1px black;*/
+  font-size: 14px;
+  padding-top: 8px;
+  padding-left: 10px;
+  color: #51c215;
+}
+
+.block-point {
+  text-align: right;
+  /*border: solid 1px black;*/
+  font-size: 14px;
+  padding-top: 8px;
+  padding-left: 10px;
+  color: #e59824;
+}
+#correctrate{
+  text-align: right;
+  font-size: 14px;
+  padding-top: 8px;
+  padding-left: 10px;
+  /* margin: 20px;
+  margin-left: 5px;
+  text-align: left; */
 }
 /* #que{
    margin-bottom: 50px;
