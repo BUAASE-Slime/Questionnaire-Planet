@@ -206,7 +206,7 @@ export default {
                                     this.getQnDataSelf();
                                     this.$notify({
                                         title: '保存成功',
-                                        message: '每隔1分钟将自动为您保存编辑信息',
+                                        message: '每隔5分钟将自动为您保存编辑信息',
                                         type: 'success',
                                         duration: 2500
                                     });
