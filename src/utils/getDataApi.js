@@ -41,7 +41,7 @@ export default {
                     console.log(err);
                 })
         },
-        getQnDataForPreview() {
+        getQnDataForPreview(_autoSave=false) {
             const formData = new FormData();
             formData.append("qn_id", this.$route.query.pid);
             this.$axios({
@@ -62,14 +62,17 @@ export default {
                             this.questions = res.data.questions;
 
                             //建立答案框架
-                            for (var i=0; i<this.questions.length; i++) {
-                                this.answers.push({
-                                    question_id: this.questions[i].question_id,
-                                    type: this.questions[i].type,
-                                    ans: null,
-                                    ansList: [],
-                                    answer: ''
-                                })
+                            if (_autoSave === false) {
+                                this.answers = []
+                                for (var i=0; i<this.questions.length; i++) {
+                                    this.answers.push({
+                                        question_id: this.questions[i].question_id,
+                                        type: this.questions[i].type,
+                                        ans: null,
+                                        ansList: [],
+                                        answer: ''
+                                    })
+                                }
                             }
 
                             break;
@@ -82,7 +85,7 @@ export default {
                     console.log(err);
                 })
         },
-        getQnDataForFill() {
+        getQnDataForFill(_autoSave=false) {
             const formData = new FormData();
             formData.append("code", this.$route.query.code);
             this.$axios({
@@ -98,15 +101,18 @@ export default {
                             this.type = res.data.type;
                             this.questions = res.data.questions;
 
-                            //建立答案框架
-                            for (var i=0; i<this.questions.length; i++) {
-                                this.answers.push({
-                                    question_id: this.questions[i].question_id,
-                                    type: this.questions[i].type,
-                                    ans: null,
-                                    ansList: [],
-                                    answer: ''
-                                })
+                            if (_autoSave === false) {
+                                //建立答案框架
+                                this.answers = [];
+                                for (var i=0; i<this.questions.length; i++) {
+                                    this.answers.push({
+                                        question_id: this.questions[i].question_id,
+                                        type: this.questions[i].type,
+                                        ans: null,
+                                        ansList: [],
+                                        answer: ''
+                                    })
+                                }
                             }
                             break;
                         case 2:

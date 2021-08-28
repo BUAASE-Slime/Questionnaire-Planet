@@ -191,10 +191,10 @@ export default {
   methods: {
     autoGet() {
       if (this.mode === '0') {
-        this.getQnDataForPreview();
+        this.getQnDataForPreview(true);
       }
       else if (this.mode === '1') {
-        this.getQnDataForFill();
+        this.getQnDataForFill(true);
       }
       console.log("get");
     },
@@ -210,6 +210,8 @@ export default {
       location.reload();
     },
     submit: function () {
+      console.log('1111');
+      clearInterval(this.timer);
       this.submitAns("4");
     },
     quit: function () {
