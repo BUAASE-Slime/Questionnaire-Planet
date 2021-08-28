@@ -18,5 +18,12 @@ export default class GlobalInfo {
         'preview_vote',
         'preview_form',
         'preview_hate'
-    ]
+    ];
+    static fillUrl = [
+        'fill',
+        'fill_test',
+        'fill_vote',
+        'fill_form',
+        'fill_hate'
+    ];
 }
