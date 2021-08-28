@@ -136,8 +136,6 @@ export default {
       mode: this.$route.query.mode,
       title: '',
       description: '',
-      // questions: [],
-      // answers: [],
       type: '',
       answers:[
             {
