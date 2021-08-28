@@ -196,11 +196,12 @@ export default {
                                     this.$message.success("保存成功");
                                     break;
                                 case 'autosave':
+                                    this.getQnDataSelf();
                                     this.$notify({
                                         title: '保存成功',
                                         message: '每隔1分钟将自动为您保存编辑信息',
                                         type: 'success',
-                                        duration: 2000
+                                        duration: 2500
                                     });
                                     break;
                             }

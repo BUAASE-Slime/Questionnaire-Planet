@@ -292,6 +292,7 @@ export default {
   mixins: [getDataApi, saveDataApi],
   data() {
     return {
+      timer: '',
       timeFrame: '',
       qrcode: null,
       linkShare: '',
@@ -821,6 +822,9 @@ export default {
         });
       });
     },
+    autoSave() {
+      this.saveQnInfo('autosave', '3');
+    },
     saveinfo(tag) {
       this.saveQnInfo(tag, "3");
     },
@@ -983,6 +987,12 @@ export default {
   created() {
     this.getQnDataSelf();
   },
+  mounted() {
+    this.timer = setInterval(this.autoSave, 60000);
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
+  }
 }
 </script>
 
