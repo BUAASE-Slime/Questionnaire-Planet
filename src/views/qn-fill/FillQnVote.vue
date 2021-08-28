@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FinishVote v-if="success || repeated" :questions="questions"></FinishVote>
+    <FinishVote v-if="success || repeat" :questions="questions"></FinishVote>
     <div class="qn-fill" v-else>
       <div class="back-bt" v-if="mode==='0' || mode===0">
         <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
@@ -90,12 +90,14 @@
 
 <script>
 import FinishVote from "@/views/qn-fill/FinishVote";
+import getDataApi from "@/utils/getDataApi";
 export default {
   name: "FillQn",
+  mixins: [getDataApi],
   components: {FinishVote},
   data() {
     return {
-      repeated: false,
+      repeat: false,
       rootUrl: this.GLOBAL.baseUrl,
       success: false,
       close: false,
@@ -254,90 +256,10 @@ export default {
   },
   created() {
     if (this.mode === '0') {
-      const formData = new FormData();
-      formData.append("qn_id", this.$route.query.pid);
-      this.$axios({
-        method: 'post',
-        url: '/sm/get/qn_detail',
-        data: formData,
-      })
-          .then(res => {
-            switch (res.data.status_code) {
-              case 0:
-                this.$message.error("您无权访问！");
-                this.$router.push('/');
-                break;
-              case 1:
-                this.title = res.data.title;
-                this.description = res.data.description;
-                this.type = res.data.type;
-                this.questions = res.data.questions;
-
-                //建立答案框架
-                for (var i=0; i<this.questions.length; i++) {
-                  this.answers.push({
-                    question_id: this.questions[i].question_id,
-                    type: this.questions[i].type,
-                    ans: null,
-                    ansList: [],
-                    answer: ''
-                  })
-                }
-
-                break;
-              default:
-                this.$message.error("访问失败！");
-                break;
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          })
+      this.getQnDataForPreview();
     }
     else if (this.mode === '1') {
-      const formData = new FormData();
-      formData.append("code", this.$route.query.code);
-      this.$axios({
-        method: 'post',
-        url: '/sm/get/qn_for_fill',
-        data: formData,
-      })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 2:
-            this.$router.push('PageNotFound');
-            break;
-          case 1:
-            this.title = res.data.title;
-            this.description = res.data.description;
-            this.type = res.data.type;
-            this.questions = res.data.questions;
-
-            //建立答案框架
-            for (var i=0; i<this.questions.length; i++) {
-              this.answers.push({
-                question_id: this.questions[i].question_id,
-                type: this.questions[i].type,
-                ans: null,
-                ansList: [],
-                answer: ''
-              })
-            }
-            break;
-          case 3:
-            this.close = true;
-            break;
-          case 888:
-            this.repeated = true;
-            break;
-          default:
-            this.$message.error("访问失败");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+      this.getQnDataForFill();
     }
   },
 }
