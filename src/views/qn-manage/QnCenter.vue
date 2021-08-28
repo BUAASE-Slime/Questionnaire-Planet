@@ -36,6 +36,18 @@
                   <i slot="suffix" class="el-input__icon el-icon-search" @click="searchQn" style="cursor: pointer"></i>
                 </el-input>
 
+              <el-dropdown @command="selectQnType" split-button class='right' size="small">
+                {{ qnValue }}
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="0">所有</el-dropdown-item>
+                  <el-dropdown-item command="1">调查问卷</el-dropdown-item>
+                  <el-dropdown-item command="2">考试问卷</el-dropdown-item>
+                  <el-dropdown-item command="3">投票问卷</el-dropdown-item>
+                  <el-dropdown-item command="4">报名问卷</el-dropdown-item>
+                  <el-dropdown-item command="5">打卡问卷</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+
                 <el-dropdown @command="selectType" split-button class='right' size="small">
                   {{ qnType }}
                 <el-dropdown-menu slot="dropdown">
@@ -58,7 +70,7 @@
 
             </div>
 
-            <div v-if="hasQn">
+            <div v-if="hasQn" id="main-body">
               <el-card v-for="(msg,index) in QnList" class="box-card" :key='index'>
                 <div slot="header" style="display:flex">
                   <el-row>
@@ -158,6 +170,7 @@ export default {
 
       qnType: '问卷状态',
       orderQn: '排序依据',
+      qnValue: '问卷类型',
 
       qnKey: '',
       orderItem: 'default',
@@ -166,6 +179,7 @@ export default {
       input: '',
       is_released: "default",
       is_collected: 0,
+      qn_type: 0,
       QnList: [
         // {
         //     title:'易灿和他的问卷',
@@ -897,6 +911,10 @@ export default {
       }
       this.searchQns(1);
     },
+    selectQnType(command) {
+      this.qn_type = command;
+      this.searchQns(1);
+    },
     orderIndex(command) {
       console.log(command);
       switch (command) {
@@ -935,6 +953,9 @@ export default {
     },
 
     searchQns(tag) {
+      let loadingInstance = this.$loading({
+        target: '#main-body',
+      });
       let formData = new FormData();
       const userInfo = user.getters.getUser(user.state());
       formData.append("username", userInfo.user.username);
@@ -958,6 +979,7 @@ export default {
         formData.append("title_key", this.qnKey);
       if (this.is_collected === 1)
         formData.append("is_collected", this.is_collected);
+      formData.append("type", this.qn_type);
 
       this.$axios({
         method: 'post',
@@ -980,6 +1002,7 @@ export default {
             break;
           default:
             this.QnList = JSON.parse(res.data.data);
+            loadingInstance.close();
             this.hasQn = true;
             if (tag === 1) {
               this.$message.success("为您查询到 " + this.QnList.length + " 条问卷");

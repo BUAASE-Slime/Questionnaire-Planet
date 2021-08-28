@@ -1,5 +1,5 @@
 <template>
-  <div class="test">
+  <div class="punch">
     <el-header class="header">
       <edit-header
           :title="title"
@@ -21,63 +21,76 @@
       <el-aside class="side">
         <el-tabs v-model="activeName" @tab-click="initOutline">
 
-          <el-tab-pane label="题目类型" name="first">
-            <div class="edit">
-
-              <div class="info">
-                <div class="edit-title">
-                  个人信息
-                </div>
-                <div class="edit-ques">
-                  <i class="el-icon-user"></i>
-                  <span> 姓名&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='name';qsEditDialogVisible=true"></i>
-                </div>
-                <div class="edit-ques">
-                  <i class="el-icon-discount"></i>
-                  <span> 学号&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='stuId';qsEditDialogVisible=true"></i>
-                </div>
-                <div class="edit-ques">
-                  <i class="el-icon-school"></i>
-                  <span> 班级&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='class';qsEditDialogVisible=true"></i>
-                </div>
-                <div class="edit-ques">
-                  <i class="el-icon-date"></i>
-                  <span> 学校&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='school';qsEditDialogVisible=true"></i>
-                </div>
-              </div>
-
-              <div class="ques">
-                <div class="edit-title">
-                  试卷问题
-                </div>
-                <div class="edit-ques">
+            <el-tab-pane label="题目类型" name="first">
+              <div class="edit">
+                <div class="ques-type">
                   <i class="el-icon-check"></i>
                   <span> 单选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='radio';qsEditDialogVisible=true"></i>
                 </div>
-                <div class="edit-ques">
+                <div class="ques-type">
                   <i class="el-icon-finished"></i>
                   <span> 多选题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='checkbox';qsEditDialogVisible=true"></i>
                 </div>
-                <div class="edit-ques">
+                <div class="ques-type">
                   <i class="el-icon-edit-outline"></i>
                   <span> 填空题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='text';qsEditDialogVisible=true"></i>
                 </div>
-                <div class="edit-ques">
-                  <i class="el-icon-circle-check"></i>
-                  <span> 判断题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='judge';qsEditDialogVisible=true"></i>
+                <div class="ques-type">
+                  <i class="el-icon-star-off"></i>
+                  <span> 评分题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='mark';qsEditDialogVisible=true"></i>
+                </div>
+                <div class="ques-type">
+                  <i class="el-icon-location-outline"></i>
+                  <span> 定位题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
+                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='location';willAddQuestion.title='所在地理位置';qsEditDialogVisible=true"></i>
+                </div>
+                <div>
+                  <el-row class="sideTitle">问题模板</el-row>
+                  <el-row class="easyChoose">
+                    <el-col :span="12">
+                      <i class="el-icon-user"></i>
+                      <span class="chooseLabel">姓名</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addName"></i>
+                    </el-col>
+                    <el-col :span="12">
+                      <i class="el-icon-tickets"></i>
+                      <span class="chooseLabel">学号</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addStuID"></i>
+                    </el-col>
+                  </el-row>
+                  <el-row class="easyChoose">
+                    <el-col :span="12">
+                      <i class="el-icon-tickets"></i>
+                      <span class="chooseLabel">体温</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addTem"></i>
+                    </el-col>
+                    <el-col :span="12">
+                      <i class="el-icon-phone-outline"></i>
+                      <span class="chooseLabel">手机</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addPhone"></i>
+                    </el-col>
+                  </el-row>
+                  <el-row class="easyChoose" style="text-align: left;margin-left: 35px">
+                    <el-col :span="24">
+                      <i class="el-icon-tickets"></i>
+                      <span class="chooseLabel">本人情况是否正常</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addHealthy"></i>
+                    </el-col>
+                  </el-row>
+                  <el-row class="easyChoose" style="text-align: left;margin-left: 35px">
+                    <el-col :span="24">
+                      <i class="el-icon-tickets"></i>
+                      <span class="chooseLabel">14日内环境安全</span>
+                      <i class="el-icon-circle-plus type-icon" @click="addEnvironment"></i>
+                    </el-col>
+                  </el-row>
                 </div>
               </div>
-
-            </div>
-          </el-tab-pane>
+            </el-tab-pane>
 
           <el-tab-pane label="问卷大纲" name="second">
             <div class="outline">
@@ -101,7 +114,6 @@
           <div class="title">
             {{ title }}
           </div>
-
           <div class="description" v-if="this.description!=='' && this.description!==null && this.description !== undefined">
             &emsp;&emsp;{{ description }}
           </div>
@@ -109,10 +121,7 @@
             <el-row class="ques-block" v-for="item in questions" :key="item.num" @mouseover.native="hoverItem=item.id">
 
               <el-col :span="17" class="block-content">
-                <div class="block-title" v-if="item.type==='judge'">
-                  {{ item.id }}. 判断：{{ item.title }} <span class="must" v-if="item.must">(必填)</span>
-                </div>
-                <div v-else class="block-title">
+                <div class="block-title">
                   {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
                 </div>
 
@@ -122,52 +131,38 @@
                 >
                   {{ item.description }}
                 </div>
+                <div v-if="item.type==='radio'||item.type==='checkbox'||item.type==='text'">
+                  <div class="block-choice" v-for="ans in item.options" :key="ans.id" >
 
-                <div class="block-choice" v-for="ans in item.options" :key="ans.id">
+                    <!--                  单选-->
+                    <el-radio v-if="item.type==='radio'" value="0">
+                      {{ ans.title }}
+                    </el-radio>
 
-                  <!--                  单选-->
-                  <el-radio v-if="item.type==='radio'" value="0">
-                    {{ ans.title }}
-                  </el-radio>
+                    <!--                  多选-->
+                    <el-checkbox v-if="item.type==='checkbox'" value="0">
+                      {{ ans.title }}
+                    </el-checkbox>
 
-                  <!--                  多选-->
-                  <el-checkbox v-if="item.type==='checkbox'" value="0">
-                    {{ ans.title }}
-                  </el-checkbox>
-
-                  <!--                  填空-->
-                  <el-input
-                      v-if="item.type==='text'"
-                      type="textarea"
-                      placeholder="请输入内容"
-                      v-bind="ans.title">
-                  </el-input>
-
-                  <!--                  判断-->
-                  <el-radio v-if="item.type==='judge'" value="0">
-                    {{ ans.title }}
-                  </el-radio>
-
-                  <!--               个人信息-->
-                  <el-input
-                      v-if="item.type==='name' || item.type==='stuId' || item.type==='class' || item.type==='school'"
-                      v-bind="ans.title">
-                  </el-input>
-
-                </div>
-
-                <div v-if="item.type!=='name' && item.type!=='stuId' && item.type!=='class' && item.type!=='school'">
-                  <div class="block-point" v-if="scoringMode !== false && item.point!==null && item.point!==undefined">
-                    <div v-if="item.point===''">分值：0</div>
-                    <div v-else>分值：{{ item.point }}</div>
-                  </div>
-
-                  <div class="block-refer" v-if="item.refer!==null && item.refer!==undefined">
-                    <div v-if="item.refer===''">答案：无</div>
-                    <div v-else>参考答案：{{ item.refer }}</div>
+                    <!--                  填空-->
+                    <el-input
+                        v-if="item.type==='text'"
+                        type="textarea"
+                        placeholder="请输入内容"
+                        v-bind="ans.title">
+                    </el-input>
                   </div>
                 </div>
 
+                <div class="block-choice" v-if="item.type==='mark'">
+                  <!--                  评分-->
+                  <el-rate value="0" :max="item.score"></el-rate>
+                </div>
+
+                <div class="block-location" v-if="item.type==='location'">
+                  <!--                  定位-->
+                  <el-button icon="el-icon-map-location" plain class="locabtn" @click="alertGetLocation">点击获取地理位置</el-button>
+                </div>
               </el-col>
 
               <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
@@ -200,7 +195,6 @@
 
     <el-dialog :title="qsEditDialogTitle" :visible.sync="qsEditDialogVisible"  :before-close="cancel_pre" class="dialog" >
       <el-form ref="form" :model="willAddQuestion" label-width="100px">
-
         <el-form-item label="题目类型" >
           <el-select :disabled="selectDisAble" v-model="willAddQuestion.type" placeholder="请选择题目类型" @change="typeChange">
             <el-option
@@ -212,122 +206,51 @@
           </el-select>
         </el-form-item>
 
-        <div
-            class="is-info"
-            v-if="willAddQuestion.type==='name'
-            || willAddQuestion.type==='stuId'
-            || willAddQuestion.type==='class'
-            || willAddQuestion.type==='school'"
-        >
-          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='name'">
-            <el-input value="姓名" disabled></el-input>
+        <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type!=='location'">
+          <el-input v-model="willAddQuestion.title" placeholder="请输入标题" ></el-input>
+        </el-form-item>
+
+        <el-form-item label="题目描述" style="width: 100%;">
+          <el-input v-model="willAddQuestion.description" placeholder="请输入题目描述"></el-input>
+        </el-form-item>
+
+        <el-form-item label="是否必填" >
+          <el-checkbox v-model="willAddQuestion.must">必填</el-checkbox>
+        </el-form-item>
+
+        <template v-if="willAddQuestion.type==='radio'||willAddQuestion.type==='checkbox'">
+          <el-form-item :label="'选项'+(index+1)" v-for="(item,index) in willAddQuestion.options" :key="index">
+            <el-row>
+              <el-col :span="16">
+                <el-input  v-model="item.title" placeholder="请输入选项名" ></el-input>
+              </el-col>
+              <el-col :span="8">
+                <el-button type="danger" plain class="deleteOptionButton" @click="deleteOption(index)" >删除选项</el-button>
+              </el-col>
+            </el-row>
+
           </el-form-item>
-          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='stuId'">
-            <el-input value="学号" disabled></el-input>
+          <el-button type="primary" plain class="addOptionButton" @click="addOption">新增选项</el-button>
+        </template>
+
+        <template v-if="willAddQuestion.type==='text'" >
+          <el-form-item label="填空">
+            <el-input
+                type="textarea"
+                :rows="willAddQuestion.row"
+                resize="none">
+            </el-input>
           </el-form-item>
-          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='class'">
-            <el-input value="班级" disabled></el-input>
+          <el-form-item label="行数">
+            <el-input-number v-model="willAddQuestion.row" :min="1" :max="10" ></el-input-number>
           </el-form-item>
-          <el-form-item label="题目标题" style="width: 100%;" v-if="willAddQuestion.type==='school'">
-            <el-input value="学校" disabled></el-input>
+        </template>
+
+        <template v-if="willAddQuestion.type==='mark'">
+          <el-form-item label="最大分数">
+            <el-input-number v-model="willAddQuestion.score" :min="3" :max="10" ></el-input-number>
           </el-form-item>
-          <el-form-item label="是否必填" >
-            <el-checkbox v-model="willAddQuestion.must">必填</el-checkbox>
-          </el-form-item>
-        </div>
-
-        <div v-else class="not-info">
-          <el-form-item label="题目标题" style="width: 100%;">
-            <el-input v-model="willAddQuestion.title" placeholder="请输入标题" ></el-input>
-          </el-form-item>
-
-          <el-form-item label="题目描述" style="width: 100%;">
-            <el-input v-model="willAddQuestion.description" placeholder="请输入题目描述"></el-input>
-          </el-form-item>
-
-          <el-form-item label="是否必填" >
-            <el-checkbox v-model="willAddQuestion.must">必填</el-checkbox>
-          </el-form-item>
-
-          <template v-if="willAddQuestion.type==='radio'|| willAddQuestion.type==='checkbox'">
-            <el-form-item :label="'选项'+(index+1)" v-for="(item,index) in willAddQuestion.options" :key="index">
-              <el-row>
-                <el-col :span="16">
-                  <el-input v-model="item.title" placeholder="请输入选项名" ></el-input>
-                </el-col>
-                <el-col :span="8">
-                  <el-button type="danger" plain class="deleteOptionButton" @click="deleteOption(index)" >删除选项</el-button>
-                </el-col>
-              </el-row>
-            </el-form-item>
-            <el-button type="primary" plain class="addOptionButton" @click="addOption">新增选项</el-button>
-          </template>
-
-          <template v-if="willAddQuestion.type==='text'" >
-            <el-form-item label="填空预览">
-              <el-input
-                  type="textarea"
-                  :rows="willAddQuestion.row"
-                  resize="none">
-              </el-input>
-            </el-form-item>
-            <el-form-item label="行数">
-              <el-input-number v-model="willAddQuestion.row" :min="1" :max="10" ></el-input-number>
-            </el-form-item>
-          </template>
-
-          <template v-if="willAddQuestion.type==='mark'">
-            <el-form-item label="最大分数">
-              <el-input-number v-model="willAddQuestion.score" :min="1" :max="10" ></el-input-number>
-            </el-form-item>
-          </template>
-
-          <template v-if="willAddQuestion.type==='judge'"></template>
-
-          <!--          填空答案设置-->
-          <el-form-item v-if="willAddQuestion.type==='text'" label="参考答案" style="width: 100%;">
-            <el-input v-model="willAddQuestion.refer" placeholder="请输入参考答案"></el-input>
-          </el-form-item>
-
-          <!--          多选答案设置-->
-          <el-form-item v-if="willAddQuestion.type==='checkbox'" label="参考答案" style="width: 100%;">
-            <el-select v-model="willAddQuestion.refer" multiple placeholder="请选择">
-              <el-option
-                  v-for="item in willAddQuestion.options"
-                  :key="item.id"
-                  :value="item.title">
-              </el-option>
-            </el-select>
-          </el-form-item>
-
-          <!--          单选答案设置-->
-          <el-form-item v-if="willAddQuestion.type==='radio'" label="参考答案" style="width: 100%;">
-            <el-select v-model="willAddQuestion.refer" @change="radioChange">
-              <el-option
-                  v-for="item in willAddQuestion.options"
-                  :key="item.id"
-                  :value="item.title">
-              </el-option>
-            </el-select>
-          </el-form-item>
-
-          <!--          判断答案设置-->
-          <el-form-item v-if="willAddQuestion.type==='judge'" label="参考答案" style="width: 100%;">
-            <el-select v-model="willAddQuestion.refer" @change="judgeChange">
-              <el-option
-                  v-for="item in [{title: '对', id: '1'}, {title: '错', id: '2'}]"
-                  :key="item.id"
-                  :value="item.title">
-              </el-option>
-            </el-select>
-          </el-form-item>
-
-          <el-form-item v-if="scoringMode" label="分值" style="width: 100%;">
-            <el-input-number v-model="willAddQuestion.point" :min="0" :max="1000"></el-input-number>
-          </el-form-item>
-        </div>
-
-
+        </template>
       </el-form>
       <span slot="footer" class="dialog-footer" style="text-align: center">
         <el-row>
@@ -384,35 +307,35 @@
                         placeholder="选择结束时间">
         </el-date-picker>
       </div>
-      <span slot="footer" class="dialog-footer" style="text-align: center">
-        <el-row>
-          <el-button type="primary" style="margin-right: 40px" @click="settingSuccess">完成</el-button>
-        </el-row>
-      </span>
+      <div class="setting-bt">
+        <el-button type="primary" @click="settingSuccess">完成</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import editHeader from "../../../components/header/editHeader";
+import location from "../../../components/location";
 import user from "@/store/user";
 import QRCode from "qrcodejs2";
 
 export default {
-  name: "test",
+  name: "punch",
   data() {
     return {
+      value:'',
       qrcode: null,
-
+      timeFrame: '',
       linkShare: '',
       editWrongMsg: "",
       editWrongMsgVisible: false,
       qsLinkDialogVisible: false,
+      dialogVisibleAsso: false,
       qsLinkDialogTitle: "发布成功！",
-      scoringMode: true,    // 评分模式（高级设置中开启后可为题目设置得分）
-      timeFrame: '',
-      settingDialogTitle: "高级设置",
-      settingDialogVisible:false,
+      settingDialogTitle: "高级设置",   // 高级设置弹框的标题
+      settingDialogVisible:false,     // 高级设置对话框可见性
+      closingDate: null,   // 高级设置中问卷回收的截止日期
       isReleased: false,   // 是否发布
       editIndex: 0,
       selectDisAble: false,
@@ -424,11 +347,10 @@ export default {
         children: 'children',
         label: 'label'
       },
-      type: "1",
+      type: 1,
       questions: [],
       outline: [],
       pid: this.$route.query.pid,
-
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
       willAddQuestion: {
@@ -436,7 +358,7 @@ export default {
         id: 0,
         type: '',
         title: '',
-        must: false, // 是否必填
+        must: true, // 是否必填
         description: '', // 问题描述
         options:[
           {
@@ -445,9 +367,7 @@ export default {
           }
         ],
         row: 1, // 填空区域行数
-        score: 10, // 最大评分
-        refer: '', // 参考答案
-        point: 0,  // 分值
+        score: 5, // 最大评分
       },
       allType:[
         {
@@ -461,27 +381,14 @@ export default {
         {
           value:'text',
           label:'填空题',
+        },{
+          value: 'mark',
+          label: '评分题',
         },
         {
-          value: 'judge',
-          label: '判断题',
-        },
-        {
-          value: 'name',
-          label: '姓名'
-        },
-        {
-          value: 'stuId',
-          label: '学号'
-        },
-        {
-          value: 'class',
-          label: '班级'
-        },
-        {
-          value: 'school',
-          label: '学校'
-        },
+          value: 'location',
+          label: '定位题',
+        }
       ],
 
       xiaoxueqi_questions: [
@@ -567,33 +474,221 @@ export default {
         },
       ],
       xiaoxueqi_outline: [
-        {
-          id: 1,
-          label: '1. 这是一个什么网站？',
-        },
-        {
-          id: 2,
-          label: '2. 软工小学期助教都有谁？',
-        },
-        {
-          id: 3,
-          label: '3. 软工小学期累不累',
-        },
-        {
-          id: 4,
-          label: '4. 您对小学期的评价如何？',
-        },
-        {
-          id: 5,
-          label: '5. 给小学期打个分吧~',
-        },
-      ],
+      {
+        id: 1,
+        label: '1. 这是一个什么网站？',
+      },
+      {
+        id: 2,
+        label: '2. 软工小学期助教都有谁？',
+      },
+      {
+        id: 3,
+        label: '3. 软工小学期累不累',
+      },
+      {
+        id: 4,
+        label: '4. 您对小学期的评价如何？',
+      },
+      {
+        id: 5,
+        label: '5. 给小学期打个分吧~',
+      },
+    ],
     }
   },
   components: {
     editHeader,
   },
   methods: {
+    genCodeAgain() {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
+      this.$axios({
+        method: 'post',
+        url: '/qn/change/code',
+        data: formData,
+      })
+      .then(res => {
+        if (res.data.status_code === 1) {
+          this.linkShare = this.GLOBAL.baseUrl + "/fill?mode=1&code=" + res.data.code;
+
+          if (this.qrcode == null) {
+            this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+              width: 200, //生成的二维码的宽度
+              height: 200, //生成的二维码的高度
+              colorDark : "#000000", // 生成的二维码的深色部分
+              colorLight : "#ffffff", //生成二维码的浅色部分
+              correctLevel : QRCode.CorrectLevel.H
+            });
+          }
+          this.qrcode.clear();
+          this.qrcode.makeCode(this.linkShare);
+        } else {
+          this.$message.error("请求失败！");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+    addName(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'text',
+        title: '姓名：',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 0,
+          title: '',
+        }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+    addStuID(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'text',
+        title: '学号：',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 0,
+          title: '',
+        }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+    addPhone(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'text',
+        title: '手机号：',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 0,
+          title: '',
+        }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+    addTem(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'radio',
+        title: '体温：',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 1,
+          title: '36.0℃以下',
+        },
+          {
+            id: 2,
+            title: '36.0℃~36.5℃',
+          },
+          {
+            id: 3,
+            title: '36.5℃~37.0℃',
+          },
+          {
+            id: 4,
+            title: '37.0℃~37.5℃',
+          },
+          {
+            id: 5,
+            title: '37.5℃以上',
+          }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+    addEnvironment(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'radio',
+        title: '近14日内，所接触环境和人员是否一切正常？',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 1,
+          title: '是（未接触风险地区和人员、无入境共居人员且社区无确诊）',
+        },
+          {
+            id: 2,
+            title: '否',
+          }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+    addHealthy(){
+      this.willAddQuestion={
+        id: this.questions.length+1,
+        type: 'radio',
+        title: '今日本人情况是否正常？',
+        description: '请考虑妥当后填写',
+        must: true,
+        options: [{
+          id: 1,
+          title: '是（本人健康且未处于隔离期）',
+        },
+          {
+            id: 2,
+            title: '否',
+          }],
+        row: 1,
+        score: 10,
+      };
+      this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
+      this.questions.push(this.willAddQuestion);
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
+      this.resetWillAdd();
+    },
+
     download() {
       // 获取base64的图片节点
       var img = document.getElementById('qrcode_2').getElementsByTagName('img')[0];
@@ -615,6 +710,9 @@ export default {
     formatTime(time) {
       this.timeFrame = time;
     },
+    alertGetLocation() {
+      this.$message.success("用户点击将自动获取地理位置");
+    },
     finish(){
       this.qsLinkDialogVisible = false;
       this.$router.push('/index') // 跳转到问卷中心？
@@ -625,6 +723,7 @@ export default {
     edit:function (index){
       index--;
       this.willAddQuestion = {
+        question_id:this.questions[index].question_id,
         id: this.questions[index].id,
         type: this.questions[index].type,
         title: this.questions[index].title,
@@ -633,8 +732,6 @@ export default {
         options: this.questions[index].options,
         row: this.questions[index].row,
         score: this.questions[index].score,
-        refer: this.questions[index].refer,
-        point: this.questions[index].point,
       };
       this.editIndex = index;
       this.selectDisAble = true;
@@ -657,21 +754,7 @@ export default {
     },
     dialogConfirm(){
       let index = this.editIndex;
-      this.qsEditDialogVisible = false;
       if(this.qsEditDialogTitle==="编辑题目") {
-        this.questions[index].id = this.willAddQuestion.id;
-        this.questions[index].row = this.willAddQuestion.row;
-        this.questions[index].must = this.willAddQuestion.must;
-        this.questions[index].description = this.willAddQuestion.description;
-        this.questions[index].title = this.willAddQuestion.title;
-        this.questions[index].options = this.willAddQuestion.options;
-        this.questions[index].score = this.willAddQuestion.score;
-        this.qsEditDialogTitle = "";
-        this.qsEditDialogVisible = false;
-        this.questions[index].refer = this.willAddQuestion.refer;
-        this.questions[index].point = this.willAddQuestion.point;
-        // 大纲更新
-        this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
         if (this.willAddQuestion.title === '') {
           this.$message({
             type: 'error',
@@ -710,30 +793,8 @@ export default {
           this.resetWillAdd();
           this.selectDisAble = false;
         }
-        // 重置
-        this.willAddQuestion = {
-          id: 0,
-          type: '',
-          title: '',
-          must: false,
-          description: '',
-          options: [
-            {
-              title: '', //选项标题
-              id: 0 //选项id
-            }],
-          row: 1,
-          score: 10,
-          refer: '',
-          point: 0,  // 分值
-        };
-        this.selectDisAble = false;
       }
       else{
-        if (this.willAddQuestion.type==='name') { this.willAddQuestion.title = '姓名'; this.willAddQuestion.refer = ''; }
-        if (this.willAddQuestion.type==='stuId') { this.willAddQuestion.title = '学号'; this.willAddQuestion.refer = '';}
-        if (this.willAddQuestion.type==='class') { this.willAddQuestion.title = '班级'; this.willAddQuestion.refer = '';}
-        if (this.willAddQuestion.type==='school') { this.willAddQuestion.title = '学校'; this.willAddQuestion.refer = '';}
         if (this.willAddQuestion.title === '') {
           this.$message({
             type: 'error',
@@ -757,9 +818,6 @@ export default {
           this.willAddQuestion.id = this.questions.length + 1;
           // 大纲更新
           this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
-          if (this.willAddQuestion.type==='judge') {
-            this.willAddQuestion.options = [{title: '对', id: 1}, {title: '错', id: 2}];
-          }
           this.questions.push(this.willAddQuestion);
           this.$message({
             type: 'success',
@@ -772,10 +830,11 @@ export default {
     },
     resetWillAdd(){
       this.willAddQuestion={
+        question_id: 0,
         id: 0,
-        type: '',
-        title: '',
-        must: false, // 是否必填
+        type:'',
+        title:'',
+        must: true, // 是否必填
         description: '', // 问题描述
         options:[
           {
@@ -784,29 +843,12 @@ export default {
           }
         ],
         row: 1, // 填空区域行数
-        score: 10, // 最大评分
-        refer: '', // 参考答案
-        point: 0,  // 分值
-      }
+        score: 5, // 最大评分
+    }
     },
-    dialogCancel: function() {
+    dialogCancel: function(){
       this.qsEditDialogTitle="";
-      this.willAddQuestion={
-        id: 0,
-        type: '',
-        title: '',
-        must: false,
-        description: '',
-        options:[
-          {
-            title: '', // 选项标题
-            id: 0 // 选项id
-          }],
-        row: 1,
-        score: 10,
-        refer: '',
-        point: 0,  // 分值
-      };
+      this.resetWillAdd();
       this.qsEditDialogVisible=false;
       this.selectDisAble=false;
     },
@@ -822,12 +864,6 @@ export default {
     },
     typeChange(value) {
       this.willAddQuestion.type = value;
-    },
-    radioChange(value) {
-      this.willAddQuestion.refer = value;
-    },
-    judgeChange(value) {
-      this.willAddQuestion.refer = value;
     },
     addOption(){
       this.willAddQuestion.options.push({
@@ -860,37 +896,6 @@ export default {
         message: '设置已生效'
       });
     },
-    genCodeAgain() {
-      const formData = new FormData();
-      formData.append("qn_id", this.$route.query.pid);
-      this.$axios({
-        method: 'post',
-        url: '/qn/change/code',
-        data: formData,
-      })
-      .then(res => {
-        if (res.data.status_code === 1) {
-          this.linkShare = this.GLOBAL.baseUrl + "/fill_test?mode=1&code=" + res.data.code;
-
-          if (this.qrcode == null) {
-            this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
-              width: 200, //生成的二维码的宽度
-              height: 200, //生成的二维码的高度
-              colorDark : "#000000", // 生成的二维码的深色部分
-              colorLight : "#ffffff", //生成二维码的浅色部分
-              correctLevel : QRCode.CorrectLevel.H
-            });
-          }
-          this.qrcode.clear();
-          this.qrcode.makeCode(this.linkShare);
-        } else {
-          this.$message.error("请求失败！");
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    },
     publish() {
       this.saveinfo('publish');
 
@@ -916,7 +921,7 @@ export default {
           console.log(res.data.status_code);
           switch (res.data.status_code) {
             case 200:
-              this.linkShare = this.GLOBAL.baseUrl + '/fill_test?mode=1&code=' + res.data.code;
+              this.linkShare = this.GLOBAL.baseUrl + '/fill_hate?mode=1&code=' + res.data.code;
 
               if (this.qrcode == null) {
                 this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
@@ -957,14 +962,6 @@ export default {
       });
     },
     saveinfo(tag) {
-      // 多选题数据格式转化
-      var new_questions = this.questions;
-      console.log(new_questions);
-      for (var i=0; i<new_questions.length; i++) {
-        if (this.questions[i].type === 'checkbox') {
-          new_questions[i].refer = new_questions[i].refer.join('-<^-^>-');
-        }
-      }
       const userInfo = user.getters.getUser(user.state());
       var param = {
         username: userInfo.user.username,
@@ -973,7 +970,7 @@ export default {
         description: this.description,
         type: this.type,
         qn_id: this.$route.query.pid,
-        questions: new_questions
+        questions: this.questions
       }
       var paramer = JSON.stringify(param, {questions: 'brackets'})
       this.$axios({
@@ -981,47 +978,105 @@ export default {
         url: '/sm/save/qn_keep/history',
         data: paramer,
       })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 0:
-            this.$message.warning("登录信息失效，请重新登录！");
-            setTimeout(() => {
-              this.$store.dispatch('clear');
-              location.reload();
-            }, 500);
-            break;
-          case 1:
-            switch (tag) {
-              case 'save':
-                this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
-                  distinguishCancelAndClose: true,
-                  confirmButtonText: '返回问卷中心',
-                  cancelButtonText: '继续编辑'
-                })
-                .then(() => {
-                  this.$router.push('/index');
-                });
-                break;
-              case 'preview':
-                this.$message.success("保存成功");
+          .then(res => {
+            switch (res.data.status_code) {
+              case 0:
+                this.$message.warning("登录信息失效，请重新登录！");
                 setTimeout(() => {
-                  location.href = 'preview_test?mode=0&pid=' + this.$route.query.pid;
-                }, 700);
+                  this.$store.dispatch('clear');
+                  location.reload();
+                }, 500);
                 break;
-              case 'publish':
-                this.$message.success("保存成功");
+              case 1:
+                switch (tag) {
+                  case 'save':
+                    this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+                      distinguishCancelAndClose: true,
+                      confirmButtonText: '返回问卷中心',
+                      cancelButtonText: '继续编辑'
+                    })
+                        .then(() => {
+                          this.$router.push('/index');
+                        });
+                    break;
+                  case 'preview':
+                    this.$message.success("保存成功");
+                    setTimeout(() => {
+                      location.href = 'preview_hate?mode=0&pid=' + this.$route.query.pid;
+                    }, 700);
+                    break;
+                  case 'publish':
+                    this.$message.success("保存成功");
+                    break;
+                }
+                break;
+              default:
+                this.$message.error("保存失败！");
                 break;
             }
-            break;
-          default:
-            this.$message.error("保存失败！");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+          })
+          .catch(err => {
+            console.log(err);
+          })
     },
+    // saveinfo(tag) {
+    //   const userInfo = user.getters.getUser(user.state());
+    //   var param = {
+    //     username: userInfo.user.username,
+    //     title: this.title,
+    //     finished_time: this.timeFrame,
+    //     description: this.description,
+    //     type: this.type,
+    //     qn_id: this.$route.query.pid,
+    //     questions: this.questions
+    //   }
+    //   var paramer = JSON.stringify(param, {questions: 'brackets'})
+    //   this.$axios({
+    //     method: 'post',
+    //     url: '/sp/save_qn',
+    //     data: paramer,
+    //   })
+    //       .then(res => {
+    //         switch (res.data.status_code) {
+    //           case 0:
+    //             this.$message.warning("登录信息失效，请重新登录！");
+    //             setTimeout(() => {
+    //               this.$store.dispatch('clear');
+    //               location.reload();
+    //             }, 500);
+    //             break;
+    //           case 1:
+    //             switch (tag) {
+    //               case 'save':
+    //                 this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
+    //                   distinguishCancelAndClose: true,
+    //                   confirmButtonText: '返回问卷中心',
+    //                   cancelButtonText: '继续编辑'
+    //                 })
+    //                 .then(() => {
+    //                   this.$router.push('/index');
+    //                 });
+    //                 break;
+    //               case 'preview':
+    //                 this.$message.success("保存成功");
+    //                 setTimeout(() => {
+    //                   location.href = 'preview_hate?mode=0&pid=' + this.$route.query.pid;
+    //                 }, 700);
+    //                 break;
+    //               case 'publish':
+    //                 this.$message.success("保存成功");
+    //                 break;
+    //             }
+    //             break;
+    //           default:
+    //             this.$message.error("保存失败！");
+    //             break;
+    //         }
+    //       })
+    //       .catch(err => {
+    //         console.log(err);
+    //       })
+    // },
     save() {
       this.saveinfo('save');
     },
@@ -1196,19 +1251,8 @@ export default {
           this.description = res.data.description;
           this.type = res.data.type;
           this.questions = res.data.questions;
-
-          for (var i=0; i<this.questions.length; i++) {
-            if (this.questions[i].type === 'checkbox') {
-              this.questions[i].refer = this.questions[i].refer.split('-<^-^>-');
-            }
-          }
-
           this.isReleased = res.data.is_released;
-          console.log(this.questions);
-
           this.InitOutline();
-          console.log(this.questions);  // 调试
-          console.log(this.outline);  // 调试
           break;
         default:
           this.$message.error("访问失败！");
@@ -1223,75 +1267,68 @@ export default {
 </script>
 
 <style>
-.test .linkDialog{
+.punch .linkDialog{
   text-align: left;
 }
-.test .container {
+.punch .container {
   padding: 0;
   height: auto;
   min-height: 610px;
 }
 
-.test header {
+.punch header {
   padding: 0 100px;
 }
 
-.test .el-container {
+.punch .el-container {
   padding: 0 100px;
 }
 
-.test .side {
+.punch .side {
   border-top: solid 1px #e3e3e3;
   border-right: solid 1px #e3e3e3;
   background: #FFFFFF;
 }
 
-.test .main {
+.punch .main {
   border-top: solid 1px #e3e3e3;
   background: #FFFFFF;
 }
 
-.test .edit {
+.punch .edit {
   margin-top: 0;
   overflow: auto;
   height: 550px;
 }
 
-.test .outline {
+.punch .outline {
   overflow: auto;
   height: 550px;
 }
 
-.test .edit-title {
-  color: black;
-  padding: 15px 0;
-  font-size: 16px;
-  border-bottom: solid #e3e3e3 2px;
-}
-
-.test .edit-ques {
+.punch .ques-type {
   padding: 15px 0;
   font-size: 16px;
   border-bottom: dashed #e3e3e3 1px;
 }
 
-.test .type-icon {
+.punch .type-icon {
   color: #1687fd;
   display: inline-block;
 }
 
-.test .type-icon:hover {
+.punch .type-icon:hover {
   color: #409EFF;
   cursor: pointer;
 }
 
-.test .el-tabs__nav-scroll {
+.punch .el-tabs__nav-scroll {
   text-align: center;
   height: 60px;
   margin: 0 60px;
 }
 
-.test .el-tabs__item {
+.punch .el-tabs__item {
   font-weight: bold;
   padding: 0 20px;
   height: 60px;
@@ -1304,27 +1341,27 @@ export default {
   position: relative;
 }
 
-.test .el-tabs__header {
+.punch .el-tabs__header {
   margin: 0;
 }
 
-.test .el-tree-node__content {
+.punch .el-tree-node__content {
   padding-left: 10px !important;
   height: 40px;
 }
 
-.test .main {
+.punch .main {
   max-height: 610px;
 }
 
-.test .ques .title {
+.punch .ques .title {
   font-size: 28px;
   font-weight: bold;
   padding-top: 10px;
   padding-bottom: 26px;
 }
 
-.test .ques .description {
+.punch .ques .description {
   text-align: left;
   font-size: 16px;
   padding-bottom: 30px;
@@ -1332,22 +1369,22 @@ export default {
   line-height: 30px;
 }
 
-.test .ques-block {
+.punch .ques-block {
   padding-bottom: 15px;
   border-top: solid #e3e3e3 1px;
 }
 
-.test .ques-block:hover {
+.punch .ques-block:hover {
   background: #f5f5f5;
   transition: .3s;
 }
 
-.test .ques-block .must {
+.punch .ques-block .must {
   font-weight: normal;
   color: crimson;
 }
 
-.test .block-title {
+.punch .block-title {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
@@ -1355,89 +1392,107 @@ export default {
   font-weight: bold;
 }
 
-.test .block-description {
+.punch .block-description {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 14px;
   padding-top: 5px;
-  padding-bottom: 10px;
+  padding-bottom: 15px;
   padding-left: 10px;
   color: #969696;
 }
 
-.test .block-refer {
-  text-align: right;
+.punch .block-choice {
+  text-align: left;
   /*border: solid 1px black;*/
-  font-size: 14px;
-  padding-top: 8px;
-  padding-left: 10px;
-  color: #51c215;
+  font-size: 16px;
+  padding: 5px 10px 10px;
 }
-
-.test .block-point {
-  text-align: right;
-  /*border: solid 1px black;*/
-  font-size: 14px;
-  padding-top: 8px;
-  padding-left: 10px;
-  color: #e59824;
-}
-
-.test .block-choice {
+.punch .block-location {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
   padding: 5px 10px 10px;
 }
 
-.test .el-button-group>.el-button:first-child {
+.punch .el-button-group>.el-button:first-child {
   border-radius: 0 0 0 8px;
 }
 
-.test .el-button-group>.el-button:last-child {
+.punch .el-button-group>.el-button:last-child {
   border-radius: 0 0 8px 0;
 }
 
-.test .block-button .el-button {
+.punch .block-button .el-button {
   background: #b9b9b9;
   border: transparent;
 }
 
-.test .block-button .el-button:hover {
+.punch .block-button .el-button:hover {
   background: #989898;
   border: transparent;
 }
 
-.test .bt {
+.punch .bt {
   color: white;
   font-size: 14px;
   font-weight: bold;
 }
 
-.test .block-choice .el-textarea__inner {
+.punch .block-choice .el-textarea__inner {
   max-height: 100px;
 }
-
-.test .dialog{
+.punch .dialog{
   text-align: left;
   font-size: large;
 }
-
-.test .addOptionButton{
+.punch .addOptionButton{
   display: inline-block;
   margin-left: 100px;
-  margin-bottom: 22px;
 }
-
-.test .deleteOptionButton{
+.punch .deleteOptionButton{
   margin-left: 20px;
 }
 
-.test .settingDialog {
+.punch .setting-item {
   text-align: left;
 }
 
-.test .settingDialog .el-dialog__body {
-  padding-left: 140px;
+.punch .setting-bt {
+  margin-top: 28px;
 }
+
+.punch .setting .el-dialog__header {
+  text-align: left;
+}
+
+.punch .setting .item-title {
+  padding-right: 20px;
+}
+.punch .sideTitle{
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.punch .easyChoose{
+  font-size: medium;
+  margin-top: 10px;
+}
+.punch .chooseLabel{
+  margin-right: 10px;
+  margin-left: 5px;
+}
+
+.locabtn{
+  text-align: center;
+  /*border: solid 1px black;*/
+  font-size: 14px;
+  padding: 12px 20px;
+  height: 40px;
+  width: 300px;
+  line-height: 1;
+}
+
+
 </style>

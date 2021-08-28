@@ -245,7 +245,7 @@
       </span>
     </el-dialog>
     <!--    高级设置弹框-->
-    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" >
+    <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="30%">
       <div class="timeBlock" style="margin-bottom: 30px">
         <span class="demonstration" style="margin-right: 15px">截止时间</span>
         <el-date-picker style="margin-left: 100px"
@@ -274,6 +274,7 @@ export default {
     return {
       value:'',
       qrcode: null,
+      timeFrame: '',
       linkShare: '',
       editWrongMsg: "",
       editWrongMsgVisible: false,
@@ -298,7 +299,6 @@ export default {
       questions: [],
       outline: [],
       pid: this.$route.query.pid,
-
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
       willAddQuestion: {
@@ -507,6 +507,7 @@ export default {
     edit:function (index){
       index--;
       this.willAddQuestion = {
+        question_id:this.questions[index].question_id,
         id: this.questions[index].id,
         type: this.questions[index].type,
         title: this.questions[index].title,
@@ -749,6 +750,7 @@ export default {
       var param = {
         username: userInfo.user.username,
         title: this.title,
+        finished_time: this.timeFrame,
         description: this.description,
         type: this.type,
         qn_id: this.$route.query.pid,
@@ -976,11 +978,7 @@ export default {
           this.type = res.data.type;
           this.questions = res.data.questions;
           this.isReleased = res.data.is_released;
-          console.log(this.questions);
-
           this.InitOutline();
-          console.log(this.questions);  // 调试
-          console.log(this.outline);  // 调试
           break;
         default:
           this.$message.error("访问失败！");

@@ -1,5 +1,5 @@
 <template>
-  <div class="qn-fill">
+  <div class="punch-fill">
     <div class="back-bt" v-if="mode==='0' || mode===0">
       <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
     </div>
@@ -8,35 +8,21 @@
         <div class="tyn-icon">
           <img src="../../assets/images/survey2.png" alt="">
         </div>
-        <h1 v-if="success">报名成功，感谢您的参与！</h1>
-        <el-button type="primary" size="middle" @click="gotoHome">返回首页</el-button>
-      </div>
-      <div v-else-if="repeat" style="padding-bottom: 50px">
-        <div class="tyn-icon">
-          <img src="../../assets/images/survey2.png" alt="">
-        </div>
-        <h1 v-if="repeat">您已报名成功，请勿重复填写！</h1>
-        <el-button type="primary" size="middle" @click="gotoHome">返回首页</el-button>
-      </div>
-      <div v-else-if="full" style="padding-bottom: 50px">
-        <div class="tyn-icon">
-          <img src="../../assets/images/survey2.png" alt="">
-        </div>
-        <h1 v-if="full">所选活动报名人数已满，可返回查看！</h1>
-        <el-button type="primary" size="middle" @click="backToSurvey">返回查看</el-button>
-      </div>
-      <div v-else-if="allfull" style="padding-bottom: 50px">
-        <div class="tyn-icon">
-          <img src="../../assets/images/survey2.png" alt="">
-        </div>
-        <h1 v-if="allfull">报名人数已满，感谢参与！</h1>
-        <el-button type="primary" size="middle" @click="gotoHome">返回首页</el-button>
+        <h1 v-if="success">打卡成功！</h1>
+        <el-button type="primary" size="middle" @click="backToSurvey">继续查看问卷信息</el-button>
       </div>
       <div v-else-if="close" style="padding-bottom: 50px">
         <div class="tyn-icon">
           <img src="../../assets/images/survey2.png" alt="">
         </div>
         <h1 v-if="close">问卷已结束，感谢您的参与！</h1>
+        <el-button type="primary" size="middle" @click="gotoHome">返回</el-button>
+      </div>
+      <div v-else-if="repeat" style="padding-bottom: 50px">
+        <div class="tyn-icon">
+          <img src="../../assets/images/survey2.png" alt="">
+        </div>
+        <h1 v-if="repeat">今日已打卡，无需重复提交！</h1>
         <el-button type="primary" size="middle" @click="gotoHome">返回首页</el-button>
       </div>
       <div class="body" v-else>
@@ -58,12 +44,18 @@
               {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
             </div>
 
+            <div
+                class="q-description"
+                v-if="item.description!=='' && item.description!==null && item.description!==undefined"
+            >
+              {{ item.description }}
+            </div>
+
             <!--                  单选-->
             <div v-if="item.type==='radio'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
                 <el-radio v-if="item.type==='radio'" v-model="answers[item.id-1].ans" :label="opt.title">
                   {{ opt.title }}
-                  <span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="opt.hasNumLimit">剩余{{opt.supply-opt.consume}}</span>
                 </el-radio>
               </div>
             </div>
@@ -72,7 +64,6 @@
             <el-checkbox-group class="q-opt" v-if="item.type==='checkbox'" v-model="answers[item.id-1].ansList">
               <el-checkbox v-for="opt in item.options" :key="opt.id" :label="opt.title">
                 {{ opt.title }}
-                <span style="color: #aaaaaa;font-size: small;margin-left: 15px" v-if="opt.hasNumLimit">剩余{{opt.supply-opt.consume}}</span>
               </el-checkbox>
             </el-checkbox-group>
 
@@ -84,6 +75,11 @@
                   placeholder="请输入内容"
                   v-model="answers[item.id-1].ans">
               </el-input>
+            </div>
+
+            <!--                  定位-->
+            <div class="q-opt" v-if="item.type==='location'">
+              <Location v-on:loadLoc="loadLoc"></Location>
             </div>
 
             <!--                  评分-->
@@ -106,9 +102,13 @@
   </div>
 </template>
 
+
+
 <script>
+import Location from "@/components/location";
 export default {
-  name: "FillQn",
+  name: "FillQnPunch",
+  components: {Location},
   data() {
     return {
       rootUrl: this.GLOBAL.baseUrl,
@@ -116,85 +116,75 @@ export default {
       success: false,
       close: false,
       repeat: false,
-      full: false,
-      allfull: false,
 
       mode: this.$route.query.mode,
-      title: '',
+      open: 1,
+
+      locationInfo: '',
+      title: '疫情填报',
       description: '',
       questions: [
-      //     {
-      //   id: 1,
-      //   type:'radio',
-      //   title:'test',
-      //   must: true, // 是否必填
-      //   description: '', // 问题描述
-      //   options:[
-      //     {
-      //       hasNumLimit:true,
-      //       title:'11111', // 选项标题
-      //       id: 0 ,// 选项id
-      //       supply:11,
-      //       consume:0,
-      //     },
-      //     {
-      //       hasNumLimit:true,
-      //       title:'22222', // 选项标题
-      //       id: 1 ,// 选项id
-      //       supply:11,
-      //       consume:0,
-      //     }
-      //   ],
-      //   row:1, // 填空区域行数
-      //   score:10, // 最大评分
-      // },
-      //   {
-      //     id: 2,
-      //     type:'text',
-      //     title:'',
-      //     must: false, // 是否必填
-      //     description: '', // 问题描述
-      //     options:[
-      //       {
-      //         hasNumLimit:false,
-      //         title:'', // 选项标题
-      //         id: 0 ,// 选项id
-      //         supply:1,
-      //         consume:0,
-      //       }
-      //     ],
-      //     row:1, // 填空区域行数
-      //     score:10, // 最大评分
-      //   }],
-      // answers: [
-      //   {
-      //     question_id: '1',
-      //     type: '1',
-      //     ans: null,
-      //     ansList: [],
-      //   },
-      //   {
-      //     question_id: '2',
-      //     type: '2',
-      //     ans: null,
-      //     ansList: [],
-      //   },
+        // {
+        //   id: 1,
+        //   type: 'location',
+        //   title: '地理位置填报',
+        //   must: true, // 是否必填
+        //   description: '', // 问题描述
+        //   options: [
+        //     {
+        //       title: '', // 选项标题
+        //       id: 0 // 选项id
+        //     }
+        //   ],
+        //   row: 1, // 填空区域行数
+        //   score: 10, // 最大评分
+        // },
+        // {
+        //   id: 2,
+        //   type: 'radio',
+        //   title: '昨天有没有加班？',
+        //   must: true, // 是否必填
+        //   description: '谨慎填写', // 问题描述
+        //   options: [
+        //     {
+        //       title: '是', // 选项标题
+        //       id: 1 // 选项id
+        //     },
+        //     {
+        //       title: '否', // 选项标题
+        //       id: 2 // 选项id
+        //     },
+        //   ],
+        //   row: 1, // 填空区域行数
+        //   score: 10, // 最大评分
+        // }
       ],
-      answers: [],
+      answers: [
+        // {
+        //   question_id: '1',
+        //   type: 'location',
+        //   ans: null,
+        //   ansList: [],
+        // },
+        // {
+        //   question_id: '2',
+        //   type: 'radio',
+        //   ans: null,
+        //   ansList: [],
+        // },
+    ],
       type: ''
     }
   },
   methods: {
+    loadLoc(value) {
+      this.locationInfo = value;
+    },
     gotoHome() {
       this.$router.push('/');
     },
     backToSurvey() {
       this.success = false;
-      this.full = false;
-      this.allfull = false;
-      this.repeat = false;
-      this.close = false;
-      location.reload();
     },
     submit: function () {
       // 必选检查
@@ -203,8 +193,15 @@ export default {
       let bool = false;
       let num = '';
       for (let i=0; i<answers.length; i++) {
-        if (questions[i].must
-            && (answers[i].ans===null || answers[i].ans==='' || (answers[i].ans===0 && answers[i].type==='4'))
+        if (answers[i].type === 'location') {
+          if (questions[i].must && this.locationInfo === '') {
+            console.log(this.locationInfo);
+            num += (i+1).toString() + ' ';
+            bool = true;
+          }
+        }
+        else if (questions[i].must
+            && (answers[i].ans===null || answers[i].ans==='' || (answers[i].ans===0 && answers[i].type==='mark'))
             && answers[i].ansList.length===0) {
           num += (i+1).toString() + ' ';
           bool = true;
@@ -224,24 +221,19 @@ export default {
       }
       // 数据转换
       for (var i=0; i<this.answers.length; i++) {
-        var ans = this.answers[i].ans;
-        var anslist = this.answers[i].ansList;
         this.answers[i].question_id = this.questions[i].question_id;
         switch (this.answers[i].type) {
-          case "radio":
-            this.answers[i].answer = this.answers[i].ans;
-            break;
           case "checkbox":
-            this.answers[i].answer = anslist.join('-<^-^>-');
-            break;
-          case "text":
-            this.answers[i].answer = ans;
+            this.answers[i].answer = this.answers[i].ansList.join('-<^-^>-');
             break;
           case "mark":
-            this.answers[i].answer = ans.toString();
+            this.answers[i].answer = this.answers[i].ans.toString();
             break;
-          default:
-            this.answers[i].answer = ans.toString();
+          case "text": case "radio":
+            this.answers[i].answer = this.answers[i].ans;
+            break;
+          case 'location':
+            this.answers[i].answer = this.locationInfo;
             break;
         }
       }
@@ -258,42 +250,36 @@ export default {
         var paramer = JSON.stringify(param, {answers: 'brackets'})
         this.$axios({
           method: 'post',
-          url: '/sp/save_answer_by_code',
+          url: '/ep/save_ans_by_code',
           data: paramer,
         })
-        .then(res => {
-          switch (res.data.status_code) {
-            case 1:
-              this.$message({
-                type: 'success',
-                message: '报名成功'
-              });
-              this.success = true;
-              break;
-            case 2: case 4: case 5:
-              this.$message.warning("问卷已结束，感谢您的参与！");
-              this.close = true;
-              break;
-            case 11 :
-              this.$message.warning("报名人数已满，感谢您的参与！");
-              this.allfull = true;
-              break;
-            case 12:
-              this.$message.warning("您填报的选项报名人数已满，感谢您的参与！");
-              this.full = true;
-              break;
-            case 3:
-              this.$message.warning("您已报名成功，请勿重复填写！");
-              this.repeat = true;
-              break;
-            default:
-              this.$message.error("操作失败！");
-              break;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        })
+            .then(res => {
+              switch (res.data.status_code) {
+                case 1:
+                  this.$message({
+                    type: 'success',
+                    message: '问卷提交成功'
+                  });
+                  this.success = true;
+                  console.log(this.questions);
+                  console.log(this.answers);
+                  break;
+                case 2: case 3: case 4:
+                  this.$message.warning("问卷已结束，感谢您的参与！");
+                  this.close = true;
+                  break;
+                case 999:
+                  this.$message.warning("今日已打卡，无需重复提交！");
+                  this.repeat = true;
+                  break;
+                default:
+                  this.$message.error("操作失败！");
+                  break;
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            })
       }).catch(() => {
 
       });
@@ -304,59 +290,58 @@ export default {
         confirmButtonText: '编辑页面',
         cancelButtonText: '问卷中心'
       })
-      .then(() => {
-        location.href = this.GLOBAL.baseUrl + "/edit_form?pid=" + this.$route.query.pid;
-      })
-      .catch(action => {
-        if (action === 'cancel') {
-          this.$router.push('/index');
-        }
-      });
+          .then(() => {
+            location.href = this.GLOBAL.baseUrl + "/edit_hate?pid=" + this.$route.query.pid;
+          })
+          .catch(action => {
+            if (action === 'cancel') {
+              this.$router.push('/index');
+            }
+          });
 
     },
   },
   created() {
-    const formData = new FormData();
-    formData.append("qn_id", this.$route.query.pid)
-
     if (this.mode === '0') {
+      const formData = new FormData();
+      formData.append("qn_id", this.$route.query.pid);
       this.$axios({
         method: 'post',
         url: '/sm/get/qn_detail',
         data: formData,
       })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 0:
-            this.$message.error("您无权访问！");
-            this.$router.push('/');
-            break;
-          case 1:
-            this.title = res.data.title;
-            this.description = res.data.description;
-            this.type = res.data.type;
-            this.questions = res.data.questions;
+          .then(res => {
+            switch (res.data.status_code) {
+              case 0:
+                this.$message.error("您无权访问！");
+                this.$router.push('/');
+                break;
+              case 1:
+                this.title = res.data.title;
+                this.description = res.data.description;
+                this.type = res.data.type;
+                this.questions = res.data.questions;
 
-            //建立答案框架
-            for (var i=0; i<this.questions.length; i++) {
-              this.answers.push({
-                question_id: this.questions[i].question_id,
-                type: this.questions[i].type,
-                ans: null,
-                ansList: [],
-                answer: ''
-              })
+                //建立答案框架
+                for (var i=0; i<this.questions.length; i++) {
+                  this.answers.push({
+                    question_id: this.questions[i].question_id,
+                    type: this.questions[i].type,
+                    ans: null,
+                    ansList: [],
+                    answer: ''
+                  })
+                }
+
+                break;
+              default:
+                this.$message.error("访问失败！");
+                break;
             }
-
-            break;
-          default:
-            this.$message.error("访问失败！");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+          })
+          .catch(err => {
+            console.log(err);
+          })
     }
     else if (this.mode === '1') {
       const formData = new FormData();
@@ -388,13 +373,10 @@ export default {
                   })
                 }
                 break;
-              case 3:
+              case 3: case 666:
                 this.close = true;
                 break;
-              case 666:
-                this.close = true;
-                break;
-              case 888:
+              case 999:
                 this.repeat = true;
                 break;
               default:
@@ -406,7 +388,7 @@ export default {
             console.log(err);
           })
     }
-  },
+  }
 }
 </script>
 
@@ -415,7 +397,7 @@ export default {
   margin: 50px ;
   padding-top: 100px;
 }
-.qn-fill {
+.punch-fill {
   background-image: url("../../assets/images/preview_bk.png");
   background-repeat: repeat-y;
   min-height: 800px;
@@ -424,37 +406,37 @@ export default {
   background-size: 100% auto;
 }
 
-.qn-fill .back-bt {
+.punch-fill .back-bt {
   position: fixed;
   right: 90px;
   top: 0;
   margin: auto;
 }
 
-.qn-fill .back-bt .el-button {
+.punch-fill .back-bt .el-button {
   border-radius: 0 0 15px 15px;
 }
 
-.qn-fill .paper {
+.punch-fill .paper {
   margin: 120px auto 0;
   width: 900px;
   background-color: #FFFFFF;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
 }
 
-.qn-fill .body {
+.punch-fill .body {
   margin-left: 80px;
   margin-right: 80px;
 }
 
-.qn-fill .body .title {
+.punch-fill .body .title {
   font-size: 28px;
   font-weight: bold;
   padding-bottom: 40px;
   padding-top: 45px;
 }
 
-.qn-fill .body .description {
+.punch-fill .body .description {
   text-align: left;
   font-size: 16px;
   color: black;
@@ -462,11 +444,11 @@ export default {
   padding-bottom: 20px;
 }
 
-.qn-fill .body .el-divider--horizontal {
+.punch-fill .body .el-divider--horizontal {
   margin: 0;
 }
 
-.qn-fill .body  .q-title {
+.punch-fill .body .q-title {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
@@ -474,38 +456,51 @@ export default {
   font-weight: bold;
 }
 
-.qn-fill .body .must {
+.punch-fill .body .q-description {
+  text-align: left;
+  font-size: 14px;
+  padding-left: 10px;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  color: #969696;
+}
+
+.punch-fill .body .must {
   font-weight: normal;
   color: crimson;
 }
 
-.qn-fill .body .q-opt {
+.punch-fill .body .q-opt {
   text-align: left;
   /*border: solid 1px black;*/
   font-size: 16px;
   padding: 10px 10px 10px;
 }
 
-.qn-fill .body .el-checkbox {
+.punch-fill .body .el-checkbox {
   padding: 10px 0;
   display: block;
 }
 
-.qn-fill .body .q-opt .el-textarea__inner {
+.punch-fill .body .q-opt .el-textarea__inner {
   max-height: 100px;
 }
 
-.qn-fill .body .submit-bt {
+.punch-fill .body .submit-bt {
   padding-top: 30px;
   padding-bottom: 50px;
 }
 
-.qn-fill .tail {
+.punch-fill .tail {
   padding-top: 25px;
   font-size: 15px;
   color: #b9b9b9;
   border-top: solid 1px #e3e3e3;
   height: 50px;
   margin: 0 30px 130px;
+}
+
+.punch-fill .ques-block .el-button {
+  width: 250px;
 }
 </style>
