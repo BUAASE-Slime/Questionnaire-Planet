@@ -913,6 +913,26 @@ export default {
     },
     selectQnType(command) {
       this.qn_type = command;
+      switch (command) {
+        case "0":
+          this.qnValue = "所有";
+          break;
+        case "1":
+          this.qnValue = "调查问卷";
+          break;
+        case "2":
+          this.qnValue = "考试问卷";
+          break;
+        case "3":
+          this.qnValue = "投票问卷";
+          break;
+        case "4":
+          this.qnValue = "报名问卷";
+          break;
+        case "5":
+          this.qnValue = "打卡问卷";
+          break;
+      }
       this.searchQns(1);
     },
     orderIndex(command) {

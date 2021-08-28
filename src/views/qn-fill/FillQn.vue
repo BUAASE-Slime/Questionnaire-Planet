@@ -92,8 +92,10 @@
 </template>
 
 <script>
+import getDataApi from "@/utils/getDataApi";
 export default {
   name: "FillQn",
+  mixins: [getDataApi],
   data() {
     return {
       rootUrl: this.GLOBAL.baseUrl,
@@ -162,11 +164,11 @@ export default {
               id: 1,
               options: [
                   {
-                      id: 590,
+                      id: 1,
                       title: "问卷星球"
                   },
                   {
-                      id: 591,
+                      id: 2,
                       title: "出版系统"
                   }
               ],
@@ -174,7 +176,7 @@ export default {
           },
           {
               last_question: 222,
-              last_option: 590,
+              last_option: 1,
               is_shown: false,
               question_id: 223,
               row: 1,
@@ -188,23 +190,23 @@ export default {
               id: 2,
               options: [
                   {
-                      id: 592,
+                      id: 1,
                       title: "ZXH"
                   },
                   {
-                      id: 593,
+                      id: 2,
                       title: "ZYH"
                   },
                   {
-                      id: 594,
+                      id: 3,
                       title: "HZY"
                   },
                   {
-                      id: 595,
+                      id: 4,
                       title: "ZHT"
                   },
                   {
-                      id: 596,
+                      id: 5,
                       title: "LKW"
                   }
               ],
@@ -212,7 +214,7 @@ export default {
           },
           {
               last_question: 223,
-              last_option: 592,
+              last_option: 1,
               is_shown: false,
               question_id: 224,
               row: 1,
@@ -226,11 +228,11 @@ export default {
               id: 3,
               options: [
                   {
-                      id: 597,
+                      id: 1,
                       title: "感受不到"
                   },
                   {
-                      id: 598,
+                      id: 2,
                       title: "一丝丝都感受不到"
                   }
               ],
@@ -238,7 +240,7 @@ export default {
           },
           {
               last_question: 224,
-              last_option: 597,
+              last_option: 1,
               is_shown: false,
               question_id: 225,
               row: 1,
@@ -252,19 +254,19 @@ export default {
               id: 4,
               options: [
                   {
-                      id: 599,
+                      id: 1,
                       title: "1-3小时"
                   },
                   {
-                      id: 600,
+                      id: 2,
                       title: "3-5小时"
                   },
                   {
-                      id: 601,
+                      id: 3,
                       title: "5-7小时"
                   },
                   {
-                      id: 602,
+                      id: 4,
                       title: "睡啥觉，起来敲代码"
                   }
               ],
@@ -276,10 +278,10 @@ export default {
   },
   methods: {
     ahead(qid){
-        if(qid==0) return true;
+        if(qid===0) return true;
         for(let i=0;i<this.questions.length;i++){
-          if(this.questions[i].question_id==qid){
-            if(this.questions[i].is_shown==true) return this.ahead(this.questions[i].last_question);
+          if(this.questions[i].question_id===qid){
+            if(this.questions[i].is_shown===true) return this.ahead(this.questions[i].last_question);
             else return false;
           }
         }
@@ -289,13 +291,13 @@ export default {
         console.log( id+ '改变之后的值是:' + value);
         let pid=0;
         for(let j=0;j<this.questions[id-1].options.length;j++){
-          if(value==this.questions[id-1].options[j].title) pid=this.questions[id-1].options[j].id;
+          if(value===this.questions[id-1].options[j].title) pid=this.questions[id-1].options[j].id;
         }
         for(let i=id;i<this.questions.length;i++){
-          if(this.questions[i].last_question==qid&&this.questions[i].last_option==pid){
+          if(this.questions[i].last_question===qid&&this.questions[i].last_option===pid){
             this.questions[i].is_shown=true;
           }
-          else if(this.questions[i].last_question==qid){
+          else if(this.questions[i].last_question===qid){
             this.questions[i].is_shown=false;
           }
         }
@@ -307,16 +309,16 @@ export default {
       let find=false;
         for(let j=0;j<this.questions[id-1].options.length;j++){
           for(let k=0;k<value.length;k++){
-            if(value[k]==this.questions[id-1].options[j].title) {
+            if(value[k]===this.questions[id-1].options[j].title) {
               pid[a++]=this.questions[id-1].options[j].id;
               break;
             }
           }
         }
         for(let i=id;i<this.questions.length;i++){
-          if(this.questions[i].last_question==qid){
+          if(this.questions[i].last_question===qid){
             for(let k=0;k<pid.length;k++){
-              if(this.questions[i].last_option==pid[k]){
+              if(this.questions[i].last_option===pid[k]){
                 this.questions[i].is_shown=true; 
                 find=true; 
                 break;
@@ -403,11 +405,7 @@ export default {
               });
               this.success = true;
               break;
-            case 2:
-              this.$message.warning("问卷已结束，感谢您的参与！");
-              this.close = true;
-              break;
-            case 3:
+            case 2: case 3: case 666:
               this.$message.warning("问卷已结束，感谢您的参与！");
               this.close = true;
               break;
@@ -444,87 +442,10 @@ export default {
   },
   created() {
     if (this.mode === '0') {
-      const formData = new FormData();
-      formData.append("qn_id", this.$route.query.pid);
-      this.$axios({
-        method: 'post',
-        url: '/sm/get/qn_detail',
-        data: formData,
-      })
-          .then(res => {
-            switch (res.data.status_code) {
-              case 0:
-                this.$message.error("您无权访问！");
-                this.$router.push('/');
-                break;
-              case 1:
-                this.title = res.data.title;
-                this.description = res.data.description;
-                this.type = res.data.type;
-                this.questions = res.data.questions;
-
-                //建立答案框架
-                for (var i=0; i<this.questions.length; i++) {
-                  this.answers.push({
-                    question_id: this.questions[i].question_id,
-                    type: this.questions[i].type,
-                    ans: null,
-                    ansList: [],
-                    answer: ''
-                  })
-                }
-
-                break;
-              default:
-                this.$message.error("访问失败！");
-                break;
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          })
+      this.getQnDataForPreview();
     }
     else if (this.mode === '1') {
-      const formData = new FormData();
-      formData.append("code", this.$route.query.code);
-      this.$axios({
-        method: 'post',
-        url: '/sm/get/qn_for_fill',
-        data: formData,
-      })
-          .then(res => {
-            switch (res.data.status_code) {
-              case 2:
-                this.$router.push('PageNotFound');
-                break;
-              case 1:
-                this.title = res.data.title;
-                this.description = res.data.description;
-                this.type = res.data.type;
-                this.questions = res.data.questions;
-
-                //建立答案框架
-                for (var i=0; i<this.questions.length; i++) {
-                  this.answers.push({
-                    question_id: this.questions[i].question_id,
-                    type: this.questions[i].type,
-                    ans: null,
-                    ansList: [],
-                    answer: ''
-                  })
-                }
-                break;
-              case 3:
-                this.close = true;
-                break;
-              default:
-                this.$message.error("访问失败！");
-                break;
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          })
+      this.getQnDataForFill();
     }
   },
 }

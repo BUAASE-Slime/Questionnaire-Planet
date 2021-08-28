@@ -12,6 +12,7 @@
           v-on:saveClicked="save($event)"
           v-on:qnPreview="preview($event)"
           v-on:onConfirm="dialogCancel($event)"
+          v-on:shareClicked="share($event)"
       >
       </edit-header>
     </el-header>
@@ -289,9 +290,11 @@
 import editHeader from "../../../components/header/editHeader";
 import user from "@/store/user";
 import QRCode from "qrcodejs2";
+import getDataApi from "@/utils/getDataApi";
 
 export default {
   name: "investigation",
+  mixins: [getDataApi],
   data() {
     return {
       value:'',
@@ -767,6 +770,51 @@ export default {
         });
       });
     },
+    share() {
+      if (!this.isReleased) {
+        this.publish();
+      } else {
+        this.saveinfo('publish');
+        this.publishSuccess();
+        const formData = new FormData();
+        formData.append("survey_id", this.pid);
+        this.$axios({
+          url: '/qn/get_code_existed',
+          method: 'post',
+          data: formData,
+        })
+        .then(res => {
+          switch (res.data.status_code) {
+            case 0:
+              this.$message.warning("您无权执行此操作！");
+              break;
+            case 1:
+              this.linkShare = this.GLOBAL.baseUrl + '/fill?mode=1&code=' + res.data.code;
+
+              if (this.qrcode == null) {
+                this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+                  width: 200, //生成的二维码的宽度
+                  height: 200, //生成的二维码的高度
+                  colorDark : "#000000", // 生成的二维码的深色部分
+                  colorLight : "#ffffff", //生成二维码的浅色部分
+                  correctLevel : QRCode.CorrectLevel.H
+                });
+              }
+              this.qrcode.clear();
+              this.qrcode.makeCode(this.linkShare);
+
+              break;
+            default:
+              this.$message.error("操作失败！");
+              break;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      }
+    },
+
     saveinfo(tag) {
       const userInfo = user.getters.getUser(user.state());
       var param = {
@@ -813,6 +861,14 @@ export default {
                     break;
                   case 'publish':
                     this.$message.success("保存成功");
+                    break;
+                  case 'autosave':
+                    this.$notify({
+                      title: '保存成功',
+                      message: '每隔3分钟将自动为您保存编辑信息',
+                      type: 'success',
+                      duration: 2000
+                    });
                     break;
                 }
                 break;
@@ -981,35 +1037,7 @@ export default {
     },
   },
   created() {
-    const formData = new FormData();
-    formData.append("qn_id", this.$route.query.pid);
-    this.$axios({
-      method: 'post',
-      url: '/sm/get/qn_detail',
-      data: formData,
-    })
-    .then(res => {
-      switch (res.data.status_code) {
-        case 0:
-          this.$message.error("您无权访问！");
-          this.$router.push('/');
-          break;
-        case 1:
-          this.title = res.data.title;
-          this.description = res.data.description;
-          this.type = res.data.type;
-          this.questions = res.data.questions;
-          this.isReleased = res.data.is_released;
-          this.InitOutline();
-          break;
-        default:
-          this.$message.error("访问失败！");
-          break;
-      }
-    })
-    .catch(err => {
-      console.log(err);
-    })
+    this.getQnDataSelf();
   },
 }
 </script>
