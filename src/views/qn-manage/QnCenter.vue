@@ -71,7 +71,8 @@
             </div>
 
             <div v-if="hasQn" id="main-body">
-              <el-card v-for="(msg,index) in QnList" class="box-card" :key='index'>
+              <div>
+              <el-card v-for="(msg,index) in userdata" class="box-card" :key='index' >
                 <div slot="header" style="display:flex">
                   <el-row>
                     <el-col span=20>{{msg.title}}</el-col>
@@ -106,6 +107,18 @@
                   <el-button type="text" v-else @click="release(index)" class="rightside el-icon-video-play" style="color: #038235"> 发布</el-button>
                 </div>
               </el-card>
+              
+              <el-pagination layout="sizes, prev, pager, next, jumper" 
+                background
+                :current-page="currentPage" 
+                :page-size="pageSize"
+                :page-sizes="pageSizes" 
+                :total="QnList.length" 
+                @size-change="handleSizeChange" 
+                @current-change="handleCurrentChange"
+                style="margin: 20px">
+                </el-pagination>
+                </div>
             </div>
           <div v-else>
             <el-divider/>
@@ -157,6 +170,10 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
+      pageSize: 5,
+      pageSizes:[4,5,7],
+
       image_url: '',
       qrcode: null,
 
@@ -202,6 +219,15 @@ export default {
     }
   },
   methods:{
+    handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.currentPage = 1;
+        this.pageSize = val;
+      },
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
+        this.currentPage = val;
+      },
     getTypeFormPid(pid) {
       for (var i=0; i<this.QnList.length; i++) {
         if (this.QnList[i].survey_id === pid) {
@@ -1035,6 +1061,11 @@ export default {
         console.log(err);
       })
     }
+  },
+  computed:{ 
+    userdata:function(){
+       return this.QnList.slice((this.currentPage-1)*this.pageSize,this.currentPage*this.pageSize); 
+       }
   }
 }
 </script>

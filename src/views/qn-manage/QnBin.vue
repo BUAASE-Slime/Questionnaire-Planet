@@ -1,12 +1,21 @@
 <template>
   <div class="bin">
-      <el-row style="margin: 20px;color: #00aeff">
-        如果您想恢复或清空回收站内的问卷数据，请点击相应按钮，注意数据清空后将无法恢复，请谨慎操作！
+      <el-row >
+        <el-col :span="6">
+        <div>
+        <el-button size="small" id="backB" type="primary" plain icon="el-icon-back" @click="goIndex">返回</el-button>
+        </div>
+        </el-col>
+        <el-col :span="16">
+        <div id="hint">
+        <span style="display:block; margin: 25px;color: #00aeff;">如果您想恢复或清空回收站内的问卷数据，请点击相应按钮，注意数据清空后将无法恢复，请谨慎操作！</span> 
+        </div>
+        </el-col>
       </el-row>
       <el-row style="text-align: center">
         <el-table
             v-loading="loading"
-            :data="binData"
+            :data="binData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
             stripe
             style="width: 70%"
             :header-cell-style="{'text-align':'center'}"
@@ -58,6 +67,17 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination layout="sizes, prev, pager, next, jumper" 
+                background
+                :current-page="currentPage" 
+                :page-size="pageSize"
+                :page-sizes="pageSizes" 
+                :total="binData.length" 
+                @size-change="handleSizeChange" 
+                @current-change="handleCurrentChange"
+                style="margin: 20px"
+                v-if="!loading">
+        </el-pagination>
         <el-button type="danger" plain style="margin-top: 20px" @click="empty_pre" >清空回收站</el-button>
       </el-row>
   </div>
@@ -70,6 +90,9 @@ export default {
   name: "QnBin",
   data() {
     return {
+      currentPage: 1,
+      pageSize: 10,
+      pageSizes:[7,10,15],
       loading: true,
       /*
       binData: [
@@ -109,6 +132,18 @@ export default {
     }
   },
   methods:{
+      goIndex: function () {
+        this.$router.push('/index');
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.currentPage = 1;
+        this.pageSize = val;
+      },
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
+        this.currentPage = val;
+      },
     empty_pre: function () {
       this.$confirm('此操作将彻底删除回收站中所有内容，确定吗？', '提示', {
         confirmButtonText: '确定',
@@ -303,5 +338,15 @@ export default {
 .bin .el-table{
   margin: auto;
   text-align: center;
+}
+#backB{
+  display: flex;
+  float:left;
+  margin: 20px;
+  margin-left: 240px;
+
+}
+#hint{
+  text-align: left;
 }
 </style>

@@ -43,14 +43,38 @@
               </el-table>
               </div>
             </div>
+            <div>
+              <div style="margin: 20px; float: left; clear:both" >
+                    <el-radio-group v-model="radio3" size="medium">
+                      <el-radio-button label="柱状图" @click.native="histoswi"></el-radio-button>
+                      <el-radio-button label="折线图" @click.native="lineswi"></el-radio-button>
+                      <el-radio-button label="雷达图" @click.native="rayswi"></el-radio-button>
+                    </el-radio-group>
+                  </div>
+                  <div style="clear:both;">
+                      <histogram4 v-if="choose==1"></histogram4>
+                      <linechart4 v-else-if="choose==2"></linechart4>
+                      <raychart4 v-else></raychart4>
+                  </div>
+            </div>
         </el-card>
     </div>
 </template>
 
 <script>
+import histogram4 from '../Echart/histogram4.vue'
+import linechart4 from '../Echart/linechart4.vue'
+import raychart4 from '../Echart/raychart4.vue'
   export default {
+    components:{
+    histogram4,
+    linechart4,
+    raychart4
+    },
     data() {
       return {
+        radio3: "柱状图",
+        choose:1,
         ans: false,
         tableHead:[],
         tableData: [],
@@ -61,6 +85,15 @@
       }
     },
     methods:{
+        rayswi: function(){
+            this.choose=3
+        },
+        histoswi: function(){
+            this.choose=1
+        },
+        lineswi: function(){
+            this.choose=2
+        },
       anlysis: function(){
         this.ans = true;
 
