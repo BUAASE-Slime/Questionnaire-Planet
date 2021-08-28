@@ -87,36 +87,6 @@
                   {{ item.description }}
                 </div>
 
-                <!--                  图片-->
-                <el-row class="block-img" v-for="(i,index) in item.imgList" :key="i.index">
-                  <el-col :offset="2" :span="10" class="demo-image__preview" v-if="index%2===0">
-                    <el-image
-                        style="width: 200px; height: 200px"
-                        :src="i.url"
-                        :preview-src-list="[i.url]">
-                    </el-image>
-                  </el-col>
-                  <el-col :span="10" class="demo-image__preview" v-if="index%2===0&&index<=item.imgList.length-1">
-                    <el-image
-                        style="width: 200px; height: 200px"
-                        :src="item.imgList[index+1].url"
-                        :preview-src-list="[item.imgList[index+1].url]">
-                    </el-image>
-                  </el-col>
-                </el-row>
-                <span style="color: #9b9ea0;font-size: x-small" v-if="item.imgList.length!==0">（点击图片查看大图）</span>
-
-
-                <!--                视频-->
-                <el-row class="block-img" v-for="i in item.videoList" :key="i.index">
-                  <embed width=400 height=230 transparentatstart=true
-                         animationatstart=false autostart=true autosize=false volume=100
-                         displaysize=0 showdisplay=true showstatusbar=true showcontrols=true
-                         showaudiocontrols=true showtracker=true showpositioncontrols=true
-                         balance=true :src="i.url">
-                </el-row>
-
-
                 <div class="block-choice" v-for="ans in item.options" :key="ans.id">
 
                   <!--                  单选-->
@@ -238,29 +208,6 @@
           </el-form-item>
         </template>
 
-        <el-form-item label="上传图片">
-          <el-upload
-              class="upload-img"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-remove="handleRemove"
-              :before-remove="beforeRemove"
-              :file-list="willAddQuestion.imgList">
-            <el-button size="small" plain style="width: 150px">点击上传</el-button>
-            <!--            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
-          </el-upload>
-        </el-form-item>
-
-        <el-form-item label="上传视频">
-          <el-upload
-              class="upload-video"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-remove="handleRemove"
-              :before-remove="beforeRemove"
-              :file-list="willAddQuestion.videoList">
-            <el-button size="small" plain style="width: 150px">点击上传</el-button>
-            <!--            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
-          </el-upload>
-        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer" style="text-align: center">
         <el-row>
