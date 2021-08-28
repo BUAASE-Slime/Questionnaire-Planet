@@ -700,6 +700,7 @@ export default {
     },
     initParams() {
       this.qnType = '问卷状态';
+      this.qnValue = '问卷类型';
       this.orderQn = '排序依据';
       this.qnKey = '';
       this.orderType = 'default';

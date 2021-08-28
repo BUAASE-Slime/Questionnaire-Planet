@@ -114,6 +114,7 @@ export default {
   mixins: [getDataApi, saveAnsApi],
   data() {
     return {
+      timer: '',
       rootUrl: this.GLOBAL.baseUrl,
 
       success: false,
@@ -188,6 +189,15 @@ export default {
     }
   },
   methods: {
+    autoGet() {
+      if (this.mode === '0') {
+        this.getQnDataForPreview();
+      }
+      else if (this.mode === '1') {
+        this.getQnDataForFill();
+      }
+      console.log("get");
+    },
     gotoHome() {
       this.$router.push('/');
     },
@@ -227,6 +237,12 @@ export default {
       this.getQnDataForFill();
     }
   },
+  mounted() {
+    this.timer = setInterval(this.autoGet, 1000);
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
+  }
 }
 </script>
 
