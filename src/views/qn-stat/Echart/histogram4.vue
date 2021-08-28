@@ -9,25 +9,26 @@
 export default {
   name: 'echart',
   props: {
-    chart1_name:[],
-    chart1_data:[],
+    dimensions_data:[],
+    source_data:[],
+    series_data: []
   },
   data () {
     return {
-        dimensions_data:['choice', 'a', 'b', 'c','d'],//['choice', 列选项]
-        source_data:[
-            {choice: 'd', 'a': 0, 'b': 66.66, 'c': 33.33 , 'd': 0},
-            {choice: 'b', 'a': 33.33, 'b': 0, 'c': 66.66, 'd': 0},
-            {choice: 'c', 'a': 20, 'b': 0, 'c': 20, 'd': 60},
-            // {choice: 行选项, 每个列选项在该行选项中所占百分比},
-        ],
-        series_data:[
-            {type: 'bar'},
-            {type: 'bar'},
-            {type: 'bar'},
-            {type: 'bar'}
-            //有几个列选项就有几个这玩意：{type: 'bar'}
-        ]
+        // dimensions_data:['choice', 'a', 'b', 'c','d'],//['choice', 列选项]
+        // source_data:[
+        //     {choice: 'd', 'a': 0, 'b': 66.66, 'c': 33.33 , 'd': 0},
+        //     {choice: 'b', 'a': 33.33, 'b': 0, 'c': 66.66, 'd': 0},
+        //     {choice: 'c', 'a': 20, 'b': 0, 'c': 20, 'd': 60},
+        //     // {choice: 行选项, 每个列选项在该行选项中所占百分比},
+        // ],
+        // series_data:[
+        //     {type: 'bar'},
+        //     {type: 'bar'},
+        //     {type: 'bar'},
+        //     {type: 'bar'}
+        //     //有几个列选项就有几个这玩意：{type: 'bar'}
+        // ]
     }
   },
   mounted(){
