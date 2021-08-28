@@ -405,6 +405,7 @@ export default {
   mixins: [getDataApi, saveDataApi],
   data() {
     return {
+      timer: '',
       qrcode: null,
 
       linkShare: '',
@@ -597,6 +598,9 @@ export default {
     editHeader,
   },
   methods: {
+    autoSave() {
+      this.saveQnInfo('autosave', '2');
+    },
     download() {
       // 获取base64的图片节点
       var img = document.getElementById('qrcode_2').getElementsByTagName('img')[0];
@@ -1164,6 +1168,12 @@ export default {
   created() {
     this.getQnDataSelf();
   },
+  mounted() {
+    this.timer = setInterval(this.autoSave, 60000);
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
+  }
 }
 </script>
 

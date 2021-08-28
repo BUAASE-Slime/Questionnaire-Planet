@@ -326,6 +326,7 @@ export default {
   mixins: [getDataApi, saveDataApi],
   data() {
     return {
+      timer: '',
       value:'',
       qrcode: null,
       timeFrame: '',
@@ -503,6 +504,9 @@ export default {
     editHeader,
   },
   methods: {
+    autoSave() {
+      this.saveQnInfo('autosave', '5');
+    },
     genCodeAgain() {
       const formData = new FormData();
       formData.append("qn_id", this.$route.query.pid);
@@ -1168,6 +1172,12 @@ export default {
   created() {
     this.getQnDataSelf();
   },
+  mounted() {
+    this.timer = setInterval(this.autoSave, 60000);
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
+  }
 }
 </script>
 
