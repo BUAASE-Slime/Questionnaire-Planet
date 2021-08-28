@@ -317,14 +317,13 @@
 
 <script>
 import editHeader from "../../../components/header/editHeader";
-import location from "../../../components/location";
-import user from "@/store/user";
 import QRCode from "qrcodejs2";
 import getDataApi from "@/utils/getDataApi";
+import saveDataApi from "@/utils/saveDataApi";
 
 export default {
   name: "punch",
-  mixins: [getDataApi],
+  mixins: [getDataApi, saveDataApi],
   data() {
     return {
       value:'',
@@ -1009,121 +1008,8 @@ export default {
       }
     },
     saveinfo(tag) {
-      const userInfo = user.getters.getUser(user.state());
-      var param = {
-        username: userInfo.user.username,
-        title: this.title,
-        finished_time: this.timeFrame,
-        description: this.description,
-        type: this.type,
-        qn_id: this.$route.query.pid,
-        questions: this.questions
-      }
-      var paramer = JSON.stringify(param, {questions: 'brackets'})
-      this.$axios({
-        method: 'post',
-        url: '/sm/save/qn_keep/history',
-        data: paramer,
-      })
-          .then(res => {
-            switch (res.data.status_code) {
-              case 0:
-                this.$message.warning("登录信息失效，请重新登录！");
-                setTimeout(() => {
-                  this.$store.dispatch('clear');
-                  location.reload();
-                }, 500);
-                break;
-              case 1:
-                switch (tag) {
-                  case 'save':
-                    this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
-                      distinguishCancelAndClose: true,
-                      confirmButtonText: '返回问卷中心',
-                      cancelButtonText: '继续编辑'
-                    })
-                        .then(() => {
-                          this.$router.push('/index');
-                        });
-                    break;
-                  case 'preview':
-                    this.$message.success("保存成功");
-                    setTimeout(() => {
-                      location.href = 'preview_hate?mode=0&pid=' + this.$route.query.pid;
-                    }, 700);
-                    break;
-                  case 'publish':
-                    this.$message.success("保存成功");
-                    break;
-                }
-                break;
-              default:
-                this.$message.error("保存失败！");
-                break;
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          })
+      this.saveQnInfo(tag, "5");
     },
-    // saveinfo(tag) {
-    //   const userInfo = user.getters.getUser(user.state());
-    //   var param = {
-    //     username: userInfo.user.username,
-    //     title: this.title,
-    //     finished_time: this.timeFrame,
-    //     description: this.description,
-    //     type: this.type,
-    //     qn_id: this.$route.query.pid,
-    //     questions: this.questions
-    //   }
-    //   var paramer = JSON.stringify(param, {questions: 'brackets'})
-    //   this.$axios({
-    //     method: 'post',
-    //     url: '/sp/save_qn',
-    //     data: paramer,
-    //   })
-    //       .then(res => {
-    //         switch (res.data.status_code) {
-    //           case 0:
-    //             this.$message.warning("登录信息失效，请重新登录！");
-    //             setTimeout(() => {
-    //               this.$store.dispatch('clear');
-    //               location.reload();
-    //             }, 500);
-    //             break;
-    //           case 1:
-    //             switch (tag) {
-    //               case 'save':
-    //                 this.$confirm('问卷信息保存成功，请选择继续编辑或返回个人问卷中心？', '提示信息', {
-    //                   distinguishCancelAndClose: true,
-    //                   confirmButtonText: '返回问卷中心',
-    //                   cancelButtonText: '继续编辑'
-    //                 })
-    //                 .then(() => {
-    //                   this.$router.push('/index');
-    //                 });
-    //                 break;
-    //               case 'preview':
-    //                 this.$message.success("保存成功");
-    //                 setTimeout(() => {
-    //                   location.href = 'preview_hate?mode=0&pid=' + this.$route.query.pid;
-    //                 }, 700);
-    //                 break;
-    //               case 'publish':
-    //                 this.$message.success("保存成功");
-    //                 break;
-    //             }
-    //             break;
-    //           default:
-    //             this.$message.error("保存失败！");
-    //             break;
-    //         }
-    //       })
-    //       .catch(err => {
-    //         console.log(err);
-    //       })
-    // },
     save() {
       this.saveinfo('save');
     },
