@@ -1086,7 +1086,7 @@ export default {
   },
   watch:{
     hasRecycleLimit:"recycleLimit",
-  }
+  },
 }
 </script>
 
