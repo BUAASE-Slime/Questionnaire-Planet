@@ -139,6 +139,10 @@ export default {
             let url;
             switch (surveyType) {
                 case "1":
+                    //-------------------------------暂时
+                    // this.corLastQusId();
+                    //--------------------------------------
+
                     url = '/sm/save/qn_keep/history';
                     break;
                 case "2":
@@ -229,6 +233,22 @@ export default {
                 .catch(err => {
                     console.log(err);
                 })
+        },
+
+        getQidFromId(id) {
+            for (var i=0; i<this.questions.length; i++) {
+                if (id === i+1) {
+                    return this.questions[i].question_id;
+                }
+            }
+            return id;
+        },
+        corLastQusId() {
+            for (var i=0; i<this.questions.length; i++) {
+                if (this.questions[i].last_question !== 0) {
+                    this.questions[i].last_question = this.getQidFromId(this.questions[i].last_question);
+                }
+            }
         }
     }
 }
