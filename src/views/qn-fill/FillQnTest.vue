@@ -22,6 +22,8 @@
 <!--        </div>-->
         <div class="body" v-else>
 
+          <DeadTime v-if="finished_time!==''&&finished_time!==undefined" :endTime="finished_time"></DeadTime>
+
           <div class="title">
             {{ title }}
           </div>
@@ -122,10 +124,11 @@ import FinishTest from "@/views/qn-fill/FinishTest";
 import getDataApi from "@/utils/getDataApi";
 import saveAnsApi from "@/utils/saveDataApi";
 import toolApi from "@/utils/toolApi";
+import DeadTime from "@/views/qn-fill/components/DeadTime";
 export default {
   name: "FillQn",
   mixins: [getDataApi, saveAnsApi, toolApi],
-  components: {FinishTest},
+  components: {FinishTest, DeadTime},
   data() {
     return {
       rootUrl: this.GLOBAL.baseUrl,
@@ -348,7 +351,8 @@ export default {
         // },
       ],
       quesStorage: [],
-      type: ''
+      type: '',
+      finished_time: '',
     }
   },
   methods: {
