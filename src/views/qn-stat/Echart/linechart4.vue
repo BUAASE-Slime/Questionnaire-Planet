@@ -56,6 +56,11 @@ export default {
                 tooltip: {
                     trigger: 'axis',
                 },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {show: true}
+                    }
+                },
                 legend: {
                     data: this.legend_data
                 },

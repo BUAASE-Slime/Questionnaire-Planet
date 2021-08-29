@@ -24,31 +24,31 @@
         <el-row>
           <el-col :span="4" offset="0">
             <el-card shadow="hover" class="box-card" @click.native="dialogVisible=true;quesType=1;" >
-              <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/survey.png"></div>
+              <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/survey3.png"></div>
               <span style="display: block; font-weight:bold; text-align: center">调查</span>
             </el-card>
           </el-col>
           <el-col :span="4" offset="1">
             <el-card shadow="hover" class="box-card" @click.native="dialogVisible=true;quesType=2;" >
-              <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/test.png"></div>
+              <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/test3.png"></div>
               <span style="display: block; font-weight:bold; text-align: center">考试</span>
             </el-card>
           </el-col>
           <el-col :span="4" offset="1">
             <el-card shadow="hover" class="box-card" @click.native="dialogVisible=true;quesType=3;" >
-              <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/vote.png"></div>
+              <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/vote3.png"></div>
               <span style="display: block; font-weight:bold; text-align: center">投票</span>
             </el-card>
           </el-col>
           <el-col :span="4" offset="1">
             <el-card shadow="hover" class="box-card" @click.native="dialogVisible=true;quesType=4;" >
-              <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/form.png"></div>
+              <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/form3.png"></div>
               <span style="display: block; font-weight:bold; text-align: center">表单</span>
             </el-card>
           </el-col>
           <el-col :span="4" offset="1">
             <el-card shadow="hover" class="box-card" @click.native="dialogVisible=true;quesType=5;" >
-              <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/punch.png"></div>
+              <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/punch3.png"></div>
               <span style="display: block; font-weight:bold; text-align: center">打卡</span>
             </el-card>
           </el-col>

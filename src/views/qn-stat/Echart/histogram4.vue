@@ -48,6 +48,11 @@ export default {
             tooltip: {
               // formatter:'{a} {b}: {d} %'
             },
+            toolbox: {
+                feature: {
+                    saveAsImage: {show: true}
+                }
+            },
             dataset: {
                 dimensions: this.dimensions_data,
                 source: this.source_data,
