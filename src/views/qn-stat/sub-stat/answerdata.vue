@@ -574,6 +574,7 @@
       }
     },
     created() {
+      let loadingIns = this.$loading({fullscreen: true});
       const formData = new FormData();
       formData.append("qn_id", this.$route.query.pid);
       this.$axios({
@@ -582,6 +583,7 @@
         data: formData,
       })
       .then(res => {
+        loadingIns.close();
         if (res.data.status_code === 1) {
           this.tableData = res.data.submits;
           this.is_test = res.data.type === "2";

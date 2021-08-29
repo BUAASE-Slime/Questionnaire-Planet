@@ -279,6 +279,7 @@ import toolApi from "@/utils/toolApi";
       }
     },
     created() {
+      let loadingIns = this.$loading({fullscreen: true});
       const formData = new FormData();
       formData.append("qn_id", this.$route.query.pid);
       this.$axios({
@@ -287,6 +288,7 @@ import toolApi from "@/utils/toolApi";
         data: formData,
       })
       .then(res => {
+        loadingIns.close();
         if (res.data.status_code === 1) {
           this.questions = res.data.questions;
           console.log(this.questions);

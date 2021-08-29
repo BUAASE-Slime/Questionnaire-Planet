@@ -63,6 +63,7 @@ export default {
     },
   },
   created() {
+    let loadingIns = this.$loading({fullscreen: true});
     const formData = new FormData();
     formData.append("qn_id", parseInt(this.$route.query.pid));
     this.$axios({
@@ -71,6 +72,7 @@ export default {
       data: formData,
     })
     .then(res => {
+      loadingIns.close();
       switch (res.data.status_code) {
         case 1:
           this.sum_collect = res.data.num_all;
