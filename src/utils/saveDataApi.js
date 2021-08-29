@@ -81,7 +81,7 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                let loadingIns = this.$loading({fullscreen: true});
+                let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
                 var param = {
                     code: this.$route.query.code,
                     answers: this.answers,
@@ -159,7 +159,7 @@ export default {
                     url = '/sm/save/qn_keep/history';
                     break;
             }
-            let loadingIns = this.$loading({fullscreen: true});
+            let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
             const userInfo = user.getters.getUser(user.state());
             var param = {
                 username: userInfo.user.username,

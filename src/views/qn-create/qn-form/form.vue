@@ -50,18 +50,14 @@
                     <i class="el-icon-user"></i>
                     <span class="chooseLabel">姓名 </span>
                     <i class="el-icon-circle-plus type-icon" @click="addName"></i>&emsp;&emsp;
-                    <i class="el-icon-male"></i>
-                    <span class="chooseLabel">性别 </span>
-                    <i class="el-icon-circle-plus type-icon" @click="addSex"></i>
-                  </div>
-                  <div class="ques-type">
                     <i class="el-icon-discount"></i>
                     <span class="chooseLabel">学号 </span>
-                    <i class="el-icon-circle-plus type-icon" @click="addStuID"></i>&emsp;&emsp;
-                    <i class="el-icon-school"></i>
-                    <span class="chooseLabel">学校 </span>
-                    <i class="el-icon-circle-plus type-icon" @click="addSchool"></i>
+                    <i class="el-icon-circle-plus type-icon" @click="addStuID"></i>
+<!--                    <i class="el-icon-male"></i>-->
+<!--                    <span class="chooseLabel">性别 </span>-->
+<!--                    <i class="el-icon-circle-plus type-icon" @click="addSex"></i>-->
                   </div>
+
                   <div class="ques-type">
                     <i class="el-icon-phone-outline"></i>
                     <span class="chooseLabel">电话 </span>
@@ -70,6 +66,12 @@
                     <span class="chooseLabel">邮箱 </span>
                     <i class="el-icon-circle-plus type-icon" @click="addEmail"></i>
                   </div>
+<!--                  <div class="ques-type">-->
+<!--                    &emsp;&emsp;-->
+<!--                    <i class="el-icon-school"></i>-->
+<!--                    <span class="chooseLabel">学校 </span>-->
+<!--                    <i class="el-icon-circle-plus type-icon" @click="addSchool"></i>-->
+<!--                  </div>-->
                 </div>
               </div>
             </el-tab-pane>

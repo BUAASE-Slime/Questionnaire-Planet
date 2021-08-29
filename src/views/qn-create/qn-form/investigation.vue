@@ -1092,6 +1092,9 @@ export default {
         message: '设置已生效'
       });
     },
+    publishTemplate() {
+
+    },
     publish() {
       this.saveQnInfo('publish', "1");
 

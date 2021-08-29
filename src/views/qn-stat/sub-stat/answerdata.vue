@@ -199,7 +199,7 @@
         indexnum: 0,
         dialogVisible: false,
         currentPage: 1,
-        pageSize: 5,
+        pageSize: 7,
         pageSizes:[3,5,7],
         loading: true,
 
@@ -577,7 +577,7 @@
       }
     },
     created() {
-      let loadingIns = this.$loading({fullscreen: true});
+      let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
       const formData = new FormData();
       formData.append("qn_id", this.$route.query.pid);
       this.$axios({
@@ -613,7 +613,7 @@
       },
       sortFun (attr, rev) {
         //第一个参数传入info里的prop表示排的是哪一列，第二个参数是升还是降排序
-        if (rev == undefined) {
+        if (rev === undefined) {
           rev = 1;
         } else {
           rev = (rev) ? 1 : -1;
@@ -645,12 +645,12 @@
               if (!isNaN(value)) {
                 return prev + curr;
               } else {
-                return prev;
+                return 'N/A';
               }
             }, 0);
             sums[index] = (sums[index]/this.tableData.length).toFixed(2);
           } else {
-            // sums[index] = 'N/A';
+            sums[index] = 'N/A';
           }
         });
 
@@ -716,6 +716,7 @@
         this.totalScore = total;
       },
       getDataBySid(sid) {
+        let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
         var data = [];
         const formData1 = new FormData();
         formData1.append("submit_id", sid);
@@ -725,6 +726,7 @@
           data: formData1,
         })
         .then(res => {
+          loadingIns.close();
           if (res.data.status_code === 1) {
             data = res.data.answers;
             console.log(data);
@@ -835,6 +837,7 @@
         });
       },
       downloadExcel() {
+        let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
         const formData = new FormData();
         formData.append('qn_id', this.$route.query.pid);
         this.$axios({
@@ -843,6 +846,7 @@
           data: formData
         })
         .then(res => {
+          loadingIns.close();
           switch (res.data.status_code) {
             case 1:
               var url = res.data.excel_url;
