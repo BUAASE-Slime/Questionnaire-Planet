@@ -441,7 +441,7 @@ export default {
         children: 'children',
         label: 'label'
       },
-      type: 1,
+      type: '1',
       questions: [],
       // questions: [{
       //   question_id: 123,
@@ -973,7 +973,7 @@ export default {
         videoList:[]
       }
     },
-    dialogCancel: function(){
+    dialogCancel: function() {
       this.qsEditDialogTitle="新建题目";
       this.resetWillAdd();
       this.qsEditDialogVisible=false;
@@ -1091,9 +1091,6 @@ export default {
         type: 'success',
         message: '设置已生效'
       });
-    },
-    publishTemplate() {
-
     },
     publish() {
       this.saveQnInfo('publish', "1");

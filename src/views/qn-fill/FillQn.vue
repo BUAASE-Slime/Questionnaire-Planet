@@ -408,8 +408,6 @@ export default {
 
     },
   },
-  mounted() {
-  },
   created() {
     if (this.mode === '0') {
       this.getQnDataForPreview();
