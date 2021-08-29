@@ -47,14 +47,14 @@
             <!--                  单选-->
             <div v-if="item.type==='radio'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
-                <el-radio v-if="item.type==='radio'" @change="changeHandler(item.question_id,item.id,answers[item.id-1].ans)" v-model="answers[item.id-1].ans" :label="opt.title">
+                <el-radio v-if="item.type==='radio'" @change="changeHandler(item.id,answers[item.id-1].ans)" v-model="answers[item.id-1].ans" :label="opt.title">
                   {{ opt.title }}
                 </el-radio>
               </div>
             </div>
 
             <!--                  多选-->
-            <el-checkbox-group class="q-opt" v-if="item.type==='checkbox'" @change="changeHandler2(item.question_id,item.id,answers[item.id-1].ansList)" v-model="answers[item.id-1].ansList">
+            <el-checkbox-group class="q-opt" v-if="item.type==='checkbox'" @change="changeHandler2(item.id,answers[item.id-1].ansList)" v-model="answers[item.id-1].ansList">
               <el-checkbox v-for="opt in item.options" :key="opt.id" :label="opt.title">
                 {{ opt.title }}
               </el-checkbox>
@@ -189,7 +189,7 @@ export default {
           //     ]
           // },
           // {
-          //     last_question: 222,
+          //     last_question: 1,
           //     last_option: 1,
           //     is_shown: false,
           //     question_id: 223,
@@ -234,7 +234,7 @@ export default {
           //     ]
           // },
           // {
-          //     last_question: 223,
+          //     last_question: 2,
           //     last_option: 1,
           //     is_shown: false,
           //     question_id: 224,
@@ -260,7 +260,7 @@ export default {
           //     answer: ""
           // },
           // {
-          //     last_question: 224,
+          //     last_question: 3,
           //     last_option: 1,
           //     is_shown: false,
           //     question_id: 225,
@@ -301,29 +301,29 @@ export default {
     ahead(qid){
         if(qid===0) return true;
         for(let i=0;i<this.questions.length;i++){
-          if(this.questions[i].question_id===qid){
+          if(this.questions[i].id===qid){
             if(this.questions[i].is_shown===true) return this.ahead(this.questions[i].last_question);
             else return false;
           }
         }
         return false;
     },
-    changeHandler(qid,id,value) {
+    changeHandler(id,value) {
         console.log( id+ '改变之后的值是:' + value);
         let pid=0;
         for(let j=0;j<this.questions[id-1].options.length;j++){
           if(value===this.questions[id-1].options[j].title) pid=this.questions[id-1].options[j].id;
         }
         for(let i=id;i<this.questions.length;i++){
-          if(this.questions[i].last_question===qid&&this.questions[i].last_option===pid){
+          if(this.questions[i].last_question===id&&this.questions[i].last_option===pid){
             this.questions[i].is_shown=true;
           }
-          else if(this.questions[i].last_question===qid){
+          else if(this.questions[i].last_question===id){
             this.questions[i].is_shown=false;
           }
         }
     },
-    changeHandler2(qid,id,value){
+    changeHandler2(id,value){
       console.log( id+ '改变之后的值是:' + value);
       let pid=[];
       let a=0;
@@ -337,7 +337,7 @@ export default {
           }
         }
         for(let i=id;i<this.questions.length;i++){
-          if(this.questions[i].last_question===qid){
+          if(this.questions[i].last_question===id){
             for(let k=0;k<pid.length;k++){
               if(this.questions[i].last_option===pid[k]){
                 this.questions[i].is_shown=true; 
