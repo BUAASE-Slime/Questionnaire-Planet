@@ -507,14 +507,16 @@ export default {
         ],
         row: 1, // 填空区域行数
         score: 5, // 最大评分
-        imgList:[{
-          name:'1.jpg',
-          url:"https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.616pic.com%2Fbg_w1180%2F00%2F22%2F20%2F2F89KQ0UnA.jpg&refer=http%3A%2F%2Fpic.616pic.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1632713364&t=82be18770c43c56fd28895cc938f6a0b"
-        },],
-        videoList:[{
-          name: "1.mp4",
-          url: "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-        }]
+        imgList: [],
+        videoList: [],
+        // imgList:[{
+        //   name:'1.jpg',
+        //   url:"https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.616pic.com%2Fbg_w1180%2F00%2F22%2F20%2F2F89KQ0UnA.jpg&refer=http%3A%2F%2Fpic.616pic.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1632713364&t=82be18770c43c56fd28895cc938f6a0b"
+        // },],
+        // videoList:[{
+        //   name: "1.mp4",
+        //   url: "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
+        // }]
       },
       willAddLogic: {
         question_id: 0,

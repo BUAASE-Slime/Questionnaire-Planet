@@ -25,10 +25,6 @@ export default {
                             this.questions = res.data.questions;
                             this.isReleased = res.data.is_released;
 
-                            //-------------------------------暂时
-                            // this.corBackLastQurId();
-                            //--------------------------------------
-
                             // 多选题标准答案数据格式转换
                             if (this.type === '2') {
                                 for (var i=0; i<this.questions.length; i++) {
@@ -192,22 +188,5 @@ export default {
                     console.log(err);
                 })
         },
-
-        //----------------------return sequence(id) from question_id
-        getIdFromQid(qid) {
-            for (var i=0; i<this.questions.length; i++) {
-                if (qid === this.questions[i].question_id) {
-                    return i+1;
-                }
-            }
-            return qid;
-        },
-        corBackLastQurId() {
-            for (var i=0; i<this.questions.length; i++) {
-                if (this.questions[i].last_question !== 0) {
-                    this.questions[i].last_question = this.getIdFromQid(this.questions[i].last_question);
-                }
-            }
-        }
     }
 }
