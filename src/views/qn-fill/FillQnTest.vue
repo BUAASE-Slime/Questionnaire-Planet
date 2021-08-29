@@ -134,8 +134,6 @@
             </div>
           </div>
           </div>
-        </div>
-
           <div class="submit-bt">
             <el-button type="primary" @click="submit">提交</el-button>
           </div>
@@ -144,7 +142,10 @@
 
         <div class="tail">
           <a :href="rootUrl">问卷星球</a>&ensp;提供技术支持
-      </div>
+        </div>
+        </div>
+
+
     </div>
   </div>
 </template>
