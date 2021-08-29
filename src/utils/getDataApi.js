@@ -25,6 +25,7 @@ export default {
                             this.questions = res.data.questions;
                             this.isReleased = res.data.is_released;
                             this.isLogic = res.data.is_logic;
+                            this.timeFrame = res.data.finished_time;
 
                             // 多选题标准答案数据格式转换
                             if (this.type === '2') {

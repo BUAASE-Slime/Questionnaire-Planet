@@ -170,6 +170,8 @@ export default {
                 qn_id: this.$route.query.pid,
                 questions: new_questions
             }
+            console.log("timeFrame")
+            console.log(this.timeFrame)
 
             var paramer = JSON.stringify(param, {questions: 'brackets'})
             this.$axios({
