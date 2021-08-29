@@ -75,6 +75,11 @@ export default {
         myChart1.setOption({
             title: { text: this.chart1_title },
             tooltip: {},
+            toolbox: {
+                feature: {
+                    saveAsImage: {show: true}
+                }
+            },
             xAxis: {
                 data:this.chart1_name,
                 name: '选项'

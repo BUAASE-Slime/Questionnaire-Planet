@@ -80,6 +80,11 @@ export default {
                     }
                 }
             },
+            toolbox: {
+                feature: {
+                    saveAsImage: {show: true}
+                }
+            },
             legend: {
                 data:['填写人数']
             },
