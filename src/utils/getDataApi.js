@@ -3,6 +3,7 @@ import user from "@/store/user";
 export default {
     methods: {
         getQnDataSelf() {
+            let loadingIns = this.$loading({fullscreen: true});
             const formData = new FormData();
             formData.append("qn_id", this.$route.query.pid);
             this.$axios({
@@ -11,6 +12,7 @@ export default {
                 data: formData,
             })
                 .then(res => {
+                    loadingIns.close();
                     switch (res.data.status_code) {
                         case 0:
                             this.$message.error("您无权访问！");
@@ -44,6 +46,7 @@ export default {
                 })
         },
         getQnDataForPreview(_autoSave=false) {
+            let loadingIns = this.$loading({fullscreen: true});
             const formData = new FormData();
             formData.append("qn_id", this.$route.query.pid);
             this.$axios({
@@ -52,6 +55,7 @@ export default {
                 data: formData,
             })
                 .then(res => {
+                    loadingIns.close();
                     switch (res.data.status_code) {
                         case 0:
                             this.$message.error("您无权访问！");
@@ -88,6 +92,7 @@ export default {
                 })
         },
         getQnDataForFill(_autoSave=false, _requireAuth=true, _outOfOrder=false) {
+            let loadingIns = this.$loading({fullscreen: true});
             const userInfo = user.getters.getUser(user.state());
             if (_requireAuth && !userInfo) {
                 this.$message.warning("请先登录");
@@ -103,6 +108,7 @@ export default {
                 data: formData,
             })
                 .then(res => {
+                    loadingIns.close();
                     switch (res.data.status_code) {
                         case 1:
                             this.title = res.data.title;
