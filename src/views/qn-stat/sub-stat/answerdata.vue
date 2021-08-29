@@ -15,8 +15,9 @@
                     :show-summary="is_test"
                     :summary-method="getAverage"
                     sum-text="平均分"
-                    style="width: 100%"
-                    >
+                    style="width: 100% font-size: 10px"
+                    :row-style="{height:'50px'}"
+                    :cell-style="{padding:'0px'}">
                     <el-table-column
                     prop="num"
                     label="序号"
@@ -98,9 +99,10 @@
           <el-divider></el-divider>
 
           <div v-if="is_test">
-            <el-row :gutter="10">
+            <el-row :gutter="1">
             <el-col :span="8"><div ><h2>用户： {{user_name}}</h2></div></el-col>
-            <el-col :span="8"><div ><h2>得分： {{score}} / {{sum_score}}</h2></div></el-col>
+            <el-col :span="8"><div ><h2>得分： {{score}} </h2></div></el-col>
+            <!-- / {{sum_score}} -->
             <el-col :span="8"><div ><h2>排名： {{rank}}</h2></div></el-col>
             
             </el-row>
