@@ -86,6 +86,11 @@ export default {
             bottom: '3%',
             containLabel: true
         },
+        toolbox: {
+                feature: {
+                    saveAsImage: {show: true}
+                }
+            },
         legend: {
             data: this.legend_data,
         },

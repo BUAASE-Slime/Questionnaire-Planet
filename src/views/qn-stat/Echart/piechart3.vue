@@ -80,6 +80,11 @@ export default {
                 trigger: 'item',
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
             },
+            toolbox: {
+                feature: {
+                    saveAsImage: {show: true}
+                }
+            },
             series: {
                 name: '选择人数',
                 type: 'pie',

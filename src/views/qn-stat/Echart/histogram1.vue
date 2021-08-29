@@ -32,6 +32,11 @@ export default {
         // 绘制图表
         myChart1.setOption({
             title: { text: this.chart1_title },
+            toolbox: {
+                feature: {
+                    saveAsImage: {show: true}
+                }
+            },
             tooltip: {},
             xAxis: {
                 data:this.chart1_name,
