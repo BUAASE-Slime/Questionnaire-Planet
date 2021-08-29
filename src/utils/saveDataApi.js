@@ -3,7 +3,6 @@ import user from "@/store/user";
 export default {
     methods: {
         submitAns(surveyType) {
-            console.log('must');
             let url;
             switch (surveyType) {
                 case '1': case '3':
@@ -82,6 +81,7 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
+                let loadingIns = this.$loading({fullscreen: true});
                 var param = {
                     code: this.$route.query.code,
                     answers: this.answers,
@@ -93,6 +93,7 @@ export default {
                     data: paramer,
                 })
                     .then(res => {
+                        loadingIns.close();
                         switch (res.data.status_code) {
                             case 1:
                                 this.$message({
@@ -158,6 +159,7 @@ export default {
                     url = '/sm/save/qn_keep/history';
                     break;
             }
+            let loadingIns = this.$loading({fullscreen: true});
             const userInfo = user.getters.getUser(user.state());
             var param = {
                 username: userInfo.user.username,
@@ -168,6 +170,7 @@ export default {
                 qn_id: this.$route.query.pid,
                 questions: new_questions
             }
+
             var paramer = JSON.stringify(param, {questions: 'brackets'})
             this.$axios({
                 method: 'post',
@@ -175,6 +178,7 @@ export default {
                 data: paramer,
             })
                 .then(res => {
+                    loadingIns.close();
                     switch (res.data.status_code) {
                         case 0:
                             this.$message.warning("登录信息失效，请重新登录！");
