@@ -12,6 +12,9 @@
                     :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
                     border
                     :default-sort="{ prop: 'submit_time', order: 'descending' }"
+                    :show-summary="is_test"
+                    :summary-method="getAverage"
+                    sum-text="平均分"
                     style="width: 100%"
                     >
                     <el-table-column
@@ -58,7 +61,7 @@
                             <el-button type="text" class="el-icon-delete op" style="color: red" @click="delSubmit(scope.row.submit_id, scope.row.num)">删除</el-button>
                           </div>
                           <div style="display:inline">
-                            <el-button type="text" class="el-icon-document op" style="color: black " @click="openBox(scope.row.num, scope.row.submit_id)">预览</el-button>
+                            <el-button type="text" class="el-icon-document op" style="color: black " @click="openBox(scope.$index+(currentPage-1)*pageSize+1, scope.row.submit_id)">预览</el-button>
                           </div>
                         </template>
                     </el-table-column>
@@ -596,6 +599,32 @@
     },
 
     methods: {
+      getAverage(param) {
+        const { columns, data } = param;
+        const sums = [];
+        columns.forEach((column, index) => {
+          if (index === 0) {
+            sums[index] = '平均';
+            return;
+          }
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] = sums[index]/this.tableData.length;
+          } else {
+            // sums[index] = 'N/A';
+          }
+        });
+
+        return sums;
+      },
       isInfo: function (item) {
         return item.type === 'name' || item.type === 'stuId' || item.type === 'class' || item.type === 'school'
       },
