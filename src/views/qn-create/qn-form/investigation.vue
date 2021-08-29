@@ -96,7 +96,7 @@
                         :preview-src-list="[i.url]">
                     </el-image>
                   </el-col>
-                  <el-col :span="10" class="demo-image__preview" v-if="index%2===0&&index<=item.imgList.length-1">
+                  <el-col :span="10" class="demo-image__preview" v-if="index%2===0&&index+1<=item.imgList.length-1">
                     <el-image
                         style="width: 200px; height: 200px"
                         :src="item.imgList[index+1].url"
