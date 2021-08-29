@@ -41,6 +41,13 @@
                     width="180"
                     align="center">
                     </el-table-column>
+                    <el-table-column
+                    prop="score"
+                    label="得分"
+                    width="180"
+                    align="center"
+                    v-if="is_test">
+                    </el-table-column>
                     <el-table-column label="操作" width="250" align="center">
                         <template slot-scope="scope">
                           <div style="display:inline">
@@ -85,9 +92,9 @@
 
           <div v-if="is_test">
             <el-row :gutter="10">
-            <el-col :span="8"><div ><h2>用户: {{user_name}}</h2></div></el-col>
-            <el-col :span="8"><div ><h2>得分: {{score}}/{{sum_score}}</h2></div></el-col>
-            <el-col :span="8"><div ><h2>排名: {{rank}}</h2></div></el-col>
+            <el-col :span="8"><div ><h2>用户： {{user_name}}</h2></div></el-col>
+            <el-col :span="8"><div ><h2>得分： {{score}} / {{sum_score}}</h2></div></el-col>
+            <el-col :span="8"><div ><h2>排名： {{rank}}</h2></div></el-col>
             
             </el-row>
             <el-divider></el-divider>
