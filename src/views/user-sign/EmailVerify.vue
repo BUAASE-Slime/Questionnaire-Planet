@@ -1,9 +1,9 @@
 <template>
   <div class="verify">
     <div class="title">
-      <el-result icon="success" title="登录成功" subTitle="邮箱验证码已发送至您的邮箱，3天内有效，请及时确认！">
+      <el-result icon="success" title="操作成功" subTitle="邮箱验证码已发送至您的邮箱，3天内有效，请及时确认！">
         <template slot="extra">
-          <el-button size="medium" @click="changeEmail">更改邮箱</el-button>
+          <el-button size="medium" @click="gotoHome">返回首页</el-button>
           <el-button @click="send_email" type="primary" size="medium">重新发送邮件</el-button>
         </template>
       </el-result>
@@ -45,6 +45,9 @@ export default {
     }
   },
   methods: {
+    gotoHome() {
+      this.$router.push('/index');
+    },
     send_email() {
       this.$axios({
         method: 'GET',

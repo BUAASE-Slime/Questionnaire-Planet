@@ -65,13 +65,7 @@ export default {
                         this.answers[i].answer = this.answers[i].ans;
                         break;
                     case "checkbox":
-                        var new_answer = [];
-                        var options = this.questions[i].options;
-                        for (var kk=0; kk<options.length; kk++)
-                            for (var jj=0; jj<this.answers[i].ansList.length; jj++)
-                                if (options[kk].title === this.answers[i].ansList[jj])
-                                    new_answer.push(options[kk].title);
-                        this.answers[i].answer = new_answer.join('-<^-^>-');
+                        this.answers[i].answer = this.answers[i].ansList.join('-<^-^>-');
                         break;
                     case 'location':
                         this.answers[i].answer = this.locationInfo;

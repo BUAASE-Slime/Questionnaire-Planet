@@ -15,7 +15,7 @@
                     :show-summary="is_test"
                     :summary-method="getAverage"
                     sum-text="平均分"
-                    style="width: 100% font-size: 10px"
+                    style="width: 100%; font-size: 14px"
                     :row-style="{height:'50px'}"
                     :cell-style="{padding:'0px'}">
                     <el-table-column
@@ -621,7 +621,7 @@
                 return prev;
               }
             }, 0);
-            sums[index] = sums[index]/this.tableData.length;
+            sums[index] = (sums[index]/this.tableData.length).toFixed(2);
           } else {
             // sums[index] = 'N/A';
           }
@@ -672,11 +672,7 @@
             // 预处理
             let reference = questions[i].refer;
             // let reference = questions[i].refer.substring(1, questions[i].refer.length-1).replace(/"/g, "").split(', ');
-            console.log("reference");
-            console.log(reference);
-            console.log("answers");
-            console.log(answers[i].ansList);
-            if (reference.toString() === answers[i].ansList.toString()) {
+            if (reference.sort().toString() === answers[i].ansList.sort().toString()) {
               answers[i].correct = true;
               score += questions[i].point;
             }

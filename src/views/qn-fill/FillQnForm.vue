@@ -77,7 +77,7 @@
             </el-checkbox-group>
 
             <!--                  填空-->
-            <div class="q-opt" v-if="item.type==='text'">
+            <div class="q-opt" v-if="item.type==='text'||item.type==='name'||item.type==='stuId'||item.type==='class'||item.type==='school'">
               <el-input
                   v-if="item.row>1"
                   type="textarea"

@@ -359,7 +359,7 @@ export default {
           console.log(reference);
           console.log("answers");
           console.log(answers[i].ansList);
-          if (reference.toString() === answers[i].ansList.toString()) {
+          if (reference.sort().toString() === answers[i].ansList.sort().toString()) {
             answers[i].correct = true;
             score += questions[i].point;
           }
