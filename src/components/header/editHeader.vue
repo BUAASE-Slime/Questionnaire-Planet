@@ -8,7 +8,7 @@
     <el-col :span="2" class="button"><el-button type="warning" icon="el-icon-receiving" @click="save">保存</el-button></el-col>
     <el-col :span="2" class="button"><el-button type="primary" icon="el-icon-view" @click="preview">预览</el-button></el-col>
     <el-col :span="2" class="state true" v-if="isReleased"><i class="el-icon-finished"></i> 已发布</el-col>
-    <el-col :span="2" class="state false" v-else>&emsp;<i class="el-icon-edit"> 编辑中</i></el-col>
+    <el-col :span="2" class="state false" v-else>&emsp;<i class="el-icon-edit"> 未发布</i></el-col>
   </el-row>
 </template>
 
