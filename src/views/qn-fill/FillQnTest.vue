@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FinishTest v-if="success || repeat"></FinishTest>
+    <FinishTest v-if="success || repeat" :quesStorage="questions"></FinishTest>
     <div class="qn-fill" v-else>
       <div class="back-bt" v-if="mode==='0' || mode===0">
         <el-button icon="el-icon-arrow-left" type="danger" @click="quit">退出预览</el-button>
@@ -121,9 +121,10 @@
 import FinishTest from "@/views/qn-fill/FinishTest";
 import getDataApi from "@/utils/getDataApi";
 import saveAnsApi from "@/utils/saveDataApi";
+import toolApi from "@/utils/toolApi";
 export default {
   name: "FillQn",
-  mixins: [getDataApi, saveAnsApi],
+  mixins: [getDataApi, saveAnsApi, toolApi],
   components: {FinishTest},
   data() {
     return {
@@ -346,6 +347,7 @@ export default {
         //   answer: ''
         // },
       ],
+      quesStorage: [],
       type: ''
     }
   },
@@ -380,7 +382,7 @@ export default {
       this.getQnDataForPreview();
     }
     else if (this.mode === '1') {
-      this.getQnDataForFill();
+      this.getQnDataForFill(false, true, true);
     }
   },
 }
