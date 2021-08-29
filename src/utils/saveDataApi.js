@@ -25,6 +25,12 @@ export default {
             let num = '';
             console.log(questions);
             console.log(answers.length);
+
+            for (let j=0; j<questions.length; j++) {
+                if (questions[j].must && !(questions[j].is_shown && this.ahead(questions[j].last_question)))
+                    questions[j].must = false;
+            }
+
             for (let i=0; i<answers.length; i++) {
                 if (answers[i].type === 'location') {
                     if (questions[i].must && this.locationInfo === '') {
