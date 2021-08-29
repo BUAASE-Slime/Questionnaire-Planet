@@ -114,9 +114,9 @@
                   </el-input>
                 </div>
 
-                <div class="block-sex" v-if="item.type==='sex'">
-                  <el-radio>男</el-radio>
-                  <el-radio>女</el-radio>
+                <div class="block-sex" v-if="item.type==='sex'" style="text-align: left;margin-left: 50px;margin-top: 5px">
+                  <el-radio value="0">男</el-radio>
+                  <el-radio value="0">女</el-radio>
                 </div>
 
 
