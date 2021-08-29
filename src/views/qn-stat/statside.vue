@@ -34,13 +34,13 @@
             </el-menu-item>
           </router-link>
 
-          <router-link :to="{name: 'ranking', query: {pid: this.pid}}" v-if="this.type==2">
-            <el-menu-item>
-              <i class="el-icon-trophy nav-icon"></i>
-              <br>
-              <span slot="title">成绩排名</span>
-            </el-menu-item>
-          </router-link>
+<!--          <router-link :to="{name: 'ranking', query: {pid: this.pid}}" v-if="this.type==2">-->
+<!--            <el-menu-item>-->
+<!--              <i class="el-icon-trophy nav-icon"></i>-->
+<!--              <br>-->
+<!--              <span slot="title">成绩排名</span>-->
+<!--            </el-menu-item>-->
+<!--          </router-link>-->
 
           <router-link :to="{name: 'crossover', query: {pid: this.pid}}">
             <el-menu-item>

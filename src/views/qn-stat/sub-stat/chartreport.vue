@@ -211,187 +211,187 @@ export default{
         }
         ],
         questions:[
-            {
-            id: '1',
-            type: 'radio',
-            title: '这是一个什么网站？',
-            must: true,
-            right_answer: "问卷系统",
-            point: 5,
-            is_exam_question: true,
-            correct_people: 1,
-            answer_sum: 3,
-            accuracy: 0.33333333,
-            options: [{
-                id: '1',
-                title: '问卷系统',
-                choosed: 15
-            }, {
-                id: '2',
-                title: '出版系统',
-                choosed: 13
-            }],
-            row: '',
-            score: '',
-            },
-            {
-            id: '2',
-            type: 'checkbox',
-            title: '软工小学期助教都有谁？',
-            must: false,
-            right_answer: "a-<^-^>-b",
-            point: 10,
-            is_exam_question: true,
-            correct_people: 1,
-            answer_sum: 3,
-            accuracy: 0.3333,
-            right_answerList: [
-                "LKW",
-                "ZXH"
-            ],
-            options: [{
-                id: '1',
-                title: 'ZYH',
-                choosed: 15
-            }, {
-                id: '2',
-                title: 'LKW',
-                choosed: 153
-            },{
-                id: '3',
-                title: 'ZXH',
-                choosed: 151
-            }, {
-                id: '4',
-                title: 'HZH',
-                choosed: 153
-            }
-            ],
-            row: '',
-            score: '',
-            },
-            {
-          id: '3',
-          type: 'radio',
-          title: '软工小学期累不累',
-          must: false,
-          options: [{
-            id: '1',
-            title: '累',
-            choosed: 10
-          }, {
-            id: '2',
-            title: '非常累',
-            choosed: 11
-          }],
-          row: '',
-          score: '',
-        },
-        {
-          id: '4',
-          type: 'text',
-          title: '您对小学期的评价如何？',
-          must: false,
-          right_answer: "好",
-          point: 5,
-          is_exam_question: true,
-          correct_people: 1,
-          answer_sum: 3,
-          accuracy: 0.7096,
-          options: [{
-            id: '',
-            title: '',
-          }],
-          row: 3,
-          score: '',
-        },
-        {
-          id: '5',
-          type: 'mark',
-          title: '给小学期打个分吧~',
-          must: true,
-          options: [{
-            id: '1',
-            title: '1',
-            choosed: 1,
-          },
-          {
-            id: '2',
-            title: '2',
-            choosed: 8,
-          },
-          {
-            id: '3',
-            title: '3',
-            choosed: 12,
-          },
-          {
-            id: '4',
-            title: '4',
-            choosed: 1,
-          },
-          {
-            id: '5',
-            title: '5',
-            choosed: 5,
-          },
-          {
-            id: '6',
-            title: '6',
-            choosed: 1,
-          },
-          {
-            id: '7',
-            title: '7',
-            choosed: 1,
-          },
-          {
-            id: '8',
-            title: '8',
-            choosed: 10,
-          },
-          {
-            id: '9',
-            title: '9',
-            choosed: 6,
-          },
-          {
-            id: '10',
-            title: '10',
-            choosed: 10,
-          },],
-          row: 1,
-          score: 10,
-        },
-        {
-            id: 6,
-            title: "问卷星球比问卷星好用吗",
-            type: "judge",
-            row: 1,
-            score: 10,
-            must: false,
-            right_answer: "对",
-            right_answerList: [
-                "对"
-            ],
-            point: 1,
-            is_exam_question: true,
-            correct_people: 2,
-            answer_sum: 3,
-            accuracy: "0.6667",
-            options: [
-                {
-                    id: 1,
-                    title: "对",
-                    choosed: 2
-                },
-                {
-                    id: 2,
-                    title: "错",
-                    choosed: 1
-                }
-            ]
-        }
+        //     {
+        //     id: '1',
+        //     type: 'radio',
+        //     title: '这是一个什么网站？',
+        //     must: true,
+        //     right_answer: "问卷系统",
+        //     point: 5,
+        //     is_exam_question: true,
+        //     correct_people: 1,
+        //     answer_sum: 3,
+        //     accuracy: 0.33333333,
+        //     options: [{
+        //         id: '1',
+        //         title: '问卷系统',
+        //         choosed: 15
+        //     }, {
+        //         id: '2',
+        //         title: '出版系统',
+        //         choosed: 13
+        //     }],
+        //     row: '',
+        //     score: '',
+        //     },
+        //     {
+        //     id: '2',
+        //     type: 'checkbox',
+        //     title: '软工小学期助教都有谁？',
+        //     must: false,
+        //     right_answer: "a-<^-^>-b",
+        //     point: 10,
+        //     is_exam_question: true,
+        //     correct_people: 1,
+        //     answer_sum: 3,
+        //     accuracy: 0.3333,
+        //     right_answerList: [
+        //         "LKW",
+        //         "ZXH"
+        //     ],
+        //     options: [{
+        //         id: '1',
+        //         title: 'ZYH',
+        //         choosed: 15
+        //     }, {
+        //         id: '2',
+        //         title: 'LKW',
+        //         choosed: 153
+        //     },{
+        //         id: '3',
+        //         title: 'ZXH',
+        //         choosed: 151
+        //     }, {
+        //         id: '4',
+        //         title: 'HZH',
+        //         choosed: 153
+        //     }
+        //     ],
+        //     row: '',
+        //     score: '',
+        //     },
+        //     {
+        //   id: '3',
+        //   type: 'radio',
+        //   title: '软工小学期累不累',
+        //   must: false,
+        //   options: [{
+        //     id: '1',
+        //     title: '累',
+        //     choosed: 10
+        //   }, {
+        //     id: '2',
+        //     title: '非常累',
+        //     choosed: 11
+        //   }],
+        //   row: '',
+        //   score: '',
+        // },
+        // {
+        //   id: '4',
+        //   type: 'text',
+        //   title: '您对小学期的评价如何？',
+        //   must: false,
+        //   right_answer: "好",
+        //   point: 5,
+        //   is_exam_question: true,
+        //   correct_people: 1,
+        //   answer_sum: 3,
+        //   accuracy: 0.7096,
+        //   options: [{
+        //     id: '',
+        //     title: '',
+        //   }],
+        //   row: 3,
+        //   score: '',
+        // },
+        // {
+        //   id: '5',
+        //   type: 'mark',
+        //   title: '给小学期打个分吧~',
+        //   must: true,
+        //   options: [{
+        //     id: '1',
+        //     title: '1',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '2',
+        //     title: '2',
+        //     choosed: 8,
+        //   },
+        //   {
+        //     id: '3',
+        //     title: '3',
+        //     choosed: 12,
+        //   },
+        //   {
+        //     id: '4',
+        //     title: '4',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '5',
+        //     title: '5',
+        //     choosed: 5,
+        //   },
+        //   {
+        //     id: '6',
+        //     title: '6',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '7',
+        //     title: '7',
+        //     choosed: 1,
+        //   },
+        //   {
+        //     id: '8',
+        //     title: '8',
+        //     choosed: 10,
+        //   },
+        //   {
+        //     id: '9',
+        //     title: '9',
+        //     choosed: 6,
+        //   },
+        //   {
+        //     id: '10',
+        //     title: '10',
+        //     choosed: 10,
+        //   },],
+        //   row: 1,
+        //   score: 10,
+        // },
+        // {
+        //     id: 6,
+        //     title: "问卷星球比问卷星好用吗",
+        //     type: "judge",
+        //     row: 1,
+        //     score: 10,
+        //     must: false,
+        //     right_answer: "对",
+        //     right_answerList: [
+        //         "对"
+        //     ],
+        //     point: 1,
+        //     is_exam_question: true,
+        //     correct_people: 2,
+        //     answer_sum: 3,
+        //     accuracy: "0.6667",
+        //     options: [
+        //         {
+        //             id: 1,
+        //             title: "对",
+        //             choosed: 2
+        //         },
+        //         {
+        //             id: 2,
+        //             title: "错",
+        //             choosed: 1
+        //         }
+        //     ]
+        // }
         ]
         }
     },
