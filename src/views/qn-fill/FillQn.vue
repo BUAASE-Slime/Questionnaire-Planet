@@ -44,6 +44,35 @@
               {{ item.description }}
             </div>
 
+              <!--                  图片-->
+              <el-row class="block-img" v-for="(i,index) in item.imgList" :key="i.index">
+                <el-col :offset="4" :span="8" class="demo-image__preview" v-if="index%2===0">
+                  <el-image
+                      style="width: 200px; height: 200px"
+                      :src="i.url"
+                      :preview-src-list="[i.url]">
+                  </el-image>
+                </el-col>
+                <el-col :span="8" class="demo-image__preview" v-if="index%2===0&&index+1<=item.imgList.length-1">
+                  <el-image
+                      style="width: 200px; height: 200px"
+                      :src="item.imgList[index+1].url"
+                      :preview-src-list="[item.imgList[index+1].url]">
+                  </el-image>
+                </el-col>
+              </el-row>
+              <span style="color: #9b9ea0;font-size: x-small;margin: 5px" v-if="item.imgList.length!==0">（点击图片查看大图）</span>
+
+
+              <!--                视频-->
+              <el-row class="block-img" v-for="i in item.videoList" :key="i.index">
+                <embed width=400 height=230 transparentatstart=true
+                       animationatstart=false autostart=true autosize=false volume=100
+                       displaysize=0 showdisplay=true showstatusbar=true showcontrols=true
+                       showaudiocontrols=true showtracker=true showpositioncontrols=true
+                       balance=true :src="i.url">
+              </el-row>
+
             <!--                  单选-->
             <div v-if="item.type==='radio'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
