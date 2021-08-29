@@ -11,13 +11,14 @@
                     v-loading="loading"
                     :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
                     border
-                    :default-sort="{ prop: 'submit_time', order: 'descending' }"
+                    :default-sort="{ prop: 'submit_time'}"
                     :show-summary="is_test"
                     :summary-method="getAverage"
                     sum-text="平均分"
                     style="width: 100%; font-size: 14px"
                     :row-style="{height:'50px'}"
-                    :cell-style="{padding:'0px'}">
+                    :cell-style="{padding:'0px'}"
+                    @sort-change="sort_change">
                     <el-table-column
                     prop="num"
                     label="序号"
@@ -603,6 +604,32 @@
     },
 
     methods: {
+
+      sort_change(column) { // column是个形参，具体查看element-ui文档
+        this.currentPage = 1 // return to the first page after sorting
+        this.total = this.tableData.length
+        this.tableData = this.tableData.sort(this.sortFun(column.prop, column.order === 'ascending'));
+        // this.showedData = this.tableData.slice(0, this.pageSize) // 排序完显示到第一页
+      },
+      sortFun (attr, rev) {
+        //第一个参数传入info里的prop表示排的是哪一列，第二个参数是升还是降排序
+        if (rev == undefined) {
+          rev = 1;
+        } else {
+          rev = (rev) ? 1 : -1;
+        }
+        return function (a, b) {
+          a = a[attr];
+          b = b[attr];
+          if (a < b) {
+            return rev * -1;
+          }
+          if (a > b) {
+            return rev * 1;
+          }
+          return 0;
+        }
+      },
       getAverage(param) {
         const { columns, data } = param;
         const sums = [];

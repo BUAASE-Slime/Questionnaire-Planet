@@ -86,25 +86,25 @@
                   </span>
                   <span class="headspan">创建时间：{{msg.create_time}}</span>
                 </div>
-                <div slot="default" class="card-body">
-                  <el-link @click="editUrl(index)" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
+                <div slot="default" class="card-body" >
+                  <el-link @click="editUrl(indexMethod(index))" :underline="false" class="leftside el-icon-edit">&nbsp;编辑</el-link>
                   <el-link :href="previewUrl(msg)" :underline="false" class="leftside el-icon-view">&nbsp;预览</el-link>
-                  <el-link @click="openShare(index)" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
-                  <el-link @click="statUrl(index)" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
-                  <el-link @click="refresh(index)" :underline="false" class="leftside el-icon-refresh">&nbsp;清空</el-link>
+                  <el-link @click="openShare(indexMethod(index))" :underline="false" class="leftside el-icon-share">&nbsp;分享</el-link>
+                  <el-link @click="statUrl(indexMethod(index))" :underline="false" class="leftside el-icon-s-data">&nbsp;统计</el-link>
+                  <el-link @click="refresh(indexMethod(index))" :underline="false" class="leftside el-icon-refresh">&nbsp;清空</el-link>
                   <el-dropdown split-button class="leftside" size="mini" id="download" @command="selectExportType">
                     导出
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item :command="beforeHandleCommand(index,'word')">导出Word</el-dropdown-item>
-                      <el-dropdown-item :command="beforeHandleCommand(index,'pdf')">导出PDF</el-dropdown-item>
+                      <el-dropdown-item :command="beforeHandleCommand(indexMethod(index),'word')">导出Word</el-dropdown-item>
+                      <el-dropdown-item :command="beforeHandleCommand(indexMethod(index),'pdf')">导出PDF</el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
-                  <el-button type="text" class="rightside el-icon-delete" @click="deleteQn(index)"> 删除</el-button>
-                  <el-button type="text" class="rightside el-icon-star-on" @click="uncollectQn(index)" v-if="msg.is_collected"> 收藏</el-button>
-                  <el-button type="text" class="rightside el-icon-star-off" @click="collectQn(index)" v-else> 收藏</el-button>
-                  <el-button type="text" class="rightside el-icon-document" @click="copyQn(index)"> 复制</el-button>
-                  <el-button type="text" v-if="msg.is_released" @click="recycle(index)" class="rightside el-icon-video-pause" style="color: red"> 暂停</el-button>
-                  <el-button type="text" v-else @click="release(index)" class="rightside el-icon-video-play" style="color: #038235"> 发布</el-button>
+                  <el-button type="text" class="rightside el-icon-delete" @click="deleteQn(indexMethod(index))"> 删除</el-button>
+                  <el-button type="text" class="rightside el-icon-star-on" @click="uncollectQn(indexMethod(index))" v-if="msg.is_collected"> 收藏</el-button>
+                  <el-button type="text" class="rightside el-icon-star-off" @click="collectQn(indexMethod(index))" v-else> 收藏</el-button>
+                  <el-button type="text" class="rightside el-icon-document" @click="copyQn(indexMethod(index))"> 复制</el-button>
+                  <el-button type="text" v-if="msg.is_released" @click="recycle(indexMethod(index))" class="rightside el-icon-video-pause" style="color: red"> 暂停</el-button>
+                  <el-button type="text" v-else @click="release(indexMethod(index))" class="rightside el-icon-video-play" style="color: #038235"> 发布</el-button>
                 </div>
               </el-card>
               
@@ -219,6 +219,9 @@ export default {
     }
   },
   methods:{
+    indexMethod(index) {
+        return (this.currentPage-1)*this.pageSize+index;
+      },
     handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
         this.currentPage = 1;
@@ -538,6 +541,7 @@ export default {
     },
 
     uncollectQn(index) {
+      console.log(index);
       const formData = new FormData();
       formData.append("survey_id", this.QnList[index].survey_id);
       this.$axios({
@@ -572,6 +576,7 @@ export default {
       })
     },
     collectQn(index) {
+      console.log(index);
       const formData = new FormData();
       formData.append("survey_id", this.QnList[index].survey_id);
       this.$axios({
