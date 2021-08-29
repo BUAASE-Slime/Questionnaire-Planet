@@ -18,12 +18,31 @@
         <el-button type="primary" @click="gotoLogin">免费使用</el-button>
       </el-row>
       <el-divider/>
+
+      <!-- <div id="model">
+        <h2>热门模板</h2>
+        <el-row>
+        <el-col :span="8" v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 2 : 0">
+          <el-card :body-style="{ padding: '0px' }">
+            <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" class="image">
+            <div style="padding: 14px;">
+              <span>好吃的汉堡</span>
+              <div class="bottom clearfix">
+                <time class="time">{{ currentDate }}</time>
+                <el-button type="text" class="button">操作按钮</el-button>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+      </div> -->
+
     </div>
 <!--    <img src="/static/images/demo1.png" class="demoImg"><br>-->
 <!--    <img src="/static/images/demo2.png" class="demoImg"><br>-->
 <!--    <img src="/static/images/demo3.png" class="demoImg"><br><br>-->
 
-    <el-footer class="bottom">
+    <el-footer class="footbottom">
       <p>Copyright © 2021 {{ domain }}. All rights reserved.</p>
       <p>官方邮箱：<a :href=sendtoEmail>{{ email }}</a></p>
       <p><a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备2021021248号</a></p>
@@ -95,6 +114,36 @@ export default{
 }
 </script>
 <style scoped>
+  #model .time {
+    font-size: 13px;
+    color: #999;
+  }
+  
+  #model .bottom {
+    margin-top: 13px;
+    line-height: 12px;
+  }
+
+  #model .button {
+    padding: 0;
+    float: right;
+  }
+
+  #model .image {
+    width: 100%;
+    display: block;
+  }
+
+  #model .clearfix:before,
+  #model .clearfix:after {
+      display: table;
+      content: "";
+  }
+  
+  #model .clearfix:after {
+      clear: both
+  }
+
 .main{
   position: relative;
   width: 100%;
@@ -130,23 +179,23 @@ export default{
   font-size: 32px;
   color: #00aeff;
 }
-.bottom{
+.footbottom{
   height: 150px!important;
   background-color: #ebecec;
   color: #9b9ea0;
   position: relative;
   padding: 20px;
 }
-.bottom a {
+.footbottom a {
   text-decoration: none;
 }
-.bottom a:link {
+.footbottom a:link {
   color: #9b9ea0;
 }
-.bottom a:hover {
+.footbottom a:hover {
   color: #00aeff;
 }
-.bottom a:visited {
+.footbottom a:visited {
   color: #9b9ea0;
 }
 .demoImg{
