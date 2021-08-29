@@ -216,12 +216,12 @@ const routes = [
                 
                 component: () => import('../views/qn-stat/sub-stat/crossover')              
             },
-            // {
-            //     path: '/download',
-            //     name: 'download',
+            {
+                path: '/ranking',
+                name: 'ranking',
                 
-            //     component: () => import('../views/qn-stat/sub-stat/download')              
-            // },
+                component: () => import('../views/qn-stat/sub-stat/ranking')              
+            },
         ]
     },
     {
