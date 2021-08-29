@@ -54,7 +54,7 @@
           </el-col>
         </el-row>
 
-        <el-dialog title=请输入问卷标题 :visible.sync="dialogVisible" width="30%" style="margin-top: 100px">
+        <el-dialog title=请输入您想创建的问卷标题 :visible.sync="dialogVisible" width="30%" style="margin-top: 100px">
           <el-input class="input" v-model="surveyTitle" ></el-input>
             <span slot="footer" class="dialog-footer" style="text-align: center">
               <el-row class="bt-group">
@@ -291,6 +291,10 @@ export default{
   
   #model .clearfix:after {
       clear: both
+  }
+
+  .el-card {
+   background-color: rgb(239, 238, 238);
   }
 
 .main{
