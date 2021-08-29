@@ -153,7 +153,7 @@ export default {
                     url = '/sm/save/qn_keep/history';
                     break;
                 case "4":
-                    url = '/sp/save_qn';
+                    url = '/sm/save/qn_keep/history';
                     break;
                 case "5":
                     url = '/sm/save/qn_keep/history';
@@ -229,6 +229,16 @@ export default {
                 .catch(err => {
                     console.log(err);
                 })
+        },
+        ahead(qid){
+            if(qid===0) return true;
+            for(let i=0;i<this.questions.length;i++){
+                if(this.questions[i].id===qid){
+                    if(this.questions[i].is_shown===true) return this.ahead(this.questions[i].last_question);
+                    else return false;
+                }
+            }
+            return false;
         },
     }
 }
