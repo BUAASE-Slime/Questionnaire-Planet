@@ -122,6 +122,7 @@ export default {
           case 1:
             // location.reload();
             // 前端保存用户信息
+              this.$message.success("登录成功");
             this.$store.dispatch('saveUserInfo', {user: {
               'username': this.form.username,
               'confirmed': true,
