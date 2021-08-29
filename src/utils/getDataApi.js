@@ -69,7 +69,16 @@ export default {
                             this.title = res.data.title;
                             this.description = res.data.description;
                             this.type = res.data.type;
-                            this.questions = res.data.questions;
+
+                            if (_autoSave === true) {
+                                var new_ques =  res.data.questions;
+                                for (var k=0; k<new_ques.length; k++) {
+                                    this.questions[k].options = new_ques[k].options;
+                                }
+                            } else {
+                                this.questions = res.data.questions;
+                            }
+
 
                             //建立答案框架
                             if (_autoSave === false) {
