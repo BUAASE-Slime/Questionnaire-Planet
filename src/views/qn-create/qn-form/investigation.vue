@@ -248,26 +248,27 @@
         <el-form-item label="上传图片">
           <el-upload
               class="upload-img"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              :action=uploadImgUrl
               multiple
-              :on-remove="handleRemove"
-              :before-remove="beforeRemove"
-              :file-list="willAddQuestion.imgList">
-            <el-button size="small"  plain style="width: 150px">点击上传</el-button>
-            <!--            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+              :http-request="upLoadImage"
+              :before-upload="beforeImageUpload"
+              :file-list="willAddQuestion.imgList"
+              :limit="6">
+            <el-button size="small"  plain style="width: 100px">点击上传</el-button>
+            <span slot="tip" class="el-upload__tip">&emsp;只能上传jpg/png文件，且不超过5mb</span>
           </el-upload>
         </el-form-item>
 
         <el-form-item label="上传视频">
           <el-upload
               class="upload-video"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              multiple
-              :on-remove="handleRemove"
-              :before-remove="beforeRemove"
-              :file-list="willAddQuestion.videoList">
-            <el-button size="small" plain style="width: 150px">点击上传</el-button>
-            <!--            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+              :action=uploadVideoUrl
+              :http-request="upLoadVideo"
+              :before-upload="beforeVideoUpload"
+              :file-list="willAddQuestion.videoList"
+              :limit="1">
+            <el-button size="small" plain style="width: 100px">点击上传</el-button>
+            <span slot="tip" class="el-upload__tip">&emsp;只能上传mp4/mkv文件，且不超过30mb</span>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -408,6 +409,9 @@ export default {
   mixins: [getDataApi, saveDataApi],
   data() {
     return {
+      uploadImgUrl: this.GLOBAL.backUrl + 'upload/image',
+      uploadVideoUrl: this.GLOBAL.backUrl + 'upload/video',
+
       timer: '',
       value:'',
       qrcode: null,
@@ -650,6 +654,106 @@ export default {
     editHeader,
   },
   methods: {
+    //---------------------------Image and video--------------------------------//
+    upLoadImage(file) {
+      const formData = new FormData();
+      formData.append('image', file.file);
+      this.$axios({
+        method: 'post',
+        url: this.uploadImgUrl,
+        data: formData,
+      })
+          .then(res => {
+            switch (res.data.status_code) {
+              case 1:
+                var name = res.data.name;
+                var url = res.data.url;
+                this.willAddQuestion.imgList.push({
+                  name: name,
+                  url: url
+                });
+                console.log(this.willAddQuestion.imgList);
+                break;
+              case 2:
+                // this.$message.error("上传文件格式错误！");
+                break;
+              default:
+                this.$message.error("操作失败！");
+                break;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+    },
+    upLoadVideo(file) {
+      const formData = new FormData();
+      formData.append('video', file.file);
+      this.$axios({
+        method: 'post',
+        url: this.uploadVideoUrl,
+        data: formData,
+      })
+          .then(res => {
+            switch (res.data.status_code) {
+              case 1:
+                var name = res.data.name;
+                var url = res.data.url;
+                this.willAddQuestion.videoList.push({
+                  name: name,
+                  url: url
+                });
+                console.log(this.willAddQuestion.videoList);
+                break;
+              case 2:
+                // this.$message.error("上传文件格式错误！");
+                break;
+              default:
+                this.$message.error("操作失败！");
+                break;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+    },
+    beforeImageUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isPNG = file.type === 'image/png';
+      const isLt5M = file.size / 1024 / 1024 < 10;
+
+      if (!isJPG && !isPNG) {
+        this.$message.error('上传头像图片只能是 JPG/PNG 格式!');
+      } else if (!isLt5M) {
+        this.$message.error('上传头像图片大小不能超过 5MB!');
+      }
+      return (isJPG || isPNG) && isLt5M;
+    },
+    beforeVideoUpload(file) {
+      const filename = file.name;
+      var suffix = '';
+      var isVideo = false;
+      const isLt2M = file.size / 1024 / 1024 < 30;
+      try {
+        var flieArr = filename.split('.');
+        suffix = flieArr[flieArr.length - 1];
+      } catch (err) {
+        suffix = '';
+      }
+      var videoList = ['mp4', 'mkv'];
+      var judge = videoList.some(function (item) {
+        return item === suffix;
+      });
+      if (judge) {
+        isVideo = true;
+      }
+      if (!isVideo) {
+        this.$message.error('上传视频文件只能是 MP4/MKV 格式!');
+      } else if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 30MB!');
+      }
+      return isLt2M && isVideo;
+    },
     beforeRemove(file, fileList) {
       console.log(file, fileList);
       return this.$confirm(`确定移除 ${ file.name }？`);
@@ -658,6 +762,7 @@ export default {
       console.log(file, fileList);
       this.$message("移除成功")
     },
+    //--------------------------------------------------------------------------//
     autoSave() {
       this.saveQnInfo('autosave', '1');
     },
