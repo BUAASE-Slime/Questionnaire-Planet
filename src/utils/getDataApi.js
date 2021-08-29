@@ -87,7 +87,7 @@ export default {
                     console.log(err);
                 })
         },
-        getQnDataForFill(_autoSave=false, _requireAuth=true) {
+        getQnDataForFill(_autoSave=false, _requireAuth=true, _outOfOrder=false) {
             const userInfo = user.getters.getUser(user.state());
             if (_requireAuth && !userInfo) {
                 this.$message.warning("请先登录");
@@ -109,6 +109,30 @@ export default {
                             this.description = res.data.description;
                             this.type = res.data.type;
                             this.questions = res.data.questions;
+
+                            if (_outOfOrder) {
+                                this.quesStorage = JSON.parse(JSON.stringify(this.questions));
+
+                                var info_ques = [];
+                                var real_ques = [];
+                                for (var k=0; k<this.quesStorage.length; k++) {
+                                    if (this.quesStorage[k].type === 'name' || this.quesStorage[k].type==='stuId' || this.quesStorage[k].type==='class' || this.quesStorage[k].type === 'school')
+                                        info_ques.push(this.quesStorage[k]);
+                                    else
+                                        real_ques.push(this.quesStorage[k]);
+                                }
+                                const userInfo = user.getters.getUser(user.state());
+                                var new_questions = JSON.parse(JSON.stringify(real_ques));
+                                var new_order = this.str2Array(userInfo.user.username, new_questions.length);
+                                for (var j=0; j<new_questions.length; j++)
+                                    real_ques[j] = new_questions[new_order[j]];
+                                this.questions = info_ques.concat(real_ques);
+
+                                //-----------------------调整id
+                                for (var ii=0; ii<this.questions.length; ii++) {
+                                    this.questions[ii].id = ii+1;
+                                }
+                            }
 
                             if (_autoSave === false) {
                                 //建立答案框架

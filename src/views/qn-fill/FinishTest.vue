@@ -104,7 +104,7 @@ import user from "@/store/user";
 export default {
   name: "FinishTest",
   props: {
-
+    quesStorage: []
   },
   data(){
     return{
@@ -335,7 +335,6 @@ export default {
       return this.answers[item.id-1].correct;
     },
     judge() {
-      console.log(1111);
       // 判卷
       let questions = this.questions;
       let answers = this.answers;
@@ -379,6 +378,7 @@ export default {
   },
   created() {
     var data = [];
+    this.questions = this.quesStorage;
     const userInfo = user.getters.getUser(user.state());
     const formData = new FormData();
     formData.append("code", this.$route.query.code);

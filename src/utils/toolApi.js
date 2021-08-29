@@ -19,6 +19,18 @@ export default {
         getStrClear(text) {
             var t = this.getParenthesesStr(text);
             return t.substr(0, t.length - 1);
+        },
+        /**
+         * 字符串到数字序列的映射
+         * @param text len
+         * @return {array}
+         */
+        str2Array(text, len) {
+            const str = text + "zewancc-wenjuanxingqiu-huangzehuan";
+            var strList = str.split('');
+            for (var i=0; i<strList.length; i++)
+                strList[i] = strList[i].charCodeAt(0)%len;
+            return Array.from(new Set(strList));
         }
     }
 }
