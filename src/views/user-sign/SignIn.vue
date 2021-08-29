@@ -152,7 +152,12 @@ export default {
               'username': this.form.username,
               'confirmed': false,
             }});
-            this.$router.push('/unverified_email');
+            var cur = localStorage.getItem('preRoute');
+            if (cur == null) {
+              this.$router.push('/unverified_email');
+            } else {
+              this.$router.push({ path: cur });
+            }
             break;
         }
       })
