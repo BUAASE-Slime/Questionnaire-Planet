@@ -27,7 +27,7 @@
               </div>
               <div v-if="item.type!=='mark'" >
                 <div class="block-choice" v-for="ans in item.options" :key="ans.id">
-                  <!--                  单选-->
+                  <!--                  单选和判断-->
                   <el-radio v-if="item.type==='radio'||item.type==='judge'" value="0">
                     <span>{{ ans.title }} </span>
                     <span v-if="item.is_exam_question&&ans.title==item.right_answer" style="color: #51c215;">（正确答案）</span>
@@ -50,10 +50,6 @@
                       v-if="item.type==='name' || item.type==='stuId' || item.type==='class' || item.type==='school'"
                       v-bind="ans.title">
                   </el-input>
-                  <!--                  判断-->
-                  <el-radio v-if="item.type==='judge'" value="0">
-                    {{ ans.title }}
-                  </el-radio>
                 </div>
               </div>
               <div v-else class="block-choice">
