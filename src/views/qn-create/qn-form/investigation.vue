@@ -409,6 +409,9 @@ export default {
   mixins: [getDataApi, saveDataApi],
   data() {
     return {
+      logicQuestionState: 0,  // 用于判断用户是否更改关联问题设置
+      logicOptionState: 0,    // 用于判断用户是否更改关联选项设置
+
       uploadImgUrl: this.GLOBAL.backUrl + 'upload/image',
       uploadVideoUrl: this.GLOBAL.backUrl + 'upload/video',
 
@@ -423,7 +426,7 @@ export default {
       dialogVisibleAsso: false,
       qsLinkDialogTitle: "发布成功！",
       settingDialogTitle: "高级设置",   // 高级设置弹框的标题
-      settingDialogVisible:false,     // 高级设置对话框可见性
+      settingDialogVisible: false,     // 高级设置对话框可见性
       closingDate: null,   // 高级设置中问卷回收的截止日期
       isLogic: false,      // 问卷是否引入关联逻辑
       isReleased: false,   // 是否发布
@@ -689,6 +692,9 @@ export default {
     upLoadVideo(file) {
       const formData = new FormData();
       formData.append('video', file.file);
+      this.$ajax({
+
+      })
       this.$axios({
         method: 'post',
         url: this.uploadVideoUrl,
@@ -1004,10 +1010,12 @@ export default {
       questions[index].last_question = willAddLogic.question_id;
       questions[index].last_option = willAddLogic.option_id;
       questions[index].is_shown = willAddLogic.question_id === 0;
-      this.$message({
-        type: 'success',
-        message: '问题关联设置成功'
-      });
+      if (this.willAddLogic.question_id !== this.logicQuestionState || this.willAddLogic.option_id !== this.logicOptionState) {
+        this.$message({
+          type: 'success',
+          message: '问题关联设置成功'
+        });
+      }
       this.qsLogicDialogVisible = false;
       this.resetLogic();
     },
@@ -1018,6 +1026,8 @@ export default {
       else this.willAddLogic.option_id = 1;
       console.log(this.questions);
       this.qsLogicDialogVisible = true;
+      this.logicQuestionState = this.willAddLogic.question_id;
+      this.logicOptionState = this.willAddLogic.option_id;
     },
     resetLogic(){
       this.willAddLogic = {

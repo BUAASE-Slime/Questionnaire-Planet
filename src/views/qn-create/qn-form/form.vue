@@ -100,9 +100,9 @@
             &emsp;&emsp;{{ description }}
           </div>
           <div class="content">
-            <el-row class="ques-block" v-for="item in questions" :key="item.num" @mouseover.native="hoverItem=item.id">
+            <el-row class="ques-block" v-for="item in questions" :key="item.id" @mouseover.native="hoverItem=item.id">
 
-              <el-col :span="17" class="block-content">
+              <el-col :span="16" class="block-content">
                 <div class="block-title">
                   {{ item.id }}. {{ item.title }} <span class="must" v-if="item.must">(必填)</span>
                 </div>
@@ -126,6 +126,36 @@
                 >
                   {{ item.description }}
                 </div>
+
+                <!--                  图片-->
+                <el-row class="block-img" v-for="(i,index) in item.imgList" :key="i.index">
+                  <el-col :offset="2" :span="10" class="demo-image__preview" v-if="index%2===0">
+                    <el-image
+                        style="width: 200px; height: 200px"
+                        :src="i.url"
+                        :preview-src-list="[i.url]">
+                    </el-image>
+                  </el-col>
+                  <el-col :span="10" class="demo-image__preview" v-if="index%2===0&&index+1<=item.imgList.length-1">
+                    <el-image
+                        style="width: 200px; height: 200px"
+                        :src="item.imgList[index+1].url"
+                        :preview-src-list="[item.imgList[index+1].url]">
+                    </el-image>
+                  </el-col>
+                </el-row>
+                <span style="color: #9b9ea0;font-size: x-small" v-if="item.imgList.length!==0">（点击图片查看大图）</span>
+
+
+                <!--                视频-->
+                <el-row class="block-img" v-for="i in item.videoList" :key="i.index">
+                  <embed width=400 height=230 transparentatstart=true
+                         animationatstart=false autostart=true autosize=false volume=100
+                         displaysize=0 showdisplay=true showstatusbar=true showcontrols=true
+                         showaudiocontrols=true showtracker=true showpositioncontrols=true
+                         balance=true :src="i.url">
+                </el-row>
+
 
                 <div class="block-choice" v-for="ans in item.options" :key="ans.id">
 
@@ -159,12 +189,19 @@
                   <el-rate value="0" :max="item.score"></el-rate>
                 </div>
 
+                <!--                 关联信息-->
+                <div class="block-relation" v-if="isLogic && item.last_question!==0">
+                  <div>{{ relatedQs(item) }}</div>
+                </div>
               </el-col>
 
-              <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
+              <el-col :span="8" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
                 <el-button-group>
                   <el-tooltip class="item" effect="light" content="编辑" placement="bottom" open-delay="400">
                     <el-button class="bt" type="primary" icon="el-icon-edit" @click="edit(item.id)"></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" v-if="isLogic" effect="light" content="添加关联逻辑" placement="bottom" open-delay="400">
+                    <el-button class="bt" type="primary" icon="el-icon-paperclip" @click="logic(item.id)"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="light" content="复制" placement="bottom" open-delay="400">
                     <el-button class="bt" type="primary" icon="el-icon-document-copy" @click="copy(item.id)"></el-button>
@@ -283,8 +320,33 @@
             <el-input-number v-model="willAddQuestion.score" :min="3" :max="10" ></el-input-number>
           </el-form-item>
         </template>
+        <el-form-item label="上传图片">
+          <el-upload
+              class="upload-img"
+              :action=uploadImgUrl
+              multiple
+              :http-request="upLoadImage"
+              :before-upload="beforeImageUpload"
+              :file-list="willAddQuestion.imgList"
+              :limit="6">
+            <el-button size="small"  plain style="width: 100px">点击上传</el-button>
+            <span slot="tip" class="el-upload__tip">&emsp;只能上传jpg/png文件，且不超过5mb</span>
+          </el-upload>
+        </el-form-item>
 
-      </div>
+        <el-form-item label="上传视频">
+          <el-upload
+              class="upload-video"
+              :action=uploadVideoUrl
+              :http-request="upLoadVideo"
+              :before-upload="beforeVideoUpload"
+              :file-list="willAddQuestion.videoList"
+              :limit="1">
+            <el-button size="small" plain style="width: 100px">点击上传</el-button>
+            <span slot="tip" class="el-upload__tip">&emsp;只能上传mp4/mkv文件，且不超过30mb</span>
+          </el-upload>
+        </el-form-item>
+        </div>
       </el-form>
       <span slot="footer" class="dialog-footer" style="text-align: center">
         <el-row>
@@ -316,9 +378,9 @@
         </el-col>
       </el-row>
       <span slot="footer" class="dialog-footer" style="text-align: center">
-                  <el-row>
-                    <el-button :span="6" type="success" style="width: 80px"  @click="finish">完 成</el-button>
-                  </el-row>
+        <el-row>
+          <el-button :span="6" type="success" style="width: 80px"  @click="finish">完 成</el-button>
+        </el-row>
       </span>
     </el-dialog>
     <el-dialog :visible.sync="editWrongMsgVisible"  class="linkDialog" :show-close="false" :close-on-click-modal="false" width="300px" >
@@ -328,6 +390,50 @@
                     <el-button :span="6" type="danger" style="width: 80px"  @click="editWrongMsgVisible=false">知道了</el-button>
                   </el-row>
       </span>
+    </el-dialog>
+    <!--    关联问题弹框-->
+    <el-dialog :title="qsLogicDialogTitle" :visible.sync="qsLogicDialogVisible"  :before-close="cancel_pre_logic" class="dialog" >
+      <el-form v-if="questions.length !== 0" class="logic-form" ref="form" label-width="80px">
+
+        <div class="logic-title">
+          当前题目：{{ questions[logicIndex].id }}. {{ questions[logicIndex].title }}
+        </div>
+
+        <el-form-item label="关联题目">
+          <el-select v-model="willAddLogic.question_id" placeholder="请选择关联题目">
+            <el-option
+                v-for="item in questionsFilter"
+                :key="item.id"
+                :label="idTitle(item)"
+                :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="关联选项" v-if="willAddLogic.question_id!==0">
+          <el-select v-model="willAddLogic.option_id" placeholder="请选择关联选项">
+            <el-option
+                v-for="item in questions[willAddLogic.question_id-1].options"
+                :key="item.id"
+                :label="item.title"
+                :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <div class="logic-info" v-if="willAddLogic.question_id!==0">
+          <!--          保存加入后选项id记得减一-->
+          当题目<span style="color: #1687fd"> "{{ idTitle(questions[willAddLogic.question_id-1]) }}" </span>选择选项<span style="color: #1687fd"> "{{ questions[willAddLogic.question_id-1].options[willAddLogic.option_id-1].title}}" </span>时此题才会显示
+        </div>
+        <div class="logic-info" v-if="questionsFilter.length===1">
+          题目之前不存在单（多）选题，无法设置关联题目
+        </div>
+
+        <div class="logic-bt">
+          <el-button type="primary" @click="logicConfirm(logicIndex)">确定</el-button>
+        </div>
+
+      </el-form>
     </el-dialog>
     <!--    高级设置弹框-->
     <el-dialog :title="settingDialogTitle" :visible.sync="settingDialogVisible" class="settingDialog" width="30%">
@@ -357,10 +463,28 @@
             </el-input-number>
           </el-row>
         </el-form-item>
+        <el-form-item label="题目关联逻辑开关">
+          <el-switch
+              v-model="isLogic"
+              active-text="开"
+              inactive-text="关"
+              @change="closeGlobalLogic"
+          >
+          </el-switch>
+        </el-form-item>
+
+        <div class="logic-description">
+          题目关联打开时，可设置一个题目的显示同前面某个题目的某个选项被选中关联在一起【问题右侧按钮处设置】
+        </div>
+
+        <div class="logic-description important" v-if="isLogic">
+          为确保您的问卷关联逻辑正确，建议您最后为问卷设计关联逻辑
+        </div>
+      </el-form>
+
       <div class="setting-bt">
         <el-button type="primary" @click="settingSuccess">完成</el-button>
       </div>
-      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -377,21 +501,31 @@ export default {
   mixins: [getDataApi, saveDataApi, qrcodeApi],
   data() {
     return {
+      logicQuestionState: 0,  // 用于判断用户是否更改关联问题设置
+      logicOptionState: 0,    // 用于判断用户是否更改关联选项设置
+
+      uploadImgUrl: this.GLOBAL.backUrl + 'upload/image',
+      uploadVideoUrl: this.GLOBAL.backUrl + 'upload/video',
+
       timer: '',
+      value:'',
       qrcode: null,
       timeFrame: '',
       linkShare: '',
+      editWrongMsg: "",
+      editWrongMsgVisible: false,
+      qsLinkDialogVisible: false,
+      dialogVisibleAsso: false,
+      qsLinkDialogTitle: "发布成功！",
       settingDialogTitle: "高级设置",   // 高级设置弹框的标题
       settingDialogVisible: false,     // 高级设置对话框可见性
       closingDate: null,   // 高级设置中问卷回收的截止日期
+      isLogic: false,      // 问卷是否引入关联逻辑
       isReleased: false,   // 是否发布
       hasRecycleLimit:false,
       max_recycling: 0,
-      editWrongMsg:"",
-      editWrongMsgVisible:false,
-      qsLinkDialogVisible:false,
-      qsLinkDialogTitle:"发布成功！",
       editIndex:0,
+      logicIndex: 0,          // 当前添加题目逻辑的问题ID
       selectDisAble:false,
       hoverItem:0,
       activeName: 'first',
@@ -407,24 +541,35 @@ export default {
       pid: this.$route.query.pid,
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
+      qsLogicDialogVisible:false,
+      qsLogicDialogTitle: "关联逻辑设置",
       willAddQuestion: {
         question_id: 0,
         id: 0,
-        type:'',
-        title:'',
+        type: '',
+        title: '',
         must: false, // 是否必填
+        is_shown: true,   // 是否显示
+        last_question: 0,   // 前导问题
+        last_option: 0,     // 前导选项
         description: '', // 问题描述
         options:[
           {
             hasNumLimit:false,  // 是否添加库存限制
             title:'', // 选项标题
-            id: 0 , // 选项id
+            id: 1, // 选项id
             supply: 1,  // 库存
             consume: 0, // 已消耗库存（已选）
           }
         ],
         row: 1, // 填空题区域显示行数
         score: 5, // 评分题的最大评分
+        imgList: [],
+        videoList: [],
+      },
+      willAddLogic: {
+        question_id: 0,
+        option_id: 1,
       },
       allType:[
         {
@@ -577,6 +722,115 @@ export default {
     editHeader,
   },
   methods: {
+    //---------------------------Image and video--------------------------------//
+    upLoadImage(file) {
+      const formData = new FormData();
+      formData.append('image', file.file);
+      this.$axios({
+        method: 'post',
+        url: this.uploadImgUrl,
+        data: formData,
+      })
+          .then(res => {
+            switch (res.data.status_code) {
+              case 1:
+                var name = res.data.name;
+                var url = res.data.url;
+                this.willAddQuestion.imgList.push({
+                  name: name,
+                  url: url
+                });
+                console.log(this.willAddQuestion.imgList);
+                break;
+              case 2:
+                // this.$message.error("上传文件格式错误！");
+                break;
+              default:
+                this.$message.error("操作失败！");
+                break;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+    },
+    upLoadVideo(file) {
+      const formData = new FormData();
+      formData.append('video', file.file);
+      this.$axios({
+        method: 'post',
+        url: this.uploadVideoUrl,
+        data: formData,
+      })
+          .then(res => {
+            switch (res.data.status_code) {
+              case 1:
+                var name = res.data.name;
+                var url = res.data.url;
+                this.willAddQuestion.videoList.push({
+                  name: name,
+                  url: url
+                });
+                console.log(this.willAddQuestion.videoList);
+                break;
+              case 2:
+                // this.$message.error("上传文件格式错误！");
+                break;
+              default:
+                this.$message.error("操作失败！");
+                break;
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+    },
+    beforeImageUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isPNG = file.type === 'image/png';
+      const isLt5M = file.size / 1024 / 1024 < 10;
+
+      if (!isJPG && !isPNG) {
+        this.$message.error('上传头像图片只能是 JPG/PNG 格式!');
+      } else if (!isLt5M) {
+        this.$message.error('上传头像图片大小不能超过 5MB!');
+      }
+      return (isJPG || isPNG) && isLt5M;
+    },
+    beforeVideoUpload(file) {
+      const filename = file.name;
+      var suffix = '';
+      var isVideo = false;
+      const isLt2M = file.size / 1024 / 1024 < 30;
+      try {
+        var flieArr = filename.split('.');
+        suffix = flieArr[flieArr.length - 1];
+      } catch (err) {
+        suffix = '';
+      }
+      var videoList = ['mp4', 'mkv'];
+      var judge = videoList.some(function (item) {
+        return item === suffix;
+      });
+      if (judge) {
+        isVideo = true;
+      }
+      if (!isVideo) {
+        this.$message.error('上传视频文件只能是 MP4/MKV 格式!');
+      } else if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 30MB!');
+      }
+      return isLt2M && isVideo;
+    },
+    beforeRemove(file, fileList) {
+      console.log(file, fileList);
+      return this.$confirm(`确定移除 ${ file.name }？`);
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+      this.$message("移除成功")
+    },
+    //--------------------------------------------------------------------------//
     recycleLimit(){
       if (this.hasRecycleLimit===false) this.max_recycling=0;
     },
@@ -667,27 +921,6 @@ export default {
       this.qsLinkDialogVisible=false;
       this.$router.push('/index')// 跳转到问卷中心？
     },
-    resetWillAdd(){
-      this.willAddQuestion={
-        question_id: 0,
-        id: 0,
-        type:'',
-        title:'',
-        must: false, // 是否必填
-        description: '', // 问题描述
-        options:[
-          {
-            title:'', // 选项标题
-            id: 0 ,// 选项id
-            hasNumLimit:false,
-            supply:1,
-            consume:0,
-          }
-        ],
-        row:1, // 填空区域行数
-        score: 5, // 最大评分
-      }
-    },
     publishSuccess:function (){
       this.qsLinkDialogVisible=true;
     },
@@ -703,6 +936,11 @@ export default {
         options: JSON.parse(JSON.stringify(this.questions[index].options)),
         row:this.questions[index].row,
         score:this.questions[index].score,
+        is_shown: this.questions[index].is_shown,
+        last_question: this.questions[index].last_question,
+        last_option: this.questions[index].last_option,
+        imgList: JSON.parse(JSON.stringify(this.questions[index].imgList)),
+        videoList: JSON.parse(JSON.stringify(this.questions[index].videoList)),
       };
       this.editIndex=index;
       this.selectDisAble=true;
@@ -752,6 +990,12 @@ export default {
           this.questions[index].title = this.willAddQuestion.title;
           this.questions[index].options = this.willAddQuestion.options;
           this.questions[index].score = this.willAddQuestion.score;
+          this.questions[index].is_shown = this.willAddQuestion.is_shown;
+          this.questions[index].last_question = this.willAddQuestion.last_question;
+          this.questions[index].last_option = this.willAddQuestion.last_option;
+          this.questions[index].options = JSON.parse(JSON.stringify(this.willAddQuestion.options));
+          this.questions[index].imgList=JSON.parse(JSON.stringify(this.willAddQuestion.imgList));
+          this.questions[index].videoList=JSON.parse(JSON.stringify(this.willAddQuestion.videoList));
           // 大纲更新
           this.updateOutline(this.willAddQuestion.id, this.willAddQuestion.title);
           this.qsEditDialogTitle = "";
@@ -799,6 +1043,32 @@ export default {
         }
       }
     },
+    resetWillAdd(){
+      this.willAddQuestion={
+        question_id: 0,
+        id: 0,
+        type:'',
+        title:'',
+        must: false, // 是否必填
+        is_shown: true,   // 是否显示
+        last_question: 0,   // 前导问题
+        last_option: 0,     // 前导选项
+        description: '', // 问题描述
+        options:[
+          {
+            title:'', // 选项标题
+            id: 1 ,// 选项id
+            hasNumLimit:false,
+            supply:1,
+            consume:0,
+          }
+        ],
+        row:1, // 填空区域行数
+        score: 5, // 最大评分
+        imgList:[],
+        videoList:[]
+      }
+    },
     dialogCancel: function(){
       this.qsEditDialogTitle="新建题目";
       this.resetWillAdd();
@@ -815,14 +1085,69 @@ export default {
       }).catch(() => {
       });
     },
+    LogicDialogCancel: function () {
+      this.qsLogicDialogVisible = false;
+      this.resetLogic();
+    },
+    cancel_pre_logic: function () {
+      this.$confirm('已编辑的题目关联逻辑将不会保存,确认关闭？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.LogicDialogCancel();
+      }).catch(() => {
+      });
+    },
+    logicConfirm: function(index) {
+      console.log(this.questions);
+      let questions = this.questions;
+      let willAddLogic = this.willAddLogic;
+      questions[index].last_question = willAddLogic.question_id;
+      questions[index].last_option = willAddLogic.option_id;
+      questions[index].is_shown = willAddLogic.question_id === 0;
+      if (this.willAddLogic.question_id !== this.logicQuestionState || this.willAddLogic.option_id !== this.logicOptionState) {
+        this.$message({
+          type: 'success',
+          message: '问题关联设置成功'
+        });
+      }
+      this.qsLogicDialogVisible = false;
+      this.resetLogic();
+    },
+    logic: function (index) {
+      this.logicIndex = index-1;
+      this.willAddLogic.question_id = this.questions[index-1].last_question;
+      if (this.questions[index-1].last_option!==0) { this.willAddLogic.option_id = this.questions[index-1].last_option; }
+      else this.willAddLogic.option_id = 1;
+      console.log(this.questions);
+      this.qsLogicDialogVisible = true;
+      this.logicQuestionState = this.willAddLogic.question_id;
+      this.logicOptionState = this.willAddLogic.option_id;
+    },
+    resetLogic(){
+      this.willAddLogic = {
+        question_id: 0,
+        option_id: 1,
+      };
+      this.logicIndex = 0;
+    },
     typeChange(value){
       this.willAddQuestion.type = value;
     },
     addOption(){
+      // 问题关联检查
+      if (this.willAddQuestion.id !== 0 && this.sonGroup(this.willAddQuestion.id-1).length !== 0) {
+        this.$message({
+          type: 'warning',
+          message: '此问题已被关联，无法新增选项，请删除关联信息后再试'
+        });
+        return;
+      }
       this.willAddQuestion.options.push({
         hasNumLimit:false,
-        title:'', // 选项标题
-        id: 0 ,// 选项id
+        title: '', // 选项标题
+        id: this.willAddQuestion.options.length + 1,
         supply:1,
         consume:0,
       });
@@ -834,7 +1159,21 @@ export default {
           message:"至少需要设置一个选项！"
         })
       }
-      else this.willAddQuestion.options.splice(index,1);
+      else {
+        // 问题关联检查
+        if (this.willAddQuestion.id !== 0 && this.sonGroup(this.willAddQuestion.id-1).length !== 0) {
+          this.$message({
+            type: 'warning',
+            message: '此问题已被关联，无法删除选项，请删除关联信息后再试'
+          });
+          return;
+        }
+        // id重排
+        for(let i=index+1; i<this.willAddQuestion.options.length; i++) {
+          this.willAddQuestion.options[i].id--;
+        }
+        this.willAddQuestion.options.splice(index,1);
+      }
     },
     changeTitle: function (value) {
       this.title = value;
@@ -930,7 +1269,25 @@ export default {
       index--;
       let questions = this.questions;
       if (index!==0) {
-        // 问卷更新
+        // 非法移动
+        if (questions[index].last_question === index) {
+          this.$message.error("拒绝移动！（试图将关联问题移至被关联问题上方，请检查您的关联逻辑）");
+          return;
+        }
+        // 关联维护
+        let arr = this.sonGroup(index);
+        if(arr.length !== 0) {
+          for(let j=0; j<arr.length; j++) {
+            questions[arr[j].id-1].last_question--;
+          }
+        }
+        arr = this.sonGroup(index-1);
+        if(arr.length !== 0) {
+          for(let j=0; j<arr.length; j++) {
+            questions[arr[j].id-1].last_question++;
+          }
+        }
+        // 题序维护
         questions[index].id--;
         questions[index-1].id++;
         let temp = questions[index];
@@ -945,7 +1302,25 @@ export default {
       index--;
       let questions = this.questions;
       if (index!==questions.length-1) {
-        // 问卷更新
+        // 非法移动
+        if (questions[index+1].last_question === index+1) {
+          this.$message.error("拒绝移动！（试图将关联问题移至被关联问题上方，请检查您的关联逻辑）");
+          return;
+        }
+        // 关联维护
+        let arr = this.sonGroup(index);
+        if(arr.length !== 0) {
+          for(let j=0; j<arr.length; j++) {
+            questions[arr[j].id-1].last_question++;
+          }
+        }
+        arr = this.sonGroup(index+1);
+        if(arr.length !== 0) {
+          for(let j=0; j<arr.length; j++) {
+            questions[arr[j].id-1].last_question--;
+          }
+        }
+        // 题序维护
         questions[index].id++;
         questions[index+1].id--;
         let temp = questions[index];
@@ -957,32 +1332,66 @@ export default {
       }
     },
     del_pre: function (index) {
-      this.$confirm('确认删除（不可恢复）？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.del(index)
-        this.$message({
-          type: 'success',
-          message: '删除成功'
+      // 问题关联检查
+      if (this.sonGroup(index-1).length !== 0) {
+        this.$confirm('该问题已被关联，删除此问题会删除所有相关关联信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.del_relation(index);
+          this.del(index)
+          this.$message({
+            type: 'success',
+            message: '问题及关联信息已成功删除'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消删除题目及关联'
+          });
         });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消删除'
+      } else {
+        this.$confirm('确认删除（不可恢复）？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.del(index)
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消删除'
+          });
         });
-      });
+      }
     },
     del: function (index) {
       index--;
       let questions = this.questions;
       let outline = this.outline;
-      for (let num=index+1; num<questions.length; num++) {
-        questions[num].id--;
+      // 维护关联关系
+      for (let i=index+1; i<questions.length; i++) {
+        let arr = this.sonGroup(i);
+        if(arr.length !== 0) {
+          for(let j=0; j<arr.length; j++) {
+            if (questions[arr[j].id-1] !== index) {
+              questions[arr[j].id-1].last_question--;
+            }
+          }
+        }
+      }
+      // 维护题序
+      for (let i=index+1; i<questions.length; i++) {
+        questions[i].id--;
       }
       outline.splice(index,1);
       questions.splice(index,1);
+      // 维护大纲
       for (let num=index; num<outline.length; num++) {
         this.updateOutline(num+1, questions[num].title);
       }
@@ -1065,14 +1474,146 @@ export default {
         this.$message.error("复制失败");
       }
     },
-    // 大纲拖拽处理函数
+    // 大纲拖拽处理函数(下3个)
     handleDrop(draggingNode, dropNode, dropType) {
       console.log('tree drop: ', draggingNode.key, dropNode.key, dropType);
-      this.updateQuestions(draggingNode.key, dropNode.key);
+      if (this.isRightRelation(draggingNode.key, dropNode.key)) {
+        this.updateQuestions(draggingNode.key, dropNode.key);
+      } else {
+        this.outline.splice(0, this.outline.length);
+        this.InitOutline();
+        this.$message.error("拒绝移动！（试图将关联问题移至被关联问题上方，请检查您的关联逻辑）");
+      }
     },
     allowDrop(draggingNode, dropNode, type) {
-      if (draggingNode.key > dropNode.key) return type==='prev';
-      else return type==='next';
+      if (draggingNode.key > dropNode.key) {
+        return type === 'prev';
+      } else  {
+        return type==='next';
+      }
+    },
+    isRightRelation: function (index1, index2) {
+      console.log(index1, index2);
+      index1--;
+      index2--;
+      let questions=this.questions;
+      if (index1 < index2) {
+        for (let i=index1+1; i<=index2; i++) {
+          if (questions[i].last_question === index1+1) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        for (let i=index1-1; i>=index2; i--) {
+          if (questions[index1].last_question === i+1) {
+            return false;
+          }
+        }
+        return true;
+      }
+    },
+    idTitle: function (item) {
+      if (item.id === 0) {
+        return item.title;
+      } else {
+        return item.id + ". " + item.title;
+      }
+    },
+    relatedQs: function (item) {
+      return "关联问题：" + this.questions[item.last_question-1].id + "." + this.questions[item.last_question-1].title + "(" + this.questions[item.last_question-1].options[item.last_option-1].title + ")";
+    },
+    // 遍历得爸爸
+    fatherIndex: function (qs_id) {
+      for (let i=0; i<this.questions.length; i++) {
+        if (this.questions[i].question_id === qs_id) {
+          return i;
+        }
+      }
+    },
+    // 遍历得儿子
+    sonGroup: function (index) {
+      let arr = [];
+      for (let i=0; i<this.questions.length; i++) {
+        if (this.questions[i].last_question === this.questions[index].id) {
+          arr.push(this.questions[i]);
+        }
+      }
+      return arr;
+    },
+    // 连带删除关联信息
+    del_relation: function (index) {
+      for (let i=0; i<this.questions.length; i++) {
+        // 保存加入后,下面需修改id为question_id
+        if (this.questions[i].last_question === this.questions[index-1].id) {
+          this.questions[i].last_option = 0;
+          this.questions[i].last_question = 0;
+          this.questions[i].is_shown = true;
+        }
+      }
+    },
+    // 关联信息存在性判断
+    isExistRelation: function () {
+      for (let i=0; i<this.questions.length; i++) {
+        if (this.questions[i].last_question !== 0) {
+          return true;
+        }
+      }
+      return false;
+    },
+    // 监听：全局删除关联信息
+    closeGlobalLogic: function(state) {
+      if(!state && this.isExistRelation()) {
+        this.$confirm('检测到您已为题目添加关联，关闭设置将会删除所有关联信息，是否继续？', '提示', {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.deleteGlobalRelation();
+          this.$message.info("关联信息已全部删除");
+        }).catch(() => {
+          this.isLogic = true;
+          this.$message.info("取消操作");
+        });
+      }
+    },
+    // 删除全局关联信息
+    deleteGlobalRelation: function () {
+      for (let i=0; i<this.questions.length; i++) {
+        this.questions[i].last_question = 0;
+        this.questions[i].last_option = 0;
+        this.questions[i].is_shown = true;
+      }
+    },
+  },
+  computed: {
+    questionsFilter: function () {
+      let questions = this.questions;
+      let arr = [{
+        question_id: 0,
+        id: 0,
+        type: '',
+        title: '不设置关联题目',
+        must: false, // 是否必填
+        is_shown: true,   // 是否显示
+        last_question: 0,   // 前导问题
+        last_option: 0,     // 前导选项
+        description: '', // 问题描述
+        options:[
+          {
+            title: '', // 选项标题
+            id: 0 // 选项id
+          }
+        ],
+        row: 1, // 填空区域行数
+        score: 5, // 最大评分
+      }];
+      for (let i=0; i<this.logicIndex; i++) {
+        if (questions[i].type === "radio" || questions[i].type === "checkbox") {
+          arr.push(questions[i]);
+        }
+      }
+      return arr;
     },
   },
   created() {
@@ -1272,6 +1813,33 @@ export default {
 .form .deleteOptionButton{
   margin-left: 20px;
 }
+.form .logic-description {
+  margin-top: -15px;
+  margin-bottom: 30px;
+  text-align: left;
+  padding-left: 6px;
+  font-size: 14px;
+  color: #aaaaaa;
+}
+
+.form .important {
+  color: crimson;
+}
+
+.form .logic-title {
+  font-size: 16px;
+  font-weight: bold;
+  padding-left: 12px;
+  padding-bottom: 30px;
+}
+
+.form .logic-bt {
+  text-align: center;
+}
+
+.form .logic-form .el-input--suffix .el-input__inner {
+  width: 620px;
+}
 
 .form .sideTitle{
   font-size: 18px;
@@ -1302,5 +1870,21 @@ export default {
 
 .form .settingDialog .item-title {
   padding-right: 20px;
+}
+
+.form .logic-info {
+  color: #aaaaaa;
+  padding-top: 2px;
+  padding-left: 12px;
+  padding-bottom: 25px;
+}
+
+.form .block-relation {
+  text-align: right;
+  /*border: solid 1px black;*/
+  font-size: 14px;
+  padding-top: 8px;
+  padding-left: 10px;
+  color: #1687fd;
 }
 </style>

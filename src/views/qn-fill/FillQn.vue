@@ -73,7 +73,8 @@
                        balance=true :src="i.url">
               </el-row>
 
-            <!--                  单选-->
+
+              <!--                  单选-->
             <div v-if="item.type==='radio'">
               <div class="q-opt" v-for="opt in item.options" :key="opt.id">
                 <el-radio v-if="item.type==='radio'" @change="changeHandler(item.id,answers[item.id-1].ans)" v-model="answers[item.id-1].ans" :label="opt.title">
@@ -383,6 +384,9 @@ export default {
     },
     backToSurvey() {
       this.success = false;
+      this.repeat = false;
+      this.close = false;
+      location.reload();
     },
     submit: function () {
       this.submitAns('1');

@@ -19,7 +19,7 @@ Vue.prototype.GLOBAL = GlobalInfo
 
 // axios
 Vue.prototype.$axios = axios
-axios.defaults.baseURL = GlobalInfo.backUrl
+axios.defaults.baseURL = GlobalInfo.backUrl;
 
 // element UI
 Vue.use(ElementUI);
