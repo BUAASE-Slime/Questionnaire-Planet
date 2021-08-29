@@ -25,6 +25,10 @@ export default {
                             this.questions = res.data.questions;
                             this.isReleased = res.data.is_released;
 
+                            //-------------------------------暂时
+                            // this.corBackLastQurId();
+                            //--------------------------------------
+
                             // 多选题标准答案数据格式转换
                             if (this.type === '2') {
                                 for (var i=0; i<this.questions.length; i++) {
@@ -46,16 +50,19 @@ export default {
                 })
         },
         getQnDataForPreview(_autoSave=false) {
-            let loadingIns = this.$loading({fullscreen: true});
             const formData = new FormData();
             formData.append("qn_id", this.$route.query.pid);
+            let loadingIns;
+            if (_autoSave === false)
+                loadingIns = this.$loading({fullscreen: true});
             this.$axios({
                 method: 'post',
                 url: '/sm/get/qn_detail',
                 data: formData,
             })
                 .then(res => {
-                    loadingIns.close();
+                    if (_autoSave === false)
+                        loadingIns.close();
                     switch (res.data.status_code) {
                         case 0:
                             this.$message.error("您无权访问！");
@@ -101,14 +108,17 @@ export default {
 
             const formData = new FormData();
             formData.append("code", this.$route.query.code);
-            let loadingIns = this.$loading({fullscreen: true});
+            let loadingIns;
+            if (_autoSave === false)
+                loadingIns = this.$loading({fullscreen: true});
             this.$axios({
                 method: 'post',
                 url: '/sm/get/qn_for_fill',
                 data: formData,
             })
                 .then(res => {
-                    loadingIns.close();
+                    if (_autoSave === false)
+                        loadingIns.close();
                     switch (res.data.status_code) {
                         case 1:
                             this.title = res.data.title;
@@ -181,6 +191,23 @@ export default {
                 .catch(err => {
                     console.log(err);
                 })
+        },
+
+        //----------------------return sequence(id) from question_id
+        getIdFromQid(qid) {
+            for (var i=0; i<this.questions.length; i++) {
+                if (qid === this.questions[i].question_id) {
+                    return i+1;
+                }
+            }
+            return qid;
+        },
+        corBackLastQurId() {
+            for (var i=0; i<this.questions.length; i++) {
+                if (this.questions[i].last_question !== 0) {
+                    this.questions[i].last_question = this.getIdFromQid(this.questions[i].last_question);
+                }
+            }
         }
     }
 }
