@@ -396,6 +396,7 @@ export default{
         }
     },
     created() {
+      let loadingIns = this.$loading({fullscreen: true});
       const formData = new FormData();
       formData.append("qn_id", this.$route.query.pid);
 
@@ -405,6 +406,7 @@ export default{
         data: formData,
       })
       .then(res => {
+        loadingIns.close();
         if (res.data.status_code === 1) {
           this.questions = res.data.questions;
           this.item=this.questions[this.nowid-1];
