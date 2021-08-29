@@ -1,8 +1,35 @@
 <template>
   <el-row class="edit-header">
-    <el-col :span="2" class="lf-bt"><el-button icon="el-icon-edit" @click="open_1">编辑标题</el-button></el-col>
-    <el-col :span="2" class="lf-bt"><el-button icon="el-icon-edit-outline" @click="open_2">编辑说明</el-button></el-col>
-    <el-col :span="2" class="lf-bt"><el-button icon="el-icon-setting" @click="setting">高级设置</el-button></el-col>
+    <el-col :span="2" class="lf-bt">
+      <el-popover
+          placement="top-start"
+          title="编辑标题"
+          width="200"
+          trigger="hover"
+          content="点击编辑此问卷标题">
+        <el-button slot="reference" icon="el-icon-edit" @click="open_1">编辑标题</el-button>
+      </el-popover>
+    </el-col>
+    <el-col :span="2" class="lf-bt">
+      <el-popover
+          placement="top-start"
+          title="编辑说明"
+          width="200"
+          trigger="hover"
+          content="点击编辑此问卷简介">
+        <el-button slot="reference" icon="el-icon-edit-outline" @click="open_2">编辑说明</el-button>
+      </el-popover>
+    </el-col>
+    <el-col :span="2" class="lf-bt">
+    <el-popover
+        placement="top-start"
+        title="高级设置"
+        width="200"
+        trigger="hover"
+        content="可设置问卷回收截止时间，开启逻辑开关，报名问卷还能设置最大回收量">
+      <el-button slot="reference" icon="el-icon-setting" @click="setting">高级设置</el-button>
+    </el-popover>
+    </el-col>
     <el-col :span="2" class="button" v-if="isReleased"><el-button type="success" icon="el-icon-share" @click="share">分享</el-button></el-col>
     <el-col :span="2" class="button" v-else><el-button type="success" icon="el-icon-upload2" @click="publish">发布</el-button></el-col>
     <el-col :span="2" class="button"><el-button type="warning" icon="el-icon-receiving" @click="save">保存</el-button></el-col>
