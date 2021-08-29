@@ -286,6 +286,7 @@ import editHeader from "../../../components/header/editHeader";
 import QRCode from "qrcodejs2";
 import getDataApi from "@/utils/getDataApi";
 import saveDataApi from "@/utils/saveDataApi";
+import user from "@/store/user";
 
 export default {
   name: "vote",
@@ -758,10 +759,8 @@ export default {
       });
     },
     publish() {
-      this.saveinfo('publish');
-
-      if (this.isReleased) {
-        this.$message.info("问卷已发布，无需重复发布");
+      if (this.questions.length === 0) {
+        this.$message.error("题目为空，无法发布！");
         return;
       }
 
@@ -771,50 +770,49 @@ export default {
         type: 'success'
       }).then(() => {
         this.publishSuccess();
-        const formData = new FormData();
-        formData.append("survey_id", this.pid);
+        var new_questions = JSON.parse(JSON.stringify(this.questions));
+        let url = '/sm/save/qn/deploy';
+        let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
+        const userInfo = user.getters.getUser(user.state());
+        var param = {
+          username: userInfo.user.username,
+          title: this.title,
+          finished_time: this.timeFrame,
+          description: this.description,
+          type: this.type,
+          qn_id: this.$route.query.pid,
+          questions: new_questions
+        };
+        var paramer = JSON.stringify(param, {questions: 'brackets'})
         this.$axios({
-          url: '/qn/get_code',
           method: 'post',
-          data: formData,
+          url: url,
+          data: paramer,
         })
-        .then(res => {
-          console.log(res.data.status_code);
-          switch (res.data.status_code) {
-            case 200:
-              this.linkShare = this.GLOBAL.baseUrl + '/fill_vote?mode=1&code=' + res.data.code;
+            .then(res => {
+              loadingIns.close();
+              if (res.data.status_code === 1) {
+                this.linkShare = this.GLOBAL.baseUrl + '/fill_vote?mode=1&code=' + res.data.code;
 
-              if (this.qrcode == null) {
-                this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
-                  width: 200, //生成的二维码的宽度
-                  height: 200, //生成的二维码的高度
-                  colorDark : "#000000", // 生成的二维码的深色部分
-                  colorLight : "#ffffff", //生成二维码的浅色部分
-                  correctLevel : QRCode.CorrectLevel.H
-                });
+                if (this.qrcode == null) {
+                  this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
+                    width: 200, //生成的二维码的宽度
+                    height: 200, //生成的二维码的高度
+                    colorDark : "#000000", // 生成的二维码的深色部分
+                    colorLight : "#ffffff", //生成二维码的浅色部分
+                    correctLevel : QRCode.CorrectLevel.H
+                  });
+                }
+                this.qrcode.clear();
+                this.qrcode.makeCode(this.linkShare);
               }
-              this.qrcode.clear();
-              this.qrcode.makeCode(this.linkShare);
-
-              break;
-            case 402:
-              this.$message.warning("问卷题目为空，无法发布");
-              break;
-            case 403:
-              this.$message.warning("您无权执行此操作！");
-              break;
-            case 406:
-              this.$message.info("问卷已发布，无需重复发布");
-              break;
-            default:
-              this.$message.error("发布失败，请检查登录信息！");
-              break;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        })
-
+              else if (res.data.status_code === 2) {
+                this.$message.error("题目为空，无法发布！");
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            })
       }).catch(() => {
         this.$message({
           type: 'info',
