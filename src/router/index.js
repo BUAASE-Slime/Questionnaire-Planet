@@ -27,6 +27,7 @@ const routes = [
         name: 'SignUp',
         component: () => import('../views/user-sign/SignUp.vue'),
         meta: {
+            requireNotAuth: true,
             noNav: true
         }
     },

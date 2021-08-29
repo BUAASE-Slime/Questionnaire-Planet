@@ -740,6 +740,7 @@ export default {
     },
 
     selectExportType(command) {
+      let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
       var surveyId = this.QnList[command.index].survey_id;
       const formData = new FormData();
       formData.append("qn_id", surveyId);
@@ -751,6 +752,7 @@ export default {
             data: formData,
           })
           .then(res => {
+            loadingIns.close();
             if (res.data.status_code === 1) {
               var item = {
                 FILETYPE: 'docx',
@@ -773,6 +775,7 @@ export default {
             data: formData,
           })
           .then(res => {
+            loadingIns.close();
             if (res.data.status_code === 1) {
               // this.downloadPDF(res.data.pdf_url, res.data.filename);
               this.fileSaverPDF(res.data.pdf_url, res.data.filename);

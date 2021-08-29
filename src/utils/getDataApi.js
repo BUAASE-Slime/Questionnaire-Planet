@@ -3,7 +3,7 @@ import user from "@/store/user";
 export default {
     methods: {
         getQnDataSelf() {
-            let loadingIns = this.$loading({fullscreen: true});
+            let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
             const formData = new FormData();
             formData.append("qn_id", this.$route.query.pid);
             this.$axios({
