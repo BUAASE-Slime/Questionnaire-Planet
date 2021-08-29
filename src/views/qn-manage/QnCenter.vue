@@ -1000,9 +1000,6 @@ export default {
     },
 
     searchQns(tag) {
-      let loadingInstance = this.$loading({
-        target: '#main-body',
-      });
       let formData = new FormData();
       const userInfo = user.getters.getUser(user.state());
       formData.append("username", userInfo.user.username);
@@ -1027,30 +1024,31 @@ export default {
       if (this.is_collected === 1)
         formData.append("is_collected", this.is_collected);
       formData.append("type", this.qn_type);
-
+      let loadingInstance = this.$loading({
+        target: '#main-body',
+      });
       this.$axios({
         method: 'post',
         url: '/qn/get_list',
         data: formData,
       })
       .then(res => {
+        loadingInstance.close();
         switch (res.data.status_code) {
           case 401:
-            this.$message.warning("您无权访问！");
-            location.reload();
+            this.$message.warning("请先登录！");
+            this.$router.push('/login');
             break;
           case 403:
             this.$message.warning("您无权访问！");
-            location.reload();
+            this.$router.push('/index');
             break;
           case 404:
             this.hasQn = false;
-            loadingInstance.close();
             console.log('成功但未查询到问卷！');
             break;
           default:
             this.QnList = JSON.parse(res.data.data);
-            loadingInstance.close();
             this.hasQn = true;
             if (tag === 1) {
               this.$message.success("为您查询到 " + this.QnList.length + " 条问卷");

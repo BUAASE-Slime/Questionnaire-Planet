@@ -92,7 +92,6 @@ export default {
                 })
         },
         getQnDataForFill(_autoSave=false, _requireAuth=true, _outOfOrder=false) {
-            let loadingIns = this.$loading({fullscreen: true});
             const userInfo = user.getters.getUser(user.state());
             if (_requireAuth && !userInfo) {
                 this.$message.warning("请先登录");
@@ -102,6 +101,7 @@ export default {
 
             const formData = new FormData();
             formData.append("code", this.$route.query.code);
+            let loadingIns = this.$loading({fullscreen: true});
             this.$axios({
                 method: 'post',
                 url: '/sm/get/qn_for_fill',
