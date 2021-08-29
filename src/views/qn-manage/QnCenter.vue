@@ -423,6 +423,7 @@ export default {
     },
 
     statUrl(index) {
+      console.log(this.QnList[index].recycling_num);
       if (this.QnList[index].recycling_num > 0) {
         location.href = this.GLOBAL.baseUrl + "/recyconcept?pid=" + this.QnList[index].survey_id;
       } else {
