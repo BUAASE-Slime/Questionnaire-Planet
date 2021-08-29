@@ -421,7 +421,7 @@ export default {
       settingDialogTitle: "高级设置",   // 高级设置弹框的标题
       settingDialogVisible:false,     // 高级设置对话框可见性
       closingDate: null,   // 高级设置中问卷回收的截止日期
-      isLogic: true,      // 问卷是否引入关联逻辑
+      isLogic: false,      // 问卷是否引入关联逻辑
       isReleased: false,   // 是否发布
       editIndex: 0,
       logicIndex: 0,          // 当前添加题目逻辑的问题ID
