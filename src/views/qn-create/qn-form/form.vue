@@ -444,7 +444,7 @@
                           v-model="timeFrame"
                           @change="formatTime"
                           type="datetime"
-                          value-format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-dd HH:mm"
                           placeholder="选择结束时间">
           </el-date-picker>
         </el-form-item>

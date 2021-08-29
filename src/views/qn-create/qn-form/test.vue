@@ -109,7 +109,7 @@
           <div class="content">
             <el-row class="ques-block" v-for="item in questions" :key="item.num" @mouseover.native="hoverItem=item.id">
 
-              <el-col :span="17" class="block-content">
+              <el-col :span="16" class="block-content">
                 <div class="block-title" v-if="item.type==='judge'">
                   {{ item.id }}. 判断：{{ item.title }} <span class="must" v-if="item.must">(必填)</span>
                 </div>
@@ -205,7 +205,7 @@
                 </div>
               </el-col>
 
-              <el-col :span="7" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
+              <el-col :span="8" class="block-button" style="text-align: right" v-if="hoverItem===item.id">
                 <el-button-group>
                   <el-tooltip class="item" effect="light" content="编辑" placement="bottom" open-delay="400">
                     <el-button class="bt" type="primary" icon="el-icon-edit" @click="edit(item.id)"></el-button>
@@ -487,7 +487,7 @@
               v-model="timeFrame"
               @change="formatTime"
               type="datetime"
-              value-format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm"
               placeholder="选择结束时间">
           </el-date-picker>
         </el-form-item>
