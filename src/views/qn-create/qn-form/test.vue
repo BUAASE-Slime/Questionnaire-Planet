@@ -550,7 +550,7 @@ export default {
       settingDialogTitle: "高级设置",   // 高级设置弹框的标题
       settingDialogVisible: false,     // 高级设置对话框可见性
       closingDate: null,   // 高级设置中问卷回收的截止日期
-      isLogic: false,      // 问卷是否引入关联逻辑
+      isLogic: true,      // 问卷是否引入关联逻辑
       scoringMode: true,    // 评分模式（高级设置中开启后可为题目设置得分）
       isReleased: false,   // 是否发布
       editIndex: 0,
@@ -1229,48 +1229,7 @@ export default {
       })
     },
     share() {
-      if (!this.isReleased) {
-        this.publish();
-      } else {
-        this.saveinfo('publish');
-        this.publishSuccess();
-        const formData = new FormData();
-        formData.append("survey_id", this.pid);
-        this.$axios({
-          url: '/qn/get_code_existed',
-          method: 'post',
-          data: formData,
-        })
-            .then(res => {
-              switch (res.data.status_code) {
-                case 0:
-                  this.$message.warning("您无权执行此操作！");
-                  break;
-                case 1:
-                  this.linkShare = this.GLOBAL.baseUrl + '/fill_test?mode=1&code=' + res.data.code;
-
-                  if (this.qrcode == null) {
-                    this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
-                      width: 200, //生成的二维码的宽度
-                      height: 200, //生成的二维码的高度
-                      colorDark : "#000000", // 生成的二维码的深色部分
-                      colorLight : "#ffffff", //生成二维码的浅色部分
-                      correctLevel : QRCode.CorrectLevel.H
-                    });
-                  }
-                  this.qrcode.clear();
-                  this.qrcode.makeCode(this.linkShare);
-
-                  break;
-                default:
-                  this.$message.error("操作失败！");
-                  break;
-              }
-            })
-            .catch(err => {
-              console.log(err);
-            })
-      }
+      this.publish();
     },
     publish() {
       if (this.questions.length === 0) {
