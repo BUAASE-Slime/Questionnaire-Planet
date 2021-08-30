@@ -536,6 +536,8 @@ export default {
       uploadImgUrl: this.GLOBAL.backUrl + 'upload/image',
       uploadVideoUrl: this.GLOBAL.backUrl + 'upload/video',
 
+      max_recycling: 0,
+      hasRecycleLimit: false,
       timer: '',
       value:'',
       qrcode: null,

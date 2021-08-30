@@ -320,6 +320,8 @@ export default {
   mixins: [getDataApi, saveDataApi],
   data() {
     return {
+      max_recycling: 0,
+      hasRecycleLimit: false,
       timer: '',
       value:'',
       qrcode: null,
