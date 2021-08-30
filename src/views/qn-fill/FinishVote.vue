@@ -7,14 +7,18 @@
       <el-divider></el-divider>
       <div class="title">
         <h2>投票结果</h2>
+        <span style="color: #9b9ea0">(红色为您做出的选择)</span>
       </div>
 
       <div class="main">
         <div class="qs-block" v-for="item in voteQuestions" v-bind:key="item.id">
           <div class="qs-title"><h3>{{item.title}}</h3></div>
           <div class="option-block" v-for="op in item.options" v-bind:key="op.id">
-            <el-row class="op-title">{{op.title}}</el-row>
-            <el-row class="progress"><el-progress :stroke-width="20" :format="f(op.num)" :percentage="op.num/item.max_num*100"></el-progress></el-row>
+            <el-row class="op-title">{{op.title}}<i class="el-icon-success" v-if="op.is_selected" style="margin-left: 20px;color: #409EFF"></i></el-row>
+            <el-row :class="{selected:op.is_selected}">
+              <el-progress :stroke-width="20" :format="f(op.num)" :percentage="op.num/item.max_num*100">
+              </el-progress>
+            </el-row>
           </div>
         </div>
         <div class="tail">
@@ -34,74 +38,74 @@ export default {
     return{
       rootUrl: this.GLOBAL.baseUrl,
       voteQuestions: [
-        {
-          question_id: 1,
-          id: 1,
-          type:'radio',
-          title:'第一题',
-          must: false, // 是否必填
-          isVote:true,//是否是投票题
-          description: '', // 问题描述
-          max_num: 12,//投票人数最多的选项的人数
-          options:[
-            {
-              title:'A.不太行', // 选项标题
-              id: 1 ,// 选项id
-              num: 2,//**********选该项人数
-            },
-            {
-              title:'B.一般般', // 选项标题
-              id: 2 ,// 选项id
-              num: 8,
-            },
-            {
-              title:'C.挺好的', // 选项标题
-              id: 3 ,// 选项id
-              num: 12,
-            },
-            {
-              title:'D.非常好', // 选项标题
-              id:4 ,// 选项id
-              num: 9,
-            }
-          ],
-          row: 1, // 填空区域行数
-          score: 5, // 最大评分
-        },
-        {
-          question_id: 2,
-          id: 2,
-          type:'checkbox',
-          title:'第二题',
-          must: true, // 是否必填
-          isVote:true,//是否是投票题
-          description: '', // 问题描述
-          max_num: 18,//投票人数最多的选项的人数
-          options:[
-            {
-              title:'A', // 选项标题
-              id: 1 ,// 选项id
-              num: 15,//**********选该项人数
-            },
-            {
-              title:'B', // 选项标题
-              id: 2 ,// 选项id
-              num: 6,
-            },
-            {
-              title:'C', // 选项标题
-              id: 3 ,// 选项id
-              num: 18,
-            },
-            {
-              title:'D', // 选项标题
-              id:4 ,// 选项id
-              num: 3,
-            }
-          ],
-          row: 1, // 填空区域行数
-          score: 5, // 最大评分
-        },
+        // {
+        //   question_id: 1,
+        //   id: 1,
+        //   type:'radio',
+        //   title:'第一题',
+        //   must: false, // 是否必填
+        //   isVote:true,//是否是投票题
+        //   description: '', // 问题描述
+        //   max_num: 12,//投票人数最多的选项的人数
+        //   options:[
+        //     {
+        //       title:'A.不太行', // 选项标题
+        //       id: 1 ,// 选项id
+        //       num: 2,//**********选该项人数
+        //     },
+        //     {
+        //       title:'B.一般般', // 选项标题
+        //       id: 2 ,// 选项id
+        //       num: 8,
+        //     },
+        //     {
+        //       title:'C.挺好的', // 选项标题
+        //       id: 3 ,// 选项id
+        //       num: 12,
+        //     },
+        //     {
+        //       title:'D.非常好', // 选项标题
+        //       id:4 ,// 选项id
+        //       num: 9,
+        //     }
+        //   ],
+        //   row: 1, // 填空区域行数
+        //   score: 5, // 最大评分
+        // },
+        // {
+        //   question_id: 2,
+        //   id: 2,
+        //   type:'checkbox',
+        //   title:'第二题',
+        //   must: true, // 是否必填
+        //   isVote:true,//是否是投票题
+        //   description: '', // 问题描述
+        //   max_num: 18,//投票人数最多的选项的人数
+        //   options:[
+        //     {
+        //       title:'A', // 选项标题
+        //       id: 1 ,// 选项id
+        //       num: 15,//**********选该项人数
+        //     },
+        //     {
+        //       title:'B', // 选项标题
+        //       id: 2 ,// 选项id
+        //       num: 6,
+        //     },
+        //     {
+        //       title:'C', // 选项标题
+        //       id: 3 ,// 选项id
+        //       num: 18,
+        //     },
+        //     {
+        //       title:'D', // 选项标题
+        //       id:4 ,// 选项id
+        //       num: 3,
+        //     }
+        //   ],
+        //   row: 1, // 填空区域行数
+        //   score: 5, // 最大评分
+        // },
       ]
     }
   },
@@ -218,5 +222,9 @@ export default {
 
 .el-progress-bar__inner{
   background-image: linear-gradient(to right, #3587d8 , #a8a4ff);
+}
+
+.selected .el-progress-bar__inner{
+  background-image: linear-gradient(to right, #fe4365, #fc9d9a);
 }
 </style>

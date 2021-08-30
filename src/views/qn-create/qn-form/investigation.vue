@@ -268,7 +268,7 @@
               :file-list="willAddQuestion.videoList"
               :limit="1">
             <el-button size="small" plain style="width: 100px">点击上传</el-button>
-            <span slot="tip" class="el-upload__tip">&emsp;只能上传mp4/mkv文件，且不超过30mb</span>
+            <span slot="tip" class="el-upload__tip">&emsp;只能上传mp4/mkv文件，且不超过5mb</span>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -742,7 +742,7 @@ export default {
       const filename = file.name;
       var suffix = '';
       var isVideo = false;
-      const isLt2M = file.size / 1024 / 1024 < 30;
+      const isLt2M = file.size / 1024 / 1024 < 10;
       try {
         var flieArr = filename.split('.');
         suffix = flieArr[flieArr.length - 1];
@@ -759,7 +759,7 @@ export default {
       if (!isVideo) {
         this.$message.error('上传视频文件只能是 MP4/MKV 格式!');
       } else if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 30MB!');
+        this.$message.error('上传视频文件大小不能超过 10MB!');
       }
       return isLt2M && isVideo;
     },
@@ -1106,10 +1106,10 @@ export default {
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
+        let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
         this.publishSuccess();
         var new_questions = JSON.parse(JSON.stringify(this.questions));
         let url = '/sm/save/qn/deploy';
-        let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
         const userInfo = user.getters.getUser(user.state());
         var param = {
           username: userInfo.user.username,
@@ -1218,9 +1218,10 @@ export default {
         }
         // 关联维护
         let arr = this.sonGroup(index);
+        let willSubtract = [];
         if(arr.length !== 0) {
           for(let j=0; j<arr.length; j++) {
-            questions[arr[j].id-1].last_question--;
+            willSubtract.push(arr[j].id-1);
           }
         }
         arr = this.sonGroup(index-1);
@@ -1228,6 +1229,9 @@ export default {
           for(let j=0; j<arr.length; j++) {
             questions[arr[j].id-1].last_question++;
           }
+        }
+        for (let i=0; i<willSubtract.length; i++) {
+          questions[willSubtract[i]].last_question--;
         }
         // 题序维护
         questions[index].id--;
@@ -1251,9 +1255,10 @@ export default {
         }
         // 关联维护
         let arr = this.sonGroup(index);
+        let willAdd = [];
         if(arr.length !== 0) {
           for(let j=0; j<arr.length; j++) {
-            questions[arr[j].id-1].last_question++;
+            willAdd.push(arr[j].id-1);
           }
         }
         arr = this.sonGroup(index+1);
@@ -1261,6 +1266,9 @@ export default {
           for(let j=0; j<arr.length; j++) {
             questions[arr[j].id-1].last_question--;
           }
+        }
+        for (let i=0; i<willAdd.length; i++) {
+          questions[willAdd[i]].last_question++;
         }
         // 题序维护
         questions[index].id++;
