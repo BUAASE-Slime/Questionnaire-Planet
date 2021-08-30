@@ -961,48 +961,7 @@ export default {
       });
     },
     share() {
-      if (!this.isReleased) {
-        this.publish();
-      } else {
-        this.saveinfo('publish');
-        this.publishSuccess();
-        const formData = new FormData();
-        formData.append("survey_id", this.pid);
-        this.$axios({
-          url: '/qn/get_code_existed',
-          method: 'post',
-          data: formData,
-        })
-            .then(res => {
-              switch (res.data.status_code) {
-                case 0:
-                  this.$message.warning("您无权执行此操作！");
-                  break;
-                case 1:
-                  this.linkShare = this.GLOBAL.baseUrl + '/fill_hate?mode=1&code=' + res.data.code;
-
-                  if (this.qrcode == null) {
-                    this.qrcode = new QRCode(document.getElementById("qrcode_2"), {
-                      width: 200, //生成的二维码的宽度
-                      height: 200, //生成的二维码的高度
-                      colorDark : "#000000", // 生成的二维码的深色部分
-                      colorLight : "#ffffff", //生成二维码的浅色部分
-                      correctLevel : QRCode.CorrectLevel.H
-                    });
-                  }
-                  this.qrcode.clear();
-                  this.qrcode.makeCode(this.linkShare);
-
-                  break;
-                default:
-                  this.$message.error("操作失败！");
-                  break;
-              }
-            })
-            .catch(err => {
-              console.log(err);
-            })
-      }
+      this.publish();
     },
     saveinfo(tag) {
       this.saveQnInfo(tag, "5");
