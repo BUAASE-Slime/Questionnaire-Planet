@@ -1529,7 +1529,7 @@ export default {
     this.getQnDataSelf();
   },
   mounted() {
-    this.timer = setInterval(this.autoSave, 180000);
+    this.timer = setInterval(this.autoSave, 60000);
   },
   beforeDestroy() {
     clearInterval(this.timer);
