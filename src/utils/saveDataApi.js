@@ -159,7 +159,10 @@ export default {
                     url = '/sm/save/qn_keep/history';
                     break;
             }
-            let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
+            let loadingIns;
+            if (tag !== 'autosave') {
+                loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
+            }
             const userInfo = user.getters.getUser(user.state());
             var param = {
                 username: userInfo.user.username,
@@ -181,7 +184,8 @@ export default {
                 data: paramer,
             })
                 .then(res => {
-                    loadingIns.close();
+                    if (tag !== 'autosave')
+                        loadingIns.close();
                     switch (res.data.status_code) {
                         case 0:
                             this.$message.warning("登录信息失效，请重新登录！");
