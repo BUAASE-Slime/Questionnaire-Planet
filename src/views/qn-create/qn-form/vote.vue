@@ -771,10 +771,10 @@ export default {
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
+        let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
         this.publishSuccess();
         var new_questions = JSON.parse(JSON.stringify(this.questions));
         let url = '/sm/save/qn/deploy';
-        let loadingIns = this.$loading({fullscreen: true, text: '拼命加载中'});
         const userInfo = user.getters.getUser(user.state());
         var param = {
           username: userInfo.user.username,
