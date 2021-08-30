@@ -26,6 +26,13 @@ export default {
                             this.isReleased = res.data.is_released;
                             this.isLogic = res.data.is_logic;
                             this.timeFrame = res.data.finished_time;
+                            this.max_recycling = res.data.max_recycling;
+
+                            if (this.max_recycling >= 1000) {
+                                this.hasRecycleLimit = false;
+                                this.max_recycling = 0;
+                            } else
+                                this.hasRecycleLimit = true;
 
                             // 多选题标准答案数据格式转换
                             if (this.type === '2') {

@@ -168,7 +168,8 @@ export default {
                 description: this.description,
                 type: this.type,
                 qn_id: this.$route.query.pid,
-                questions: new_questions
+                questions: new_questions,
+                max_recycling: this.max_recycling,
             }
             console.log("timeFrame")
             console.log(this.timeFrame)

@@ -492,6 +492,8 @@ export default {
       //   ]
       // }],
       outline: [],
+      max_recycling: 0,
+      hasRecycleLimit: false,
       pid: this.$route.query.pid,
       qsEditDialogVisible:false,
       qsEditDialogTitle:"新建题目",
@@ -693,10 +695,10 @@ export default {
     upLoadVideo(file) {
       const formData = new FormData();
       formData.append('video', file.file);
-      this.$ajax({
-
+      const instance = this.$axios.create({
+        withCredentials: true,
       })
-      this.$axios({
+      instance({
         method: 'post',
         url: this.uploadVideoUrl,
         data: formData,
