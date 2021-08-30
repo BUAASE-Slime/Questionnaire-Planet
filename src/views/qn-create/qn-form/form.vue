@@ -525,7 +525,7 @@ export default {
       isLogic: false,      // 问卷是否引入关联逻辑
       isReleased: false,   // 是否发布
       hasRecycleLimit:false,
-      max_recycling: 0,
+      max_recycling: 10000,
       editIndex:0,
       logicIndex: 0,          // 当前添加题目逻辑的问题ID
       selectDisAble:false,
@@ -834,7 +834,7 @@ export default {
     },
     //--------------------------------------------------------------------------//
     recycleLimit(){
-      if (this.hasRecycleLimit===false) this.max_recycling=0;
+      if (this.hasRecycleLimit===false) this.max_recycling=10000;
     },
     autoSave() {
       this.saveQnInfo('autosave', '4');

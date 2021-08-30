@@ -30,7 +30,7 @@ export default {
 
                             if (this.max_recycling >= 1000) {
                                 this.hasRecycleLimit = false;
-                                this.max_recycling = 0;
+                                this.max_recycling = 10000;
                             } else
                                 this.hasRecycleLimit = true;
 

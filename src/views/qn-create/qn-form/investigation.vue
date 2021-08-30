@@ -492,7 +492,7 @@ export default {
       //   ]
       // }],
       outline: [],
-      max_recycling: 0,
+      max_recycling: 10000,
       hasRecycleLimit: false,
       pid: this.$route.query.pid,
       qsEditDialogVisible:false,
