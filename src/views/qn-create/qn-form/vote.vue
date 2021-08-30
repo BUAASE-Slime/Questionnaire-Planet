@@ -293,7 +293,7 @@ export default {
   mixins: [getDataApi, saveDataApi],
   data() {
     return {
-      max_recycling: 0,
+      max_recycling: 10000,
       timer: '',
       hasRecycleLimit: false,
       timeFrame: '',
