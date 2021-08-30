@@ -70,11 +70,11 @@
                   <span> 填空题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
                   <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='text';qsEditDialogVisible=true"></i>
                 </div>
-                <div class="edit-ques">
-                  <i class="el-icon-circle-check"></i>
-                  <span> 判断题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>
-                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='judge';qsEditDialogVisible=true"></i>
-                </div>
+<!--                <div class="edit-ques">-->
+<!--                  <i class="el-icon-circle-check"></i>-->
+<!--                  <span> 判断题&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</span>-->
+<!--                  <i class="el-icon-circle-plus type-icon" @click="willAddQuestion.type='judge';qsEditDialogVisible=true"></i>-->
+<!--                </div>-->
               </div>
 
             </div>

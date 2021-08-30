@@ -138,11 +138,19 @@ export default {
                             this.title = res.data.title;
                             this.description = res.data.description;
                             this.type = res.data.type;
-                            this.questions = res.data.questions;
+                            if (_autoSave === true) {
+                                var new_ques =  res.data.questions;
+                                for (var jj=0; jj<new_ques.length; jj++) {
+                                    this.questions[jj].options = new_ques[jj].options;
+                                }
+                            } else {
+                                this.questions = res.data.questions;
+                            }
                             if (res.data.finished_time !== undefined && res.data.finished_time !== '') {
                                 this.finished_time = res.data.finished_time;
                                 console.log(this.finished_time);
                             }
+
 
                             if (_outOfOrder) {
                                 this.quesStorage = JSON.parse(JSON.stringify(this.questions));
