@@ -290,7 +290,6 @@ export default {
       else if (this.mode === '1') {
         this.getQnDataForFill(true);
       }
-      console.log("get");
     },
     gotoHome() {
       this.$router.push('/');

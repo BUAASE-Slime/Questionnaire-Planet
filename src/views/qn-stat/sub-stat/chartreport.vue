@@ -410,8 +410,6 @@ export default{
         if (res.data.status_code === 1) {
           this.questions = res.data.questions;
           this.item=this.questions[this.nowid-1];
-          console.log("questions");
-          console.log(this.questions);
         } else {
           this.$message.error("请求失败！");
         }

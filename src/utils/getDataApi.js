@@ -148,7 +148,6 @@ export default {
                             }
                             if (res.data.finished_time !== undefined && res.data.finished_time !== '') {
                                 this.finished_time = res.data.finished_time;
-                                console.log(this.finished_time);
                             }
 
 

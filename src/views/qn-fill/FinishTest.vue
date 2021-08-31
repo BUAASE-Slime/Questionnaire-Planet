@@ -355,10 +355,6 @@ export default {
           // 预处理
           let reference = questions[i].refer;
           // let reference = questions[i].refer.substring(1, questions[i].refer.length-1).replace(/"/g, "").split(', ');
-          console.log("reference");
-          console.log(reference);
-          console.log("answers");
-          console.log(answers[i].ansList);
           if (reference.sort().toString() === answers[i].ansList.sort().toString()) {
             answers[i].correct = true;
             score += questions[i].point;
@@ -391,7 +387,6 @@ export default {
     .then(res => {
       if (res.data.status_code === 1) {
         data = res.data.answers;
-        console.log(data);
         this.questions = res.data.questions;
 
         for (var m=0; m<this.questions.length; m++) {

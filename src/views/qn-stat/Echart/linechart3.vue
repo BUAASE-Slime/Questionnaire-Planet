@@ -50,7 +50,6 @@ export default {
   },
   methods: {
     getData() {
-      console.log(this.data);
       var title;
       var choosed;
       for (var i=0; i<this.data.length; i++) {

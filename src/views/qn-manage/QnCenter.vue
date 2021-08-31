@@ -301,7 +301,6 @@ export default {
       canvas.getContext('2d').drawImage(img, 0, 0);
       // 构造url
       var url = canvas.toDataURL('image/png');
-      console.log(url);
       // 构造a标签并模拟点击
       var downloadLink = document.createElement('a');
       downloadLink.download = '二维码.png';
@@ -426,7 +425,6 @@ export default {
     },
 
     statUrl(index) {
-      console.log(this.QnList[index].recycling_num);
       if (this.QnList[index].recycling_num > 0) {
         location.href = this.GLOBAL.baseUrl + "/recyconcept?pid=" + this.QnList[index].survey_id;
       } else {
@@ -541,7 +539,6 @@ export default {
     },
 
     uncollectQn(index) {
-      console.log(index);
       const formData = new FormData();
       formData.append("survey_id", this.QnList[index].survey_id);
       this.$axios({
@@ -576,7 +573,6 @@ export default {
       })
     },
     collectQn(index) {
-      console.log(index);
       const formData = new FormData();
       formData.append("survey_id", this.QnList[index].survey_id);
       this.$axios({
@@ -608,7 +604,6 @@ export default {
     copyQn(index) {
       const formData = new FormData();
       formData.append("qn_id", this.QnList[index].survey_id);
-      console.log(this.QnList[index].survey_id);
       this.$axios({
         method: 'post',
         url: '/sm/duplicate/qn',
@@ -972,7 +967,6 @@ export default {
       this.searchQns(1);
     },
     orderIndex(command) {
-      console.log(command);
       switch (command) {
         case "1":
           this.orderQn = "按创建时间正序";
@@ -1016,12 +1010,10 @@ export default {
       if (this.is_released === "1")
       {
         formData.append("is_released", 1);
-        console.log("1");
       }
       else if (this.is_released === "0")
       {
         formData.append("is_released", 0);
-        console.log("0");
       }
 
       if (this.orderItem !== "default" && this.orderType !== "default") {
@@ -1054,7 +1046,6 @@ export default {
             break;
           case 404:
             this.hasQn = false;
-            console.log('成功但未查询到问卷！');
             break;
           default:
             this.QnList = JSON.parse(res.data.data);
@@ -1062,7 +1053,6 @@ export default {
             if (tag === 1) {
               this.$message.success("为您查询到 " + this.QnList.length + " 条问卷");
             }
-            console.log('success');
             break;
         }
       })
