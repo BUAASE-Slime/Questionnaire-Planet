@@ -27,9 +27,9 @@
 
 > 须结合 [未发布-后端说明]() 进行配置
 
-运行项目前，请根据文件内容提示修改 /src/GlobalInfo.js，其中包含前端路由 `baseUrl`、后端路由 `backUrl`、后端公共路由 `backUrl`。
+运行项目前，请根据文件内容提示修改 **/src/GlobalInfo.js**，其中包含前端路由 `baseUrl`、后端路由 `backUrl`、后端公共路由 `publicBackUrl`。
 
-本地运行项目，会执行 vue.config.js 的设置信息，请如需按提示修改该文件。
+本地运行项目，会执行 **vue.config.js** 的设置信息，请如需按提示修改该文件。
 
 接下来安装运行项目：
 
