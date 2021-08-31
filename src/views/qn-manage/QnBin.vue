@@ -153,6 +153,7 @@ export default {
         if (this.binData.length === 0) {
           this.$message.info("回收站为空，无需执行此操作！");
         } else {
+          let loadingIns = this.$loading({fullscreen: true, text: '正在为您清空回收站'});
           const formData = new FormData();
           formData.append("username", user.getters.getUser(user.state()).user.username);
           this.$axios({
@@ -161,6 +162,7 @@ export default {
             data: formData,
           })
           .then(res => {
+            loadingIns.close();
             if (res.data.status_code === 1) {
               this.empty()
               this.$message({
@@ -190,6 +192,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        let loadingIns = this.$loading({fullscreen: true, text: '清空数据中'});
         const formData = new FormData();
         formData.append("qn_id", this.binData[index].survey_id);
         this.$axios({
@@ -198,6 +201,7 @@ export default {
           data: formData,
         })
         .then(res => {
+          loadingIns.close();
           switch (res.data.status_code) {
             case 0:
               this.$message.warning("您无权执行此操作！");
@@ -226,6 +230,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        let loadingIns = this.$loading({fullscreen: true});
         const formData = new FormData();
         formData.append("qn_id", this.binData[index].survey_id);
         this.$axios({
@@ -234,6 +239,7 @@ export default {
           data: formData
         })
         .then(res => {
+          loadingIns.close();
           switch (res.data.status_code) {
             case 0:
               this.$message.warning("您无权执行此操作！");
@@ -268,6 +274,7 @@ export default {
       });
     },
     recovery: function (index) {
+        let loadingIns = this.$loading({fullscreen: true});
       const formData = new FormData();
       formData.append("qn_id", this.binData[index].survey_id);
       this.$axios({
@@ -276,6 +283,7 @@ export default {
         data: formData,
       })
       .then(res => {
+        loadingIns.close();
         switch (res.data.status_code) {
           case 1:
             this.$message({
