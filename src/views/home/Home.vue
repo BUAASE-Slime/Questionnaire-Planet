@@ -23,46 +23,37 @@
         <h2>热门模板</h2>
         <el-row>
           <el-col :span="4" offset="0">
-            <el-card shadow="hover" class="box-card" @click.native="dialogVisible=true;quesType=1;" >
+            <el-card shadow="hover" class="box-card" >
               <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/survey3.png"></div>
               <span style="display: block; font-weight:bold; text-align: center">调查</span>
             </el-card>
           </el-col>
           <el-col :span="4" offset="1">
-            <el-card shadow="hover" class="box-card" @click.native="dialogVisible=true;quesType=2;" >
+            <el-card shadow="hover" class="box-card" >
               <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/test3.png"></div>
               <span style="display: block; font-weight:bold; text-align: center">考试</span>
             </el-card>
           </el-col>
           <el-col :span="4" offset="1">
-            <el-card shadow="hover" class="box-card" @click.native="dialogVisible=true;quesType=3;" >
+            <el-card shadow="hover" class="box-card" >
               <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/vote3.png"></div>
               <span style="display: block; font-weight:bold; text-align: center">投票</span>
             </el-card>
           </el-col>
           <el-col :span="4" offset="1">
-            <el-card shadow="hover" class="box-card" @click.native="dialogVisible=true;quesType=4;" >
+            <el-card shadow="hover" class="box-card" >
               <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/form3.png"></div>
               <span style="display: block; font-weight:bold; text-align: center">表单</span>
             </el-card>
           </el-col>
           <el-col :span="4" offset="1">
-            <el-card shadow="hover" class="box-card" @click.native="dialogVisible=true;quesType=5;" >
+            <el-card shadow="hover" class="box-card" >
               <div style="display: table-cell;text-align: center"><img class="image" src="../../assets/images/punch3.png"></div>
               <span style="display: block; font-weight:bold; text-align: center">打卡</span>
             </el-card>
           </el-col>
         </el-row>
 
-        <el-dialog title=请输入您想创建的问卷标题 :visible.sync="dialogVisible" width="30%" style="margin-top: 100px">
-          <el-input class="input" v-model="surveyTitle" ></el-input>
-            <span slot="footer" class="dialog-footer" style="text-align: center">
-              <el-row class="bt-group">
-                <el-button :span="6" @click="dialogVisible = false">取 消</el-button>
-                <el-button :span="6" type="primary" @click="createConfirm">确 定</el-button>
-              </el-row>
-            </span>
-        </el-dialog>
       </div>
        <el-divider/>
 
@@ -169,73 +160,6 @@ export default{
     }
   },
   methods: {
-    createSurvey(tag) {
-      var formData = new FormData();
-      const userInfo = user.getters.getUser(user.state());
-      formData.append("username", userInfo.user.username);
-      formData.append("title", this.surveyTitle);
-
-      var editUrlName = '';
-
-      switch (tag) {
-        case 1:
-          formData.append("type", "1");
-          editUrlName = 'Edit';
-          break;
-        case 2:
-          formData.append("type", "2");
-          editUrlName = 'Test';
-          break;
-        case 3:
-          formData.append("type", "3");
-          editUrlName = 'EditVote';
-          break;
-        case 4:
-          formData.append("type", "4");
-          editUrlName = 'SignUpForm';
-          break;
-        case 5:
-          formData.append("type", "5");
-          editUrlName = 'EditHate';
-          break;
-      }
-
-      this.$axios({
-        method: 'post',
-        url: '/sm/create/qn',
-        data: formData,
-      })
-      .then(res => {
-        switch (res.data.status_code) {
-          case 1:
-            var surveyId = res.data.qn_id;
-            this.$router.push({
-              name: editUrlName,
-              query: {
-                pid: surveyId
-              }
-            });
-            break;
-          case 2:
-            this.$message.warning("登录信息失效，请重新登录！");
-            setTimeout(() => {
-              this.$store.dispatch('clear');
-              location.reload();
-            }, 500);
-            break;
-          default:
-            this.$message.error("操作失败！");
-            break;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    },
-    createConfirm(){
-      this.dialogVisible=false;
-      this.createSurvey(this.quesType);
-    },
     gotoLogin() {
       const userInfo = user.getters.getUser(user.state())
       if (userInfo) {
