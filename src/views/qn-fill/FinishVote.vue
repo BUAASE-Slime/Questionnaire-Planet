@@ -119,7 +119,6 @@ export default {
   created() {
     const formData = new FormData();
     formData.append("code", this.$route.query.code);
-    console.log(this.$route.query.code);
     this.$axios({
       method: 'post',
       url: '/sm/get/vote/current_situation/from/code',

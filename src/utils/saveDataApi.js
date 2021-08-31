@@ -23,8 +23,6 @@ export default {
             let questions = this.questions;
             let bool = false;
             let num = '';
-            console.log(questions);
-            console.log(answers.length);
 
             for (let j=0; j<questions.length; j++) {
                 if (questions[j].must && !(questions[j].is_shown && this.ahead(questions[j].last_question)))
@@ -174,8 +172,6 @@ export default {
                 questions: new_questions,
                 max_recycling: this.max_recycling,
             }
-            console.log("timeFrame")
-            console.log(this.timeFrame)
 
             var paramer = JSON.stringify(param, {questions: 'brackets'})
             this.$axios({

@@ -82,7 +82,6 @@ export default {
                 _this.locationInfo.city = response.data.city
                 _this.locationInfo.district = response.data.district
                 _this.locationInfo.location = response.data.location
-                console.log(_this.locationInfo);
 
                 this.isLocated=true;
                 this.locationDescription = this.getLocationDiscription();

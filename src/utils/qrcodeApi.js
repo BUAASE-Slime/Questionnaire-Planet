@@ -43,7 +43,6 @@ export default {
             canvas.getContext('2d').drawImage(img, 0, 0);
             // 构造url
             var url = canvas.toDataURL('image/png');
-            console.log(url);
             // 构造a标签并模拟点击
             var downloadLink = document.createElement('a');
             downloadLink.download = '二维码.png';

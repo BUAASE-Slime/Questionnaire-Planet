@@ -65,12 +65,9 @@ export default {
           name: title
         });
       }
-      console.log('chart2_data');
-      console.log(this.chart2_data);
     },
     showChart2()
     {
-      console.log("showChart2")
 
       // 基于准备好的dom，初始化echarts实例
       let myChart2 = this.$echarts.init(document.getElementById('myChart2'))

@@ -136,10 +136,8 @@ import toolApi from "@/utils/toolApi";
           var ta = [];
           for (var key in this.tableData[kk])
             ta.push(this.tableData[kk][key]);
-          console.log(ta);
           ta.splice(0,1);
           ta.splice(ta.length-1, 1);
-          console.log(ta);
           matrix.push(ta);
         }
         for (var ii=0; ii<matrix.length; ii++)
@@ -151,10 +149,6 @@ import toolApi from "@/utils/toolApi";
             value: matrix.map(function(value) { return value[k]; })
           })
         }
-        //debug
-        console.log(this.legend_data);
-        console.log(this.indecatior_data);
-        console.log(this.series_data_r);
       },
       computeLinData() {
         //legend_data
@@ -171,10 +165,8 @@ import toolApi from "@/utils/toolApi";
           var ta = [];
           for (var key in this.tableData[kk])
             ta.push(this.tableData[kk][key]);
-          console.log(ta);
           ta.splice(0,1);
           ta.splice(ta.length-1, 1);
-          console.log(ta);
           matrix.push(ta);
         }
         for (var ii=0; ii<matrix.length; ii++)
@@ -187,10 +179,6 @@ import toolApi from "@/utils/toolApi";
             data: matrix.map(function(value) { return value[k]; })
           })
         }
-        //debug
-        console.log(this.legend_data);
-        console.log(this.x_data);
-        console.log(this.series_data_l);
       },
       computeHisData() {
         //dimensions_data
@@ -214,10 +202,6 @@ import toolApi from "@/utils/toolApi";
         for (var k=0; k<column_num; k++) {
           this.series_data.push({type: 'bar'});
         }
-        //debug
-        console.log(this.dimensions_data);
-        console.log(this.source_data);
-        console.log(this.series_data);
       },
       rayswi: function(){
           this.choose=3
@@ -234,8 +218,6 @@ import toolApi from "@/utils/toolApi";
         const formData = new FormData();
         var id_1 = this.questions[this.value1-1].question_id;
         var id_2 = this.questions[this.value2-1].question_id;
-        // console.log(id_1);
-        // console.log(id_2);
         formData.append("question_id_1", id_1);
         formData.append("question_id_2", id_2);
         this.$axios({
@@ -248,8 +230,6 @@ import toolApi from "@/utils/toolApi";
             this.tableHead = res.data.tableHead;
             this.tableData = res.data.tableData;
             this.loading = false;
-            console.log(this.tableHead);
-            console.log(this.tableData);
 
             //-------------------------------compute
             this.isClick = true;
@@ -291,7 +271,6 @@ import toolApi from "@/utils/toolApi";
         loadingIns.close();
         if (res.data.status_code === 1) {
           this.questions = res.data.questions;
-          console.log(this.questions);
         }
       })
       .catch(err => {
