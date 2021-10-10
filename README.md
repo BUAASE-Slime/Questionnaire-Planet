@@ -4,7 +4,7 @@
 
 > 北航 1921 软件工程暑期实践
 
-后端：[https://github.com/BFlameSwift/Questionnaire-Planet-Django](https://github.com/BFlameSwift/Questionnaire-Planet-Django)
+后端：[https://github.com/BUAASE-Slime/Questionnaire-Planet-Django](https://github.com/BUAASE-Slime/Questionnaire-Planet-Django)
 
 ## 项目介绍
 
